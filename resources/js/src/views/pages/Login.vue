@@ -6,7 +6,7 @@
       <b-link class="brand-logo">
         <vuexy-logo />
         <h2 class="brand-text text-dark ml-1">
-          {{app.name}} 
+          {{app.name}}
         </h2>
       </b-link>
       <!-- /Brand logo-->
