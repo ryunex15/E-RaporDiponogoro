@@ -65,22 +65,25 @@
                             <font-awesome-icon :icon="['fas', 'user']" class="d-block d-md-none" />
                         </template>
                     </b-tab>
+
                     <b-tab class="font-weight-bold">
                         <template #title>
                             <span class="d-none d-md-block">Nilai</span>
                             <font-awesome-icon :icon="['fas', 'list-check']" class="d-block d-md-none" />
                         </template>
                     </b-tab>
+
                     <b-tab class="font-weight-bold">
                         <template #title>
                             <span class="d-none d-md-block">Teman Sekelas</span>
                             <font-awesome-icon :icon="['fas', 'users']" class="d-block d-md-none" />
                         </template>
                     </b-tab>
+
                     <b-tab class="font-weight-bold">
                         <template #title>
-                            <span class="d-none d-md-block">Pembelajaran</span>
-                            <font-awesome-icon :icon="['fas', 'book']" class="d-block d-md-none" />
+                            <span class="d-none d-md-block">Detil Tugas</span>
+                            <font-awesome-icon :icon="['fas', 'users']" class="d-block d-md-none" />
                         </template>
                     </b-tab>
 
