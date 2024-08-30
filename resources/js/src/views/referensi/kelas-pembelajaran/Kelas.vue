@@ -285,14 +285,25 @@ export default {
         getFields() {
             return [
                 {
-                    key: "icon",
-                    label: "",
-                    thClass: "d-none",
-                    tdClass: "icon-cell",
+                    key: "type",
+                    label: "Tipe",
+                    sortable: true,
+
+                },
+                {
+                    key: "pemateri",
+                    label: "Pemateri",
+                    sortable: true,
+
                 },
                 {
                     key: "title",
                     label: "Judul",
+                    sortable: true,
+                },
+                {
+                    key: "topik",
+                    label: "Topik",
                     sortable: true,
                 },
                 {
@@ -312,22 +323,28 @@ export default {
         getInitialItems() {
             return [
                 {
-                    icon: "📄",
-                    title: "dudung zulkipli memposting materi baru: Section 3",
+                    type: "Tugas",
+                    pemateri: "Dudung Dzulkifli",
+                    title: "Materi baru: Section 3",
+                    topik: "Pemograman Web",
                     date: "13 Apr 2023",
-                    actions: "edit",
+                    actions: "Detail",
                 },
                 {
-                    icon: "📄",
-                    title: "dudung zulkipli memposting materi baru: Section 2",
+                    type: "Materi",
+                    pemateri: "Dudung Dzulkifli",
+                    title: "Materi baru: Section 2",
+                    topik: "Pemograman Web",
                     date: "13 Apr 2023",
-                    actions: "edit",
+                    actions: "Detail",
                 },
                 {
-                    icon: "📄",
-                    title: "dudung zulkipli memposting materi baru: Section 1",
+                    type: "Tugas",
+                    pemateri: "Dudung Dzulkifli",
+                    title: "Materi baru: Section 1",
+                    topik: "Pemograman Web",
                     date: "13 Apr 2023",
-                    actions: "edit",
+                    actions: "Detail",
                 },
             ];
         },
@@ -420,7 +437,7 @@ export default {
     background-color: #f0f2f5;
 }
 
-.icon-cell {
+.type-cell {
     width: 40px;
     text-align: center;
 }

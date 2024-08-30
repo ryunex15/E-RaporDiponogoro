@@ -37,17 +37,7 @@
     </b-row>
     <b-modal ref="detil-modal" size="lg" :title="judul" @ok="handleOk" ok-title="Simpan" cancel-title="Tutup">
       <detil-ptk :data="data" :loading_modal="loading_modal" :ref_gelar_depan="ref_gelar_depan" :ref_gelar_belakang="ref_gelar_belakang" :form="form" :isAsesor="isAsesor" :ref_dudi="ref_dudi"></detil-ptk>
-      <template #modal-footer="{ ok, cancel }">
-        <b-overlay :show="loading_modal" rounded opacity="0.6" size="sm" spinner-variant="secondary">
-          <b-button @click="cancel()">Tutup</b-button>
-        </b-overlay>
-        <b-overlay :show="loading_modal" rounded opacity="0.6" size="sm" spinner-variant="primary">
-          <b-button variant="primary" @click="ok()">Perbaharui</b-button>
-        </b-overlay>
-        <b-overlay :show="loading_modal" rounded opacity="0.6" size="sm" spinner-variant="danger">
-          <b-button variant="danger" @click="hapusData()" v-if="hapus">Hapus</b-button>
-        </b-overlay>
-      </template>
+     
     </b-modal>
   </div>
 </template>
