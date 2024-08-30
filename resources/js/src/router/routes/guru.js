@@ -119,13 +119,35 @@ export default [
     meta: {
       resource: 'Guru',
       action: 'read',
-      pageTitle: 'Data Kelas Pembelajaran',
+      pageTitle: 'Kelas Pembelajaran',
       breadcrumb: [
         {
           text: 'Referensi',
         },
         {
-          text: 'Data Kelas Pembelajaran',
+          text: 'Kelas Pembelajaran',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/referensi/kelas-pembelajaran/kelas',
+    name: 'referensi-kelas-pembelajaran-kelas',
+    component: () => import('@/views/referensi/kelas-pembelajaran/Kelas.vue'),
+    meta: {
+      resource: 'Guru',
+      action: 'read',
+      pageTitle: 'Kelas X',
+      breadcrumb: [
+        {
+          text: 'Referensi',
+        },
+        {
+          text: 'Kelas Pembelajaran',
+        },
+        {
+          text: 'Kelas X',
           active: true,
         },
       ],

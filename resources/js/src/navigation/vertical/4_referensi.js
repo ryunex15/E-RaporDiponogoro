@@ -140,7 +140,7 @@ export default [
         {
           icon: 'hand-point-right',
           title: 'Kelas Pembelajaran',
-          route: 'referensi-bobot-penilaian',
+          route: 'referensi-kelas-pembelajaran',
           resource: 'Guru',
           action: 'read',
         },
