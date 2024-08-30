@@ -9,55 +9,55 @@ class TopikTugasController extends Controller
 {
     public function index()
     {
-        // $topikTugas = TopikTugas::all();
-        // return view('topik_tugas.index', compact('topikTugas'));
+        $topikTugas = TopikTugas::all();
+        return view('topik_tugas.index', compact('topikTugas'));
     }
 
     public function create()
     {
-        // return view('topik_tugas.create');
+        return view('topik_tugas.create');
     }
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'judul_topik' => 'required|string|max:255',
-        // ]);
+        $request->validate([
+            'judul_topik' => 'required|string|max:255',
+        ]);
 
-        // TopikTugas::create($request->all());
+        TopikTugas::create($request->all());
 
-        // return redirect()->route('topik_tugas.index')
-        //     ->with('success', 'Topik tugas berhasil ditambahkan.');
+        return redirect()->route('topik_tugas.index')
+            ->with('success', 'Topik tugas berhasil ditambahkan.');
     }
 
     public function show(TopikTugas $topikTugas)
     {
-        // return view('topik_tugas.show', compact('topikTugas'));
+        return view('topik_tugas.show', compact('topikTugas'));
     }
 
     public function edit(TopikTugas $topikTugas)
     {
-        // return view('topik_tugas.edit', compact('topikTugas'));
+        return view('topik_tugas.edit', compact('topikTugas'));
     }
 
     public function update(Request $request, TopikTugas $topikTugas)
     {
-        // $request->validate([
-        //     'judul_topik' => 'required|string|max:255',
-        // ]);
+        $request->validate([
+            'judul_topik' => 'required|string|max:255',
+        ]);
 
-        // $topikTugas->update($request->all());
+        $topikTugas->update($request->all());
 
-        // return redirect()->route('topik_tugas.index')
-        //     ->with('success', 'Topik tugas berhasil diperbarui.');
+        return redirect()->route('topik_tugas.index')
+            ->with('success', 'Topik tugas berhasil diperbarui.');
     }
 
     public function destroy(TopikTugas $topikTugas)
     {
-        // $topikTugas->delete();
+        $topikTugas->delete();
 
-        // return redirect()->route('topik_tugas.index')
-        //     ->with('success', 'Topik tugas berhasil dihapus.');
+        return redirect()->route('topik_tugas.index')
+            ->with('success', 'Topik tugas berhasil dihapus.');
     }
 }
 
