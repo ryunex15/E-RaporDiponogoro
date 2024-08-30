@@ -424,4 +424,8 @@ export default {
     width: 40px;
     text-align: center;
 }
+
+.modal-footer {
+    display: none;
+}
 </style>
