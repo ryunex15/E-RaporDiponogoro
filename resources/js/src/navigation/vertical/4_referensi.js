@@ -139,7 +139,7 @@ export default [
         },
         {
           icon: 'hand-point-right',
-          title: 'INI APA',
+          title: 'Kelas Pembelajaran',
           route: 'referensi-bobot-penilaian',
           resource: 'Guru',
           action: 'read',

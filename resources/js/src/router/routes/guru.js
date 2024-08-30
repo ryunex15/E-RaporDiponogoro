@@ -113,6 +113,25 @@ export default [
     },
   },
   {
+    path: '/referensi/kelas-pembelajaran',
+    name: 'referensi-kelas-pembelajaran',
+    component: () => import('@/views/referensi/kelas-pembelajaran/Index.vue'),
+    meta: {
+      resource: 'Guru',
+      action: 'read',
+      pageTitle: 'Data Kelas Pembelajaran',
+      breadcrumb: [
+        {
+          text: 'Referensi',
+        },
+        {
+          text: 'Data Kelas Pembelajaran',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/referensi/uji-kompetensi-keahlian',
     name: 'referensi-ukk',
     component: () => import('@/views/referensi/ukk/Index.vue'),
