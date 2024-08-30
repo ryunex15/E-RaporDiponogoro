@@ -44,6 +44,7 @@ export default {
     ProfileBiodata,
     ProfileNilai,
     ProfileTeman,
+    ProfileTugas,
   },
   data() {
     return {
