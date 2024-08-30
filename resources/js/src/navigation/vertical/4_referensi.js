@@ -139,6 +139,13 @@ export default [
         },
         {
           icon: 'hand-point-right',
+          title: 'INI APA',
+          route: 'referensi-bobot-penilaian',
+          resource: 'Guru',
+          action: 'read',
+        },
+        {
+          icon: 'hand-point-right',
           title: 'Uji Kompetensi Keahlian',
           route: 'referensi-ukk',
           resource: 'Kaprog',
