@@ -129,12 +129,6 @@ export default [
           active: true,
         },
       ],
-      tombol_add: {
-        action: 'add-tp',
-        link: '',
-        variant: 'success',
-        text: 'Tambah Data'
-      },
     },
   },
   {
