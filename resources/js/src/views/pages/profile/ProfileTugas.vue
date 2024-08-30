@@ -110,7 +110,7 @@
         capaian_kompetensi_p: '-',
         capaian_kompetensi_k: '',
         show: false,
-        tabIndex: 0,
+        tabIndex: 4,
         kelas: null,
       }
     },
