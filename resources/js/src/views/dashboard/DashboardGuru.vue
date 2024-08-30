@@ -17,7 +17,8 @@
                 <b-th class="text-center">Wali Kelas</b-th>
                 <b-th class="text-center">Jml Peserta Didik</b-th>
                 <b-th class="text-center">Jml Peserta Didik Dinilai</b-th>
-                <b-th class="text-center">Detil</b-th>
+                <b-th class="text-center">Detil Siswa</b-th>
+                <b-th class="text-center">Detil Kelas</b-th>
               </b-tr>
             </b-thead>
             <b-tbody>
@@ -37,7 +38,12 @@
                       <b-td class="text-center">{{item.pd_dinilai}}</b-td>
                     </template>
                     <b-td class="text-center">
-                      <b-button variant="success" size="sm" @click="detil(item)">Detil</b-button>
+                      <b-button variant="success" size="sm" @click="detil(item)">Detil Siswa</b-button>
+                    </b-td>
+                    <b-td class="text-center">
+                      <router-link to="/referensi/kelas-pembelajaran/kelas">
+                        <b-button variant="success" size="sm">Detil Kelas</b-button>
+                      </router-link>
                     </b-td>
                   </b-tr>
                 </template>
