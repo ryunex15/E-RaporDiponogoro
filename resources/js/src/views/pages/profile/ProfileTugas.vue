@@ -1,160 +1,219 @@
 <template>
-    <b-card no-body>
-      <template v-if="show">
-        <b-card-body>
-          <template v-if="isBusy">
-            <div class="text-center text-danger my-2">
-              <b-spinner class="align-middle"></b-spinner>
-              <strong>Loading...</strong>
-            </div>
-          </template>
-          <template v-else>
-            <b-card-header class="pb-1">
-              <b-card-title>Detil Nilai Mata Pelajaran {{ mapel }}</b-card-title>
-              <b-button variant="info" size="sm" @click="$emit('kembali')">Kembali</b-button>
-            </b-card-header>
-            <template v-if="nilai_tp.length">
-              <b-table-simple bordered class="mb-2">
-                <b-thead>
-                  <b-tr>
-                    <b-th class="text-center">No</b-th>
-                    <b-th class="text-center">Tujuan Pembelajaran</b-th>
-                    <b-th class="text-center">Nilai</b-th>
-                    <b-th class="text-center">Ketercapaian Kompetensi</b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr v-for="(item, index) in nilai_tp" :key="item.nilai_tp_id">
-                    <b-td class="text-center">{{ index + 1 }}</b-td>
-                    <b-td>{{ item.tp.deskripsi }}</b-td>
-                    <b-td class="text-center">{{ item.nilai }}</b-td>
-                    <b-td class="text-center">{{ (parseInt(item.capaian_kompeten.kompeten)) ? 'Tercapai' : 'Tidak tercapai' }}</b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
-            </template>
-          </template>
-          <b-table-simple bordered>
-            <b-tbody>
-              <b-tr>
-                <b-td><strong>Nilai Rapor</strong></b-td>
-                <b-td>{{ nilai_rapor }}</b-td>
-              </b-tr>
-              <b-tr>
-                <b-td><strong>Capaian Kompetensi</strong></b-td>
-                <b-td>
-                  {{ capaian_kompetensi_p }}
-                  <br>
-                  {{ capaian_kompetensi_k }}
-                </b-td>
-              </b-tr>
-            </b-tbody>
-          </b-table-simple>
-        </b-card-body>
-      </template>
-      <template v-else>
-        <b-tabs fill v-model="tabIndex" @input="inputTab" content-class="mt-0">
-          <template v-for="(item, index) in semester">
-            <b-tab :title="item.nama">
-              <template v-if="isBusy">
-                  <div class="text-center text-danger my-2">
-                    <b-spinner class="align-middle"></b-spinner>
-                    <strong>Loading...</strong>
-                  </div>
-                </template>
-                <template v-else>
-                  <profile-pembelajaran :pd="pd" :kelas="kelas" @nilai="handleNilai" />
-                </template>
-            </b-tab>
-          </template>
-        </b-tabs>
-      </template>
-    </b-card>
-  </template>
+    <b-card no-body class="main-card">
+        <b-overlay :show="isBusy" rounded opacity="0.6" size="lg" spinner-variant="primary">
+            <b-card-body class="p-0">
+                <div class="header-banner text-white p-4 mb-4">
+                    <h1 class="mb-1">Kelas X RPL 2</h1>
+                    <p class="mb-0">Pemrograman web</p>
+                    <p class="mb-0">Dudung Dzulkifli</p>
+                </div>
 
-  <script>
-  import { BCard, BCardHeader, BCardTitle, BCardBody, BCardText, BSpinner, BTableSimple, BThead, BTbody, BTr, BTh, BTd, BTabs, BTab, BButton } from 'bootstrap-vue'
-  import ProfilePembelajaran from './ProfilePembelajaran.vue'
-  export default {
-    components: {
-      BCard,
-      BCardHeader,
-      BCardTitle,
-      BCardBody,
-      BCardText,
-      BSpinner,
-      BTableSimple, BThead, BTbody, BTr, BTh, BTd, BTabs, BTab,
-      BButton,
-      ProfilePembelajaran
-    },
-    props: {
-      pembelajaran_id: {
-        type:String,
-        required: true
-      },
-      pd: {
-        type: Object,
-        default: () => {},
-      },
-      semester: {
-        type: Array,
-        default: () => [],
-      }
-    },
-    data() {
-      return {
-        isBusy: true,
-        mapel: '',
-        nilai_tp: [],
-        nilai_rapor: '-',
-        capaian_kompetensi_p: '-',
-        capaian_kompetensi_k: '',
-        show: false,
-        tabIndex: 4,
-        kelas: null,
-      }
-    },
-    created() {
-      if(this.pembelajaran_id){
-        this.loadPostsData(this.pembelajaran_id)
-      } else {
-        this.inputTab(this.tabIndex)
-      }
-    },
-    methods: {
-      loadPostsData(pembelajaran_id){
-        this.show = true
-        this.isBusy = true
-        this.$http.post('/dashboard/detil-nilai', {
-          sekolah_id: this.user.sekolah_id,
-          semester_id: this.user.semester.semester_id,
-          periode_aktif: this.user.semester.nama,
-          pembelajaran_id: pembelajaran_id,
-        }).then(response => {
-          this.isBusy = false
-          let getData = response.data
-          this.mapel = getData.nama_mata_pelajaran
-          this.nilai_tp = getData.nilai_tp
-          this.nilai_rapor = (getData.nilai_akhir_kurmer) ? getData.nilai_akhir_kurmer.nilai : getData.nilai_akhir_pengetahuan?.nilai
-          this.capaian_kompetensi_p = getData.single_deskripsi_mata_pelajaran?.deskripsi_pengetahuan
-          this.capaian_kompetensi_k = getData.single_deskripsi_mata_pelajaran?.deskripsi_keterampilan
-        })
-      },
-      inputTab(idx){
-        if(idx >= 0){
-          let smt = this.semester[idx]
-          this.isBusy = true
-          this.$http.post('/users/nilai-semester', {
-            semester_id: smt.semester_id
-          }).then(response => {
-            this.isBusy = false
-            this.kelas = response.data
-          })
-        }
-      },
-      handleNilai(pembelajaran_id){
-        this.loadPostsData(pembelajaran_id)
-      },
+                <div class="container">
+                    <b-row>
+                        <b-col md="3">
+                            <b-card class="sidebar-card mb-4 shadow-lg rounded-lg" :class="{'bg-light text-dark': !isDarkMode, 'bg-dark text-light': isDarkMode}">
+                                <b-card-body>
+                                    <h5 class="card-title font-weight-bold mb-2">
+                                        Mendatang
+                                    </h5>
+                                    <p class="card-text">
+                                        Hore, tidak ada tugas yang perlu segera diselesaikan!
+                                    </p>
+                                    <b-link href="#" class="font-weight-bold">
+                                        Lihat semua
+                                    </b-link>
+                                </b-card-body>
+                            </b-card>
+                        </b-col>
+
+                        <b-col md="9">
+                            <b-col md="12">
+                                <b-card class="mb-0 post-card shadow-sm rounded border-0">
+                                    <b-card-body class="d-flex align-items-center">
+                                        <b-img src="https://lh3.googleusercontent.com/a/ACg8ocLPS5kaZwaq3HcNkgRsgIOdS-Z_0x5irL74fZzP1raa6VTKkKWM=s40-c" rounded="circle" width="50" height="50" class="mr-3" alt="Avatar" />
+                                        <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1" aria-label="Announcement input" />
+                                    </b-card-body>
+                                </b-card>
+                            </b-col>
+
+                            <b-card class="mb-4 datatable-card">
+                                <b-card-body>
+                                    <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items" :fields="fields" :meta="meta" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" />
+                                </b-card-body>
+                            </b-card>
+
+                            <!-- <add-ptk @reload="handleReload" :title="Tambah Materi Baru" :link_excel="/excel/format_excel_materi.xlsx" :jenis_gtk="pengajar" /> -->
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-card-body>
+        </b-overlay>
+    </b-card>
+    </template>
+
+    <script>
+    import {
+        BCard,
+        BCardBody,
+        BOverlay,
+        BRow,
+        BCol,
+        BFormInput,
+        BImg,
+        BLink
+    } from 'bootstrap-vue'
+    import Datatable from '../../progress/Datatable.vue'
+    import AddPtk from '../../referensi/modal/AddPtk.vue';
+    import eventBus from '@core/utils/eventBus'
+
+    export default {
+        components: {
+            BCard,
+            BCardBody,
+            BOverlay,
+            BRow,
+            BCol,
+            BFormInput,
+            BImg,
+            BLink,
+            Datatable,
+            AddPtk,
+        },
+        data() {
+            return {
+                isAsesor: false,
+                isBusy: false,
+                fields: this.getFields(),
+                items: this.getInitialItems(),
+                meta: {},
+                current_page: 1,
+                per_page: 10,
+                search: '',
+                sortBy: 'date',
+                sortByDesc: true,
+            }
+        },
+        created() {
+            this.loadPostsData()
+            eventBus.$on('modal-materi', this.handleEvent)
+        },
+        methods: {
+            getFields() {
+                return [{
+                        key: 'icon',
+                        label: '',
+                        thClass: 'd-none',
+                        tdClass: 'icon-cell'
+                    },
+                    {
+                        key: 'title',
+                        label: 'Judul',
+                        sortable: true
+                    },
+                    {
+                        key: 'date',
+                        label: 'Tanggal',
+                        sortable: true
+                    },
+                    {
+                        key: 'actions',
+                        label: 'Aksi',
+                        sortable: false,
+                        thClass: 'text-center',
+                        tdClass: 'text-center'
+                    },
+                ];
+            },
+            getInitialItems() {
+                return [{
+                        icon: '📄',
+                        title: 'dudung zulkipli memposting materi baru: Section 3',
+                        date: '13 Apr 2023',
+                        actions: 'edit'
+                    },
+                    {
+                        icon: '📄',
+                        title: 'dudung zulkipli memposting materi baru: Section 2',
+                        date: '13 Apr 2023',
+                        actions: 'edit'
+
+                    },
+                    {
+                        icon: '📄',
+                        title: 'dudung zulkipli memposting materi baru: Section 1',
+                        date: '13 Apr 2023',
+                        actions: 'edit'
+                    },
+                ];
+            },
+            handleEvent() {
+                eventBus.$emit('open-modal-ptk')
+            },
+            handleReload() {
+                this.loadPostsData()
+            },
+            loadPostsData() {
+                this.isBusy = true
+                setTimeout(() => {
+                    this.isBusy = false
+                    this.meta = {
+                        total: this.items.length,
+                        current_page: this.current_page,
+                        per_page: this.per_page,
+                        from: 1,
+                        to: this.items.length,
+                    }
+                }, 1000)
+            },
+            handlePerPage(val) {
+                this.per_page = val
+                this.loadPostsData()
+            },
+            handlePagination(val) {
+                this.current_page = val
+                this.loadPostsData()
+            },
+            handleSearch(val) {
+                this.search = val
+                this.loadPostsData()
+            },
+            handleSort(val) {
+                if (val.sortBy) {
+                    this.sortBy = val.sortBy
+                    this.sortByDesc = val.sortDesc
+                    this.loadPostsData()
+                }
+            },
+        },
     }
-  }
-  </script>
+    </script>
+
+    <style scoped>
+    .main-card {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .header-banner {
+        background-color: #90daff;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    .sidebar-card,
+    .post-card,
+    .datatable-card {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .post-card .form-control {
+        border: none;
+        background-color: #f0f2f5;
+    }
+
+    .icon-cell {
+        width: 40px;
+        text-align: center;
+    }
+    </style>
