@@ -12,6 +12,8 @@
           <profile-biodata :bio-data="profileData.pd" v-if="activeTab === 1" :form="form" :pekerjaan="pekerjaan" />
           <profile-nilai :semester="semester" :pd="profileData.pd" v-if="activeTab === 2" :pembelajaran_id="pembelajaran_id" @kembali="handleKembali" />
           <profile-teman :semester="semester" :pd="profileData.pd" v-if="activeTab === 3" />
+          <!-- <profile-tugas :semester="semester" :pd="profileData.pd" v-if="activeTab === 4" :tugas-data="tugasData" @tugas="handleTugas" /> -->
+          <profile-tugas :semester="semester" :pd="profileData.pd" v-if="activeTab === 4" :pembelajaran_id="pembelajaran_id" @tugas="handleTugas" />
         </b-col>
       </b-row>
     </section>
@@ -25,6 +27,7 @@ import { BRow, BCol } from 'bootstrap-vue'
 import ProfileHeader from './ProfileHeader.vue'
 import ProfileAbout from './ProfileAbout.vue'
 import ProfilePembelajaran from './ProfilePembelajaran.vue'
+import ProfileTugas from './ProfileTugas.vue'
 import ProfileBiodata from './ProfileBiodata.vue'
 import ProfileNilai from './ProfileNilai.vue'
 import ProfileTeman from './ProfileTeman.vue'
@@ -87,6 +90,10 @@ export default {
       this.activeTab = idx
     },
     handleNilai(pembelajaran_id){
+      this.pembelajaran_id = pembelajaran_id
+      this.activeTab = 2
+    },
+    handleTugas(pembelajaran_id){
       this.pembelajaran_id = pembelajaran_id
       this.activeTab = 2
     },

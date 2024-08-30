@@ -23,6 +23,7 @@
                     <b-th class="text-center">Guru Mata Pelajaran</b-th>
                     <b-th class="text-center">Nilai Rapor</b-th>
                     <b-th class="text-center">Detil Nilai</b-th>
+                    <b-th class="text-center">Detil Tugas</b-th>
                   </b-tr>
                 </template>
                 <template v-else>
@@ -66,6 +67,10 @@
                     </template>
                   </template>
                   <b-td class="text-center"><b-button size="sm" variant="success" @click="detilNilai(item.pembelajaran_id)">Detil Nilai</b-button></b-td>
+                  <b-td class="text-center">
+                    <b-button size="sm" variant="success" @click="detilTugas(item.pembelajaran_id)">Detil Tugas</b-button>
+                  </b-td>
+
                 </b-tr>
               </template>
               <template v-else>
@@ -114,10 +119,12 @@ export default {
   methods: {
     cekKurikulum(nama_kurikulum, semester_id){
       return nama_kurikulum.includes("Merdeka");
-      
     },
     cekTahun(semester_id){
       return parseInt(semester_id) >= 20221
+    },
+    detilTugas(pembelajaran_id){
+      this.$emit('tugas', pembelajaran_id)
     },
     detilNilai(pembelajaran_id){
       this.$emit('nilai', pembelajaran_id)
@@ -136,7 +143,7 @@ export default {
             }
           } else {
             get_pembelajaran.push(item)
-          }  
+          }
         });
         return get_pembelajaran
       } else {
