@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -19,6 +18,7 @@ class GuruController extends Controller
 {
     public function index()
     {
+        $datas = Guru::paginate(request()->per_page);
         $data = Guru::where(function($query){
             $query->whereIn('jenis_ptk_id', jenis_gtk(request()->jenis_gtk));
             $query->where('sekolah_id', request()->sekolah_id);
@@ -32,7 +32,7 @@ class GuruController extends Controller
             $query->where('nama', 'ILIKE', '%' . request()->q . '%');
             $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
         })->paginate(request()->per_page);
-        return response()->json(['status' => 'success', 'data' => $data]);
+        return response()->json(['status' => 'success', 'data' => $data, 'datas' => $datas]);
     }
     public function detil(){
         $guru = Guru::with(['gelar_depan', 'gelar_belakang', 'agama', 'dudi'])->find(request()->guru_id);

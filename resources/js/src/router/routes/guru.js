@@ -154,6 +154,28 @@ export default [
     },
   },
   {
+    path: '/referensi/kelas-pembelajaran/kelas/tugas',
+    name: 'referensi-kelas-pembelajaran-kelas-tugas',
+    component: () => import('@/views/referensi/kelas-pembelajaran/Tugas.vue'),
+    meta: {
+      resource: 'Guru',
+      action: 'read',
+      pageTitle: 'Detail Tugas',
+      breadcrumb: [
+        {
+          text: 'Referensi',
+        },
+        {
+          text: 'Detail Tugas',
+        },
+        {
+          text: 'Kelas X',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/referensi/uji-kompetensi-keahlian',
     name: 'referensi-ukk',
     component: () => import('@/views/referensi/ukk/Index.vue'),

@@ -145,7 +145,7 @@ export default {
             this.$emit('action-clicked', item);
             console.log('Action clicked:', item);
             this.$router.push({
-                path: `/details/${item.id}`,
+                path: `/referensi/kelas-pembelajaran/kelas/tugas`,
                 query: {
                     someParam: item.someValue
                 }
