@@ -8,11 +8,10 @@
             spinner-variant="primary"
         >
             <b-card-body class="p-0">
-                <!-- Navigation -->
                 <ul class="nav nav-pills nav-fill mb-3 nav-pills-custom">
                     <li class="nav-item">
                         <a
-                            class="nav-link"
+                            class="nav-link text-sm text-md text-lg"
                             :class="{ active: activeTab === 'ditugaskan' }"
                             href="#"
                             @click.prevent="setTab('ditugaskan')"
@@ -22,7 +21,7 @@
                     </li>
                     <li class="nav-item">
                         <a
-                            class="nav-link"
+                            class="nav-link text-sm text-md text-lg"
                             :class="{ active: activeTab === 'belumDiserahkan' }"
                             href="#"
                             @click.prevent="setTab('belumDiserahkan')"
@@ -32,7 +31,7 @@
                     </li>
                     <li class="nav-item">
                         <a
-                            class="nav-link"
+                            class="nav-link text-sm text-md text-lg"
                             :class="{ active: activeTab === 'selesai' }"
                             href="#"
                             @click.prevent="setTab('selesai')"
@@ -42,43 +41,114 @@
                     </li>
                 </ul>
 
-                <!-- Header Banner -->
-                <div class="header-banner text-white p-4 mb-4">
-                    <h1 class="mb-1">Kelas X RPL 2</h1>
-                    <p class="mb-0">Pemrograman web</p>
+                <div class="header-banner text-white p-4 mb-4 text-md-start">
+                    <h1 class="display-6 display-md-4 mb-1">Kelas X RPL 2</h1>
+                    <p class="lead mb-0">Pemrograman web</p>
                     <p class="mb-0">Dudung Dzulkifli</p>
                 </div>
 
-                <!-- Content Based on Active Tab -->
                 <div class="container">
                     <b-row>
                         <b-col md="12">
+                            <!-- Ditugaskan -->
                             <b-card
                                 class="mb-4 post-card shadow-sm rounded border-0"
                                 v-if="activeTab === 'ditugaskan'"
                             >
                                 <b-card-body>
-                                    <p class="mb-0">Konten Ditugaskan...</p>
+                                    <p class="responsive-text">
+                                        <b>Dummy Tugas 1</b> - Deskripsi tugas 1
+                                    </p>
+                                    <b-button
+                                        variant="primary"
+                                        class="ml-auto"
+                                        @click="showTaskDetails"
+                                        >Detail Tugas</b-button
+                                    >
+                                </b-card-body>
+                            </b-card>
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border-0"
+                                v-if="activeTab === 'ditugaskan'"
+                            >
+                                <b-card-body>
+                                    <p class="responsive-text">
+                                        <b>Dummy Tugas 2</b> - Deskripsi tugas 2
+                                    </p>
+                                    <b-button
+                                        variant="primary"
+                                        class="ml-auto"
+                                        @click="showTaskDetails"
+                                        >Detail Tugas</b-button
+                                    >
                                 </b-card-body>
                             </b-card>
 
+                            <!-- Belum Diserahkan -->
                             <b-card
                                 class="mb-4 post-card shadow-sm rounded border-0"
                                 v-if="activeTab === 'belumDiserahkan'"
                             >
                                 <b-card-body>
-                                    <p class="mb-0">
-                                        Konten Belum Diserahkan...
+                                    <p class="responsive-text">
+                                        <b>Dummy Tugas 1</b> - Deskripsi tugas 1
                                     </p>
+                                    <b-button
+                                        variant="warning"
+                                        class="ml-auto"
+                                        @click="showTaskDetails"
+                                        >Detail Tugas</b-button
+                                    >
+                                </b-card-body>
+                            </b-card>
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border-0"
+                                v-if="activeTab === 'belumDiserahkan'"
+                            >
+                                <b-card-body>
+                                    <p class="responsive-text">
+                                        <b>Dummy Tugas 2</b> - Deskripsi tugas 2
+                                    </p>
+                                    <b-button
+                                        variant="warning"
+                                        class="ml-auto"
+                                        @click="showTaskDetails"
+                                        >Detail Tugas</b-button
+                                    >
                                 </b-card-body>
                             </b-card>
 
+                            <!-- Selesai -->
                             <b-card
                                 class="mb-4 post-card shadow-sm rounded border-0"
                                 v-if="activeTab === 'selesai'"
                             >
                                 <b-card-body>
-                                    <p class="mb-0">Konten Selesai...</p>
+                                    <p class="responsive-text">
+                                        <b>Dummy Tugas 1</b> - Deskripsi tugas 1
+                                    </p>
+                                    <b-button
+                                        variant="success"
+                                        class="ml-auto"
+                                        @click="showTaskDetails"
+                                        >Detail Tugas</b-button
+                                    >
+                                </b-card-body>
+                            </b-card>
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border-0"
+                                v-if="activeTab === 'selesai'"
+                            >
+                                <b-card-body>
+                                    <p class="responsive-text">
+                                        <b>Dummy Tugas 2</b> - Deskripsi tugas 2
+                                    </p>
+                                    <b-button
+                                        variant="success"
+                                        class="ml-auto"
+                                        @click="showTaskDetails"
+                                        >Detail Tugas</b-button
+                                    >
                                 </b-card-body>
                             </b-card>
                         </b-col>
@@ -90,27 +160,30 @@
 </template>
 
 <script>
-import { BCard, BCardBody, BOverlay, BRow, BCol } from "bootstrap-vue";
+import { BCard, BCardBody, BButton, BRow, BCol, BOverlay } from "bootstrap-vue";
 
 export default {
     components: {
         BCard,
         BCardBody,
-        BOverlay,
+        BButton,
         BRow,
         BCol,
+        BOverlay,
     },
     data() {
         return {
             isBusy: false,
-            activeTab: "ditugaskan", // Default tab
+            activeTab: "ditugaskan",
         };
     },
     methods: {
         setTab(tab) {
             this.activeTab = tab;
-            // Logic to handle tab switching, fetching data, or any other actions.
-            console.log(`Active tab set to: ${tab}`);
+        },
+        showTaskDetails() {
+            alert("Detail Tugas Diklik");
+            // Tambahkan logika lain di sini
         },
     },
 };
@@ -118,29 +191,27 @@ export default {
 
 <style scoped>
 .main-card {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: none;
-}
-
-.header-banner {
-    background-color: #90daff;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-}
-
-.nav-pills-custom .nav-link {
-    border-radius: 0.25rem;
-    transition: all 0.3s ease;
-    color: #007bff;
+    margin-bottom: 20px;
 }
 
 .nav-pills-custom .nav-link.active {
     background-color: #007bff;
-    color: white;
+}
+
+.header-banner {
+    background-color: #343a40;
+    border-radius: 10px;
+}
+
+.responsive-text {
+    font-size: 1rem;
 }
 
 .post-card {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: none;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.post-card:hover {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 </style>
