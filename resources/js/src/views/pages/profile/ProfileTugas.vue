@@ -54,30 +54,82 @@
                         <b-col md="12">
                             <!-- Ditugaskan -->
                             <b-card
-                                class="mb-4 post-card shadow-sm rounded border-0"
+                                class="mb-2 post-card shadow-sm rounded border border-secondary"
                                 v-if="activeTab === 'ditugaskan'"
                             >
                                 <b-card-body>
-                                    <p class="responsive-text">
-                                        <b>Tugas 1</b> - Mempelajari Akupuntur.
-                                    </p>
-                                    <b-button
-                                        variant="info"
-                                        class="ml-auto"
-                                        @click="showTaskDetails"
-                                        >Detail Tugas</b-button
+                                    <div
+                                        class="responsive-text d-flex justify-content-between"
                                     >
+                                        <div>
+                                            <b>Tugas 1</b> - Mempelajari
+                                            Akupuntur.
+                                            <br />
+                                            <b>Topik</b> - Dasar-dasar
+                                            Akupuntur.
+                                            <br />
+                                            <b>Pemberi Materi</b> - Mr. Dudung
+                                            Dzulkifli
+                                            <br />
+                                        </div>
+                                        <div>
+                                            <h5>Tenggat Waktu</h5>
+                                            <p>10/11/2024</p>
+
+                                            <b-button
+                                                variant="info"
+                                                class="ml-auto"
+                                                @click="showTaskDetails"
+                                                >Detail Tugas</b-button
+                                            >
+                                        </div>
+                                    </div>
+                                </b-card-body>
+                            </b-card>
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border border-secondary"
+                                v-if="activeTab === 'ditugaskan'"
+                            >
+                                <b-card-body>
+                                    <div
+                                        class="responsive-text d-flex justify-content-between"
+                                    >
+                                        <div>
+                                            <b>Tugas 2</b> - Mempelajari
+                                            G30SPKI.
+                                            <br />
+                                            <b>Topik</b> - Siapa Saja Tokoh di
+                                            G30SPKI.
+                                            <br />
+                                            <b>Pemberi Materi</b> - Mr. Dudung
+                                            Dzulkifli
+                                            <br />
+                                        </div>
+                                        <div>
+                                            <h5>Tenggat Waktu</h5>
+                                            <p>10/11/2024</p>
+
+                                            <b-button
+                                                variant="info"
+                                                class="ml-auto"
+                                                @click="showTaskDetails"
+                                                >Detail Tugas</b-button
+                                            >
+                                        </div>
+                                    </div>
                                 </b-card-body>
                             </b-card>
 
                             <!-- Belum Diserahkan -->
                             <b-card
-                                class="mb-4 post-card shadow-sm rounded border-0"
+                                class="mb-4 post-card shadow-sm rounded border border-warning"
                                 v-if="activeTab === 'belumDiserahkan'"
                             >
-                                <b-card-body>
+                                <b-card-body
+                                    class="d-flex justify-content-between"
+                                >
                                     <p class="responsive-text">
-                                        <b>Tugas 1</b> - Mempelajari Akupuntur.
+                                        <b>Tugas 1</b> - Mempelajari Linkedin.
                                         <br />
                                         <b
                                             >Batas Penyerahan : Selasa 3
@@ -95,7 +147,7 @@
 
                             <!-- Selesai -->
                             <b-card
-                                class="mb-4 post-card shadow-sm rounded border-0"
+                                class="mb-4 post-card shadow-sm rounded border border-success"
                                 v-if="activeTab === 'selesai'"
                             >
                                 <b-card-body>
@@ -105,7 +157,7 @@
                                 </b-card-body>
                             </b-card>
                             <b-card
-                                class="mb-4 post-card shadow-sm rounded border-0"
+                                class="mb-4 post-card shadow-sm rounded border border-success"
                                 v-if="activeTab === 'selesai'"
                             >
                                 <b-card-body>
@@ -129,13 +181,14 @@
             centered
         >
             <h3>Mempelajari Akupuntur</h3>
+            <h5>Pemberi Materi : MR.Dudung Dzul</h5>
             <p>Batas Penyerahan : Selasa, 3 September 2024</p>
 
             <!-- Preview gambar tugas di sini -->
-            <b-img
-                src="https://images.unsplash.com/photo-1719937051058-63705ed35502?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8"
-                fluid
-                alt="Preview Gambar Tugas"
+            <img
+                src="/images/tutwuri.png"
+                alt="Deskripsi Gambar"
+                class="mb-4 w-25 d-block mx-auto"
             />
 
             <h5>
