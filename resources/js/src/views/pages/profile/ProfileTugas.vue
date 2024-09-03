@@ -41,47 +41,76 @@
                             </b-card-body>
                         </b-card>
 
-                        <!-- Belum Diserahkan -->
-                        <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'belumDiserahkan'">
-                            <b-card-body>
-                                <p class="responsive-text">
-                                    <b>Tugas 1</b> - Mempelajari Akupuntur.
-                                    <br />
-                                    <b>Batas Penyerahan : Selasa 3
-                                        September 2024</b>
-                                </p>
-                                <b-button variant="success" class="ml-auto" @click="showSubmitTask">Kirim Tugas</b-button>
-                            </b-card-body>
-                        </b-card>
+                            <!-- Belum Diserahkan -->
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border border-warning"
+                                v-if="activeTab === 'belumDiserahkan'"
+                            >
+                                <b-card-body
+                                    class="d-flex justify-content-between"
+                                >
+                                    <p class="responsive-text">
+                                        <b>Tugas 1</b> - Mempelajari Linkedin.
+                                        <br />
+                                        <b
+                                            >Batas Penyerahan : Selasa 3
+                                            September 2024</b
+                                        >
+                                    </p>
+                                    <b-button
+                                        variant="success"
+                                        class="ml-auto"
+                                        @click="showSubmitTask"
+                                        >Kirim Tugas</b-button
+                                    >
+                                </b-card-body>
+                            </b-card>
 
-                        <!-- Selesai -->
-                        <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
-                            <b-card-body>
-                                <p class="responsive-text">
-                                    <b>Tugas 1</b> - Telah diserahkan.
-                                </p>
-                            </b-card-body>
-                        </b-card>
-                        <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
-                            <b-card-body>
-                                <p class="responsive-text">
-                                    <b>Tugas 2</b> - Telah diserahkan.
-                                </p>
-                            </b-card-body>
-                        </b-card>
-                    </b-col>
-                </b-row>
-            </div>
-        </b-card-body>
-    </b-overlay>
+                            <!-- Selesai -->
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border border-success"
+                                v-if="activeTab === 'selesai'"
+                            >
+                                <b-card-body>
+                                    <p class="responsive-text">
+                                        <b>Tugas 1</b> - Telah diserahkan.
+                                    </p>
+                                </b-card-body>
+                            </b-card>
+                            <b-card
+                                class="mb-4 post-card shadow-sm rounded border border-success"
+                                v-if="activeTab === 'selesai'"
+                            >
+                                <b-card-body>
+                                    <p class="responsive-text">
+                                        <b>Tugas 2</b> - Telah diserahkan.
+                                    </p>
+                                </b-card-body>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-card-body>
+        </b-overlay>
 
-    <!-- Modal for Detail Tugas -->
-    <b-modal id="task-modal" title="Detail Tugas" v-model="isDetailModalVisible" hide-footer centered>
-        <h3>Mempelajari Akupuntur</h3>
-        <p>Batas Penyerahan : Selasa, 3 September 2024</p>
+        <!-- Modal for Detail Tugas -->
+        <b-modal
+            id="task-modal"
+            title="Detail Tugas"
+            v-model="isDetailModalVisible"
+            hide-footer
+            centered
+        >
+            <h3>Mempelajari Akupuntur</h3>
+            <h5>Pemberi Materi : MR.Dudung Dzul</h5>
+            <p>Batas Penyerahan : Selasa, 3 September 2024</p>
 
-        <!-- Preview gambar tugas di sini -->
-        <b-img src="https://images.unsplash.com/photo-1719937051058-63705ed35502?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8" fluid alt="Preview Gambar Tugas" />
+            <!-- Preview gambar tugas di sini -->
+            <img
+                src="/images/tutwuri.png"
+                alt="Deskripsi Gambar"
+                class="mb-4 w-25 d-block mx-auto"
+            />
 
         <h5>
             Manfaat akupuntur juga bisa membantu meredakan nyeri sendi.
