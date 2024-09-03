@@ -106,22 +106,7 @@
                         </b-card>
 
                         <!-- Selesai -->
-                        <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
-                            <b-card-body>
-                                <p class="responsive-text">
-                                    <b>Dummy Tugas 1</b> - Deskripsi tugas 1
-                                </p>
-                                <b-button variant="success" class="ml-auto" @click="showTaskDetails">Detail Tugas</b-button>
-                            </b-card-body>
-                        </b-card>
-                        <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
-                            <b-card-body>
-                                <p class="responsive-text">
-                                    <b>Dummy Tugas 2</b> - Deskripsi tugas 2
-                                </p>
-                                <b-button variant="success" class="ml-auto" @click="showTaskDetails">Detail Tugas</b-button>
-                            </b-card-body>
-                        </b-card>
+                        <Siswa />
                     </b-col>
                 </b-row>
             </div>
@@ -150,6 +135,8 @@ import {
     BFormTimepicker,
     BFormTextarea,
 } from "bootstrap-vue";
+
+import Siswa from '../kelas-pembelajaran/Siswa.vue';
 import Datatable from "../../progress/Datatable.vue";
 import AddPtk from "./../modal/AddPtk.vue";
 import eventBus from "@core/utils/eventBus";
@@ -175,6 +162,7 @@ export default {
         Datatable,
         AddPtk,
         BOverlay,
+        Siswa,
     },
     data() {
         return {
