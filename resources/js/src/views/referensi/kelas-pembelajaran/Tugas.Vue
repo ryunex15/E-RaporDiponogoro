@@ -22,10 +22,14 @@
                         <h5>Tugas</h5>
                         <b-badge variant="success">Selesai</b-badge>
                     </div>
-                    <div class="d-flex justify-content-between mt-3">
-                        <b-button variant="primary">Tambah atau buat</b-button>
+                    <div class="d-flex flex-column mt-3">
+                        <b-button variant="outline-primary" class="mb-2">
+                            + Tambah atau buat
+                        </b-button>
+
                         <b-button variant="primary">Tandai sebagai selesai</b-button>
                     </div>
+
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-sm text-md text-lg" :class="{ active: activeTab === 'belumDiserahkan' }" href="#" @click.prevent="setTab('belumDiserahkan')">
-                       Tugas
+                        Tugas
                     </a>
                 </li>
                 <li class="nav-item">
@@ -106,11 +106,15 @@
                         </b-card>
 
                         <!-- Selesai -->
-                        <Siswa />
+                        <b-card class="mb-4 shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
+                            <b-card-body>
+                                <Siswa />
+                            </b-card-body>
+                        </b-card>
                     </b-col>
+                    
                 </b-row>
             </div>
-
         </b-card-body>
     </b-overlay>
 </b-card>
@@ -233,7 +237,7 @@ export default {
                     sortable: false,
                     thClass: "text-center",
                     tdClass: "text-center",
-                   
+
                 },
             ];
         },

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -15,6 +14,7 @@ use App\Models\Ekstrakurikuler;
 use App\Models\Pembelajaran;
 use App\Models\Pekerjaan;
 use App\Models\Semester;
+use App\Models\TopikTugas;
 use Validator;
 use Hash;
 class UsersController extends Controller
@@ -393,33 +393,55 @@ class UsersController extends Controller
            });
         };
     }
-    public function profil_pd(){
+    public function profil_pd()
+    {
         $user = auth()->user();
+        $pembelajaran_id = request()->pembelajaran_id;
+    
+        // Retrieve the pembelajaran record
+        $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->first();
+    
+        // If pembelajaran is found, get the mata_pelajaran_id
+        $mata_pelajaran_id = $pembelajaran ? $pembelajaran->mata_pelajaran_id : null;
+    
+        // Fetch the topik based on both mata_pelajaran_id and pembelajaran_id
+        $topikTugas = ($mata_pelajaran_id && $pembelajaran_id) 
+            ? TopikTugas::where('mata_pelajaran_id', $mata_pelajaran_id)
+                        ->where('pembelajaran_id', $pembelajaran_id)
+                        ->get()
+            : collect(); // Return an empty collection if no mata_pelajaran_id or pembelajaran_id is found
+    
         $data = [
-                'header' => [
-                    'avatar' => $user->profile_photo_path,
-                    'nama' => $user->name,
-                    'nisn' => "NISN: $user->nisn",
-                    'coverImg' => '/images/profile/timeline.png',
-                ],
-                'pekerjaan' => Pekerjaan::orderBy('pekerjaan_id')->get(),
-                'pd' => Peserta_didik::with(['pekerjaan_ayah', 'pekerjaan_ibu', 'agama', 'kelas' => function($query){
+            'pembelajaran' => $pembelajaran,
+            'header' => [
+                'avatar' => $user->profile_photo_path,
+                'nama' => $user->name,
+                'nisn' => "NISN: $user->nisn",
+                'coverImg' => '/images/profile/timeline.png',
+            ],
+            'pekerjaan' => Pekerjaan::orderBy('pekerjaan_id')->get(),
+            'topik' => $topikTugas,
+            'pd' => Peserta_didik::with([
+                'pekerjaan_ayah', 
+                'pekerjaan_ibu', 
+                'agama', 
+                'kelas' => function ($query) {
                     $query->where('jenis_rombel', 1);
                     $query->where('rombongan_belajar.semester_id', request()->semester_id);
                     $query->with([
                         'kurikulum',
-                        'wali_kelas' => function($query){
-                           $query->select('guru_id', 'nama');
+                        'wali_kelas' => function ($query) {
+                            $query->select('guru_id', 'nama');
                         },
-                        'pembelajaran' => function($query){
+                        'pembelajaran' => function ($query) {
                             $query->whereNotNull('kelompok_id');
                             $query->whereNotNull('no_urut');
                             $query->orderBy('mata_pelajaran_id');
                             $query->with([
-                                'guru' => function($query){
+                                'guru' => function ($query) {
                                     $query->select('guru_id', 'nama');
-                                }, 
-                                'pengajar' => function($query){
+                                },
+                                'pengajar' => function ($query) {
                                     $query->select('guru_id', 'nama');
                                 },
                                 'nilai_akhir_pengetahuan' => $this->callback(),
@@ -427,19 +449,23 @@ class UsersController extends Controller
                                 'nilai_akhir_kurmer' => $this->callback(),
                             ]);
                         },
-                     ]);
-                }])->find($user->peserta_didik_id),
-                'semester' => Semester::whereHas('anggota_rombel', function($query){
-                    $query->whereHas('rombongan_belajar', function($query){
-                       $query->where('jenis_rombel', 1);
-                    });
-                    $query->whereHas('peserta_didik', function($query){
-                       $query->where('peserta_didik_id', request()->user()->peserta_didik_id);
-                    });
-                 })->orderBy('semester_id')->get(),
+                    ]);
+                }
+            ])->find($user->peserta_didik_id),
+            'semester' => Semester::whereHas('anggota_rombel', function ($query) {
+                $query->whereHas('rombongan_belajar', function ($query) {
+                    $query->where('jenis_rombel', 1);
+                });
+                $query->whereHas('peserta_didik', function ($query) {
+                    $query->where('peserta_didik_id', request()->user()->peserta_didik_id);
+                });
+            })->orderBy('semester_id')->get(),
         ];
+    
         return response()->json($data);
     }
+    
+    
     public function update_profile(){
         $user = auth()->user();
         if(request()->has('name')){
