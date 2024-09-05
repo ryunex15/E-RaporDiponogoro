@@ -1,5 +1,5 @@
 <template>
-    <b-container fluid class="px-4">
+<b-container fluid class="px-4">
     <!-- Bagian Pengajar -->
     <b-row class="my-4 align-items-center">
         <b-col>
@@ -13,11 +13,11 @@
     </b-row>
 
     <b-list-group class="mb-5">
-        <b-list-group-item v-for="teacher in teachers" :key="teacher.id" class="border-0 py-3 d-flex align-items-center">
+        <b-list-group-item v-for="(teacher, index) in teachers" :key="index" class="border-0 py-2 d-flex align-items-center">
             <b-avatar :src="teacher.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
             <div>
                 <div class="font-weight-bold">{{ teacher.name }}</div>
-                <div class="text-muted small">{{ teacher.email }}</div>
+                <div class="text-muted small"></div>
             </div>
         </b-list-group-item>
         <hr class="my-4" />
@@ -37,11 +37,11 @@
     </b-row>
 
     <b-list-group>
-        <b-list-group-item v-for="student in students" :key="student.id" class="border-0 py-3 d-flex align-items-center">
+        <b-list-group-item v-for="(student, index) in students" :key="index" class="border-0 py-3 d-flex align-items-center">
             <b-avatar :src="student.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
             <div>
                 <div class="font-weight-bold">{{ student.name }}</div>
-                <div class="text-muted small">{{ student.email }}</div>
+                <div class="text-muted small">{{ student.kelas }}</div>
             </div>
         </b-list-group-item>
         <hr class="my-4" />
@@ -51,48 +51,60 @@
 
 <script>
 export default {
+    props: {
+        pd: {
+            type: Array,
+            default: () => [],
+        },
+        guru: {
+            type: Array,
+            default: () => [],
+        },
+    },
     data() {
         return {
-            teachers: [{
-                id: 1,
-                name: 'Andika Supriyadi Nur Maulana',
-                email: 'andika@example.com',
-                avatar: 'https://plus.unsplash.com/premium_photo-1713800447758-19ceb4931073?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8'
-            }, ],
-            students: [{
-                    id: 1,
-                    name: 'Dudi Dwi Raharjo',
-                    email: 'dudi@example.com',
-                    avatar: 'https://plus.unsplash.com/premium_photo-1713800447758-19ceb4931073?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8'
-                },
-                {
-                    id: 2,
-                    name: 'ahmad_032',
-                    email: 'ahmad@example.com',
-                    avatar: 'https://plus.unsplash.com/premium_photo-1713800447758-19ceb4931073?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8'
-                },
-                {
-                    id: 3,
-                    name: 'Fitri Adelia',
-                    email: 'fitri@example.com',
-                    avatar: 'https://plus.unsplash.com/premium_photo-1713800447758-19ceb4931073?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8'
-                },
-                {
-                    id: 4,
-                    name: 'Eliyah Aja',
-                    email: 'eliyah@example.com',
-                    avatar: 'https://plus.unsplash.com/premium_photo-1713800447758-19ceb4931073?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8'
-                },
-                {
-                    id: 5,
-                    name: 'Navy Alikha',
-                    email: 'navy@example.com',
-                    avatar: 'https://plus.unsplash.com/premium_photo-1713800447758-19ceb4931073?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8'
-                },
-            ]
-        }
-    }
-}
+            pembelajaranId: null,
+            teachers: [],
+            students: [], // Initialize as an empty array
+        };
+    },
+    created() {
+        this.pembelajaranId = this.$route.query.pembelajaranId;
+        this.loadPostsData(this.pembelajaranId);
+    },
+    methods: {
+        async loadPostsData(pembelajaran_id) {
+            try {
+                this.isBusy = true;
+                const response = await this.$http.get("/getSiswa", {
+                    params: {
+                        semester_id: this.user.semester.semester_id,
+                        pembelajaran_id: pembelajaran_id,
+                    },
+                });
+
+                // Map the student data
+                this.students = response.data.peserta_didik.map((student) => ({
+                    name: student.nama,
+                    kelas: student.kelas,
+                    avatar: student.avatar,
+                }));
+
+                // Map the teacher data
+                const guruData = Array.isArray(response.data.guru) ?
+                    response.data.guru : [response.data.guru];
+
+                this.teachers = guruData.map((teacher) => ({
+                    name: teacher.nama_lengkap || "Nama tidak tersedia",
+                }));
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                this.isBusy = false;
+            }
+        },
+    },
+};
 </script>
 
 <style scoped>

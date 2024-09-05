@@ -9,6 +9,7 @@ use App\Http\Controllers\UkkController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\WakaController;
+use App\Http\Controllers\TugasController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WalasController;
 use App\Http\Controllers\RombelController;
@@ -28,6 +29,9 @@ use App\Http\Controllers\SinkronisasiController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::post('/simpan-tugas', [TugasController::class, 'store']);
+Route::get('/getSiswa', [TopikTugasController::class, 'getPd']);
 
 Route::get('/topik', [TopikTugasController::class, 'index']);
 Route::post('/simpan-topik', [TopikTugasController::class, 'store']);

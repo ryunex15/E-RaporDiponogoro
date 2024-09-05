@@ -1,14 +1,26 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Pembelajaran;
+use App\Models\Peserta_didik;
+use App\Models\Anggota_rombel;
 use App\Models\TopikTugas;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 
 class TopikTugasController extends Controller
 {
     public function index()
     {
-        $data = TopikTugas::all();
+        $pembelajaran_id = request()->pembelajaran_id;
+        $pembelajaran = Pembelajaran::where("pembelajaran_id", $pembelajaran_id)->first();
+        $id_mapel = $pembelajaran->mata_pelajaran_id;
+        $topik = TopikTugas::where("pembelajaran_id", $pembelajaran_id)->get();
+
+        $data = [
+            "topik"=> $topik,
+            "id_mapel"=> $id_mapel,
+        ];
         return response()->json($data);
     }
 
@@ -67,5 +79,48 @@ class TopikTugasController extends Controller
 
         return redirect()->route('topik_tugas.index')
             ->with('success', 'Topik tugas berhasil dihapus.');
+    }
+
+    public function getPd(){
+          // Ambil pembelajaran_id dari request
+    $pembelajaran_id = request()->input('pembelajaran_id');
+
+    // Ambil data pembelajaran berdasarkan pembelajaran_id
+    $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->first();
+
+    // ambil guru yang mengampu mapel
+    $guru_id = $pembelajaran->guru_id;
+
+    $guru = Guru::where('guru_id', $guru_id)->first();
+
+    
+
+    if (!$pembelajaran) {
+        return response()->json(['message' => 'Pembelajaran not found'], 404);
+    }
+
+    // Ambil rombongan_belajar_id dari pembelajaran
+    $rombongan_belajar_id = $pembelajaran->rombongan_belajar_id;
+
+    // Ambil anggota_rombel yang memiliki rombongan_belajar_id yang sesuai
+    $anggotaRombel = Anggota_rombel::where('rombongan_belajar_id', $rombongan_belajar_id)->get();
+
+    // Ambil peserta didik_ids dari anggota_rombel
+    $pesertaDidikIds = $anggotaRombel->pluck('peserta_didik_id');
+
+    // Ambil data peserta didik berdasarkan peserta_didik_ids
+    $pesertaDidik = Peserta_didik::whereIn('peserta_didik_id', $pesertaDidikIds)->orderBy('nama', 'ASC')->get();
+    
+
+    // Menggabungkan semua data dalam array
+    $data = [
+        'guru' => $guru,
+        'pembelajaran' => $pembelajaran,
+        'anggota_rombel' => $anggotaRombel,
+        'peserta_didik' => $pesertaDidik,
+    ];
+
+    // Mengembalikan response JSON dengan data
+    return response()->json($data, 200);
     }
 }
