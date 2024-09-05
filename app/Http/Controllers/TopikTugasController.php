@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\TopikTugas;
@@ -9,8 +8,8 @@ class TopikTugasController extends Controller
 {
     public function index()
     {
-        $topikTugas = TopikTugas::all();
-        return view('topik_tugas.index', compact('topikTugas'));
+        $data = TopikTugas::all();
+        return response()->json($data);
     }
 
     public function create()
@@ -20,14 +19,24 @@ class TopikTugasController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'judul_topik' => 'required|string|max:255',
-        ]);
+       // Validate the request data
+    $validated = $request->validate([
+        'judul_topik' => 'required|string',
+    ]);
 
-        TopikTugas::create($request->all());
+    // Save the data to the database
+    $topik = new TopikTugas();
+    $topik->judul_topik = $validated['judul_topik'];
+    $topik->save();
 
-        return redirect()->route('topik_tugas.index')
-            ->with('success', 'Topik tugas berhasil ditambahkan.');
+    $data = [
+        'icon' => 'success',
+        'title' => 'Berhasil!',
+        'text' => 'Data berhasil disimpan',
+    ];
+
+    // Return a response
+    return response()->json(['data' => $data], 201);
     }
 
     public function show(TopikTugas $topikTugas)
@@ -60,4 +69,3 @@ class TopikTugasController extends Controller
             ->with('success', 'Topik tugas berhasil dihapus.');
     }
 }
-

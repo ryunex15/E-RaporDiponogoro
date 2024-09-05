@@ -2,21 +2,22 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\ApiController;
-use App\Http\Controllers\SinkronisasiController;
-use App\Http\Controllers\GuruController;
-use App\Http\Controllers\RombelController;
 use App\Http\Controllers\PdController;
-use App\Http\Controllers\ReferensiController;
-use App\Http\Controllers\PenilaianController;
-use App\Http\Controllers\WalasController;
-use App\Http\Controllers\WakaController;
-use App\Http\Controllers\UkkController;
-use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\PklController;
+use App\Http\Controllers\UkkController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GuruController;
+use App\Http\Controllers\WakaController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\WalasController;
+use App\Http\Controllers\RombelController;
+use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PenilaianController;
+use App\Http\Controllers\ReferensiController;
+use App\Http\Controllers\TopikTugasController;
+use App\Http\Controllers\SinkronisasiController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,6 +28,9 @@ use App\Http\Controllers\PklController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('/topik', [TopikTugasController::class, 'index']);
+Route::post('/simpan-topik', [TopikTugasController::class, 'store']);
 Route::get('sekolah', [DashboardController::class, 'hitung_sekolah']);
 Route::get('no-access', [DashboardController::class, 'no_access'])->name('login');
 Route::group(['prefix' => 'auth'], function () {
