@@ -30,6 +30,7 @@ use App\Http\Controllers\SinkronisasiController;
 |
 */
 
+Route::get('/tugas', [TugasController::class, 'index']);
 Route::post('/simpan-tugas', [TugasController::class, 'store']);
 Route::get('/getSiswa', [TopikTugasController::class, 'getPd']);
 Route::get('/topik', [TopikTugasController::class, 'index']);
@@ -44,8 +45,8 @@ Route::group(['prefix' => 'auth'], function () {
   Route::get('/allow-register', [AuthController::class, 'allow_register']);
   Route::post('login', [AuthController::class, 'login']);
   Route::post('register', [AuthController::class, 'register']);
-  Route::post('forget-password', [AuthController::class, 'submitForgetPasswordForm']);
-  Route::post('get-email', [AuthController::class, 'get_email']);
+  Route::post('forget-password', [AuthController::class, 'submitForgetPasswordForm']); 
+  Route::post('get-email', [AuthController::class, 'get_email']); 
   Route::post('reset-password', [AuthController::class, 'submitResetPasswordForm']);
   Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('logout', [AuthController::class, 'logout']);
