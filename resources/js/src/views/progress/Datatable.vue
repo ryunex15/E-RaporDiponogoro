@@ -20,6 +20,15 @@
             <!-- New Actions Button Column -->
             <template v-slot:cell(actions)="row">
                 <b-button variant="primary" size="sm" @click="handleAction(row.item)">View</b-button>
+                <!-- <b-button v-if="actions.showDelete" variant="danger" size="sm" @click="handleDelete(items.id, actions.deleteRoute)">
+                    Delete
+                </b-button> -->
+                <!-- <b-button v-if="actions.showDelete" variant="danger" size="sm" @click="handleDelete(items[0].topik_tugas_id, 'id', actions.deleteRoute)">
+                    Delete
+                </b-button> -->
+                <b-button v-if="actions.showDelete" variant="danger" size="sm" @click="handleDelete(row.item.topik_tugas_id, 'id', actions.deleteRoute)">
+                    Delete {{ row.index + 1 }}
+                </b-button>
             </template>
 
             <!-- Existing Columns -->
@@ -131,6 +140,17 @@ export default {
         isBusy: {
             type: Boolean,
             default: () => true,
+        },
+        actions: {
+            type: Object,
+            default: () => ({
+                showDelete: false,
+                deleteRoute: '',
+            }),
+        }, // Provide default values for actions prop
+        deleteIdKey: {
+            type: String,
+            default: 'id' // Default ID key
         }
     },
     data() {
@@ -145,18 +165,23 @@ export default {
             this.$emit('action-clicked', item);
             console.log('Action clicked:', item);
             this.$router.push({
-                path: `/referensi/kelas-pembelajaran/kelas/tugas`,
+                path: /referensi/kelas - pembelajaran / kelas / tugas,
                 query: {
                     someParam: item.someValue
                 }
             });
-            console.log('Navigating to:', `/details/${item.id}`);
+            console.log('Navigating to:', /details/$ {
+                item.id
+            });
         },
         loadPerPage(val) {
             this.$emit('per_page', this.meta.per_page)
         },
         changePage(val) {
             this.$emit('pagination', val)
+        },
+        handleDelete(item, route) {
+            this.$emit('delete-item', item, this.deleteIdKey, route);
         },
         search: _.debounce(function (e) {
             this.$emit('search', e)

@@ -92,7 +92,8 @@ export default {
 
                 // Map the teacher data
                 const guruData = Array.isArray(response.data.guru) ?
-                    response.data.guru : [response.data.guru];
+                    response.data.guru :
+                    [response.data.guru];
 
                 this.teachers = guruData.map((teacher) => ({
                     name: teacher.nama_lengkap || "Nama tidak tersedia",

@@ -32,8 +32,16 @@
                     <b-col md="12">
                         <b-card class="mb-0 post-card shadow-sm rounded border-0 w-100" v-if="activeTab === 'ditugaskan'">
                             <!-- Button to trigger the modal -->
-                            <b-button variant="success" @click="showModal = true" class="rounded-pill w-100">Tambah Pembelajaran</b-button>
                             <b-button variant="success" @click="showModalTopik = true" class="rounded-pill w-100 mt-2">Tambah Topik</b-button>
+                            <b-card-body class="d-flex align-items-center">
+                                <b-img src="https://lh3.googleusercontent.com/a/ACg8ocLPS5kaZwaq3HcNkgRsgIOdS-Z_0x5irL74fZzP1raa6VTKkKWM=s40-c" rounded="circle" width="50" height="50" class="mr-3" alt="Avatar" />
+                                <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1 w-100" aria-label="Announcement input" />
+                            </b-card-body>
+                        </b-card>
+
+                        <b-card class="mb-0 post-card shadow-sm rounded border-0 w-100" v-if="activeTab === 'belumDiserahkan'">
+                            <!-- Button to trigger the modal -->
+                            <b-button variant="success" @click="showModal = true" class="rounded-pill w-100">Tambah Pembelajaran</b-button>
                             <b-card-body class="d-flex align-items-center">
                                 <b-img src="https://lh3.googleusercontent.com/a/ACg8ocLPS5kaZwaq3HcNkgRsgIOdS-Z_0x5irL74fZzP1raa6VTKkKWM=s40-c" rounded="circle" width="50" height="50" class="mr-3" alt="Avatar" />
                                 <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1 w-100" aria-label="Announcement input" />
@@ -43,10 +51,10 @@
                         <b-card class="mb-4 datatable-card w-100" v-if="activeTab === 'ditugaskan'">
                             <b-card-body>
                                 <h1 class="text-xl mb-4">Topik Tugas</h1>
-                                <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items2" :fields="fields" :meta="meta" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" />
+                                <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items2" :fields="fields" :meta="meta" :actions="dynamicActions" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" @delete-item="handleDelete" :delete-id-key="'topik_tugas_id'" />
                             </b-card-body>
                         </b-card>
-                        <b-card class="mb-4 datatable-card w-100" v-if="activeTab === 'ditugaskan'">
+                        <b-card class="mb-4 datatable-card w-100" v-if="activeTab === 'belumDiserahkan'">
                             <b-card-body>
                                 <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items" :fields="fields2" :meta="meta" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" />
                             </b-card-body>
@@ -61,11 +69,24 @@
                             /> -->
 
                         <!-- Modal for adding new learning -->
-                        <b-modal v-model="showModal" title="Tambah Pembelajaran" v-if="activeTab === 'ditugaskan'">
+                        <b-modal v-model="showModal" title="Tambah Pembelajaran" v-if="activeTab === 'belumDiserahkan'">
                             <form @submit.prevent="submitPembelajaran">
                                 <!-- Tabel Input Topik -->
+                                <!-- <b-form-group
+                                        label="Topik Pembelajaran"
+                                        label-for="topik-pembelajaran"
+                                    >
+                                        <b-form-input
+                                            id="topik-pembelajaran"
+                                            v-model="newPembelajaran.topik"
+                                            required
+                                            class="w-100"
+                                        ></b-form-input>
+                                    </b-form-group> -->
                                 <b-form-group label="Topik Pembelajaran" label-for="topik-pembelajaran">
-                                    <b-form-input id="topik-pembelajaran" v-model="newPembelajaran.topik" required class="w-100"></b-form-input>
+                                    <b-form-select id="topik-pembelajaran" v-model="newPembelajaran.topik" :options="topikOptions" required class="w-100">
+                                        <option :value="null" disabled>Pilih Topik</option>
+                                    </b-form-select>
                                 </b-form-group>
 
                                 <!-- Input Judul Tugas -->
@@ -121,7 +142,7 @@
                                 <!-- Tabel Input Topik -->
                                 <b-form-group label="Topik tugas" label-for="topik">
                                     <b-form-input id="topik" v-model="newTopik.judul_topik" required class="w-100"></b-form-input>
-                                    <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="hidden"></b-form-input>
+                                    <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="text" hidden></b-form-input>
                                 </b-form-group>
 
                                 <div class="d-flex justify-content-end">
@@ -243,6 +264,10 @@ export default {
             newTopik: {
                 judul_topik: "",
                 pembelajaran_id: this.$route.query.pembelajaranId,
+            },
+            dynamicActions: {
+                showDelete: true,
+                deleteRoute: '/topik/', // Base route for delete
             },
         };
     },
@@ -369,10 +394,10 @@ export default {
                 })
                 .then((response) => {
                     let getData = response.data;
-                    console.log(getData.topik);
 
                     this.items2 = getData.topik.map((item) => ({
                         judul: item.judul_topik, // Make sure to map the correct field
+                        topik_tugas_id: item.topik_tugas_id, // Make sure to map the correct field
                     }));
                     console.log("Data items2:", this.items2);
 
@@ -437,18 +462,55 @@ export default {
             this.showModal = false;
             this.resetForm();
         },
+        async handleDelete(id, key, route) {
+            try {
+                this.isBusy = true; // Display loader if necessary
+
+                // Make a DELETE request to the specified route with the ID
+                const response = await this.$http.delete(topik / $ {
+                    id
+                });
+
+                console.log(Item with $ {
+                        key
+                    }
+                    $ {
+                        id
+                    }
+                    successfully deleted: , response);
+
+                // Optionally, you might want to refresh the list of items after deletion
+                this.loadPostsData(); // Reload data if needed
+
+            } catch (error) {
+                console.error(Error deleting item with $ {
+                        key
+                    }
+                    $ {
+                        id
+                    }: , error);
+
+                // Handle error
+                alert('An error occurred while deleting the item. Please try again.');
+
+            } finally {
+                this.isBusy = false; // Hide loader
+            }
+        },
         async submitTopik() {
             const payload = {
                 judul_topik: this.newTopik.judul_topik,
+                pembelajaran_id: this.newTopik.pembelajaran_id,
             };
 
+            console.log("Data berhasil dikirim: coba");
             try {
                 this.isBusy = true; // Tampilkan loader jika diperlukan
                 const response = await this.$http.post(
                     "/simpan-topik",
                     payload
                 ); // Ganti '/simpan-topik' dengan endpoint API yang sesuai
-                console.log("Data berhasil dikirim:", response.data);
+                console.log("Data berhasil dikirim:", response);
                 this.showModalTopik = false; // Tutup modal setelah berhasil
                 this.resetForm(); // Reset form
                 this.loadPostsData(); // Reload data jika diperlukan
@@ -470,6 +532,7 @@ export default {
             };
             this.newTopik = {
                 judul_topik: "",
+                pembelajaran_id: "",
             };
         },
     },
