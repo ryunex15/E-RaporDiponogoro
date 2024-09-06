@@ -30,11 +30,13 @@ use App\Http\Controllers\SinkronisasiController;
 |
 */
 
-Route::post('/simpan-tugas', [TugasController::class, 'store']);
+// Route::post('/simpan-tugas', [TugasController::class, 'store']);
 Route::get('/getSiswa', [TopikTugasController::class, 'getPd']);
 Route::get('/topik', [TopikTugasController::class, 'index']);
 Route::post('/simpan-topik', [TopikTugasController::class, 'store']);
 Route::delete('/topik/{id}', [TopikTugasController::class, 'destroy'])->name('topik.destroy');
+
+Route::post('/tugas', [TugasController::class, 'store']);
 
 
 Route::get('sekolah', [DashboardController::class, 'hitung_sekolah']);

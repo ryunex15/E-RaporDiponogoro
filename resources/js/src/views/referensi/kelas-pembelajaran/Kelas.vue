@@ -21,14 +21,14 @@ Kelas.vue
                         </a>
                     </li>
                 </ul>
-    
+
                 <div class="header-banner text-white p-4 mb-4">
                     <h1 class="mb-1">Kelas X RPL 2</h1>
                     <p class="mb-0">Pemrograman web</p>
                     <p class="mb-0">Dudung Dzulkifli</p>
                     <p class="mb-0">{{ pembelajaranId }}</p>
                 </div>
-    
+
                 <div class="container-fluid">
                     <b-row>
                         <b-col md="12">
@@ -40,7 +40,7 @@ Kelas.vue
                                     <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1 w-100" aria-label="Announcement input" />
                                 </b-card-body>
                             </b-card>
-    
+
                             <b-card class="mb-0 post-card shadow-sm rounded border-0 w-100" v-if="activeTab === 'belumDiserahkan'">
                                 <!-- Button to trigger the modal -->
                                 <b-button variant="success" @click="showModal = true" class="rounded-pill w-100">Tambah Pembelajaran</b-button>
@@ -49,7 +49,7 @@ Kelas.vue
                                     <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1 w-100" aria-label="Announcement input" />
                                 </b-card-body>
                             </b-card>
-    
+
                             <b-card class="mb-4 datatable-card w-100" v-if="activeTab === 'ditugaskan'">
                                 <b-card-body>
                                     <h1 class="text-xl mb-4">Topik Tugas</h1>
@@ -61,7 +61,7 @@ Kelas.vue
                                     <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items" :fields="fields2" :meta="meta" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" />
                                 </b-card-body>
                             </b-card>
-    
+
                             <!-- <add-ptk
                                     @reload="handleReload"
                                     :title="Tambah Materi Baru"
@@ -69,67 +69,85 @@ Kelas.vue
                                     :jenis_gtk="pengajar"
                                     v-if="activeTab === 'ditugaskan'"
                                 /> -->
-    
+
                             <!-- Modal for adding new learning -->
                             <b-modal v-model="showModal" title="Tambah Pembelajaran" v-if="activeTab === 'belumDiserahkan'">
-                                <form @submit.prevent="submitPembelajaran">
+                                <form @submit.prevent="submitTugas">
                                     <!-- Tabel Input Topik -->
-                                    <!-- <b-form-group
-                                            label="Topik Pembelajaran"
-                                            label-for="topik-pembelajaran"
-                                        >
-                                            <b-form-input
-                                                id="topik-pembelajaran"
-                                                v-model="newPembelajaran.topik"
-                                                required
-                                                class="w-100"
-                                            ></b-form-input>
-                                        </b-form-group> -->
                                     <b-form-group label="Topik Pembelajaran" label-for="topik-pembelajaran">
-                                        <b-form-select id="topik-pembelajaran" v-model="newPembelajaran.topik" :options="topikOptions" required class="w-100">
-                                            <option :value="null" disabled>Pilih Topik</option>
-                                        </b-form-select>
+                                        <select
+                                            id="topik-pembelajaran"
+                                            v-model="newPembelajaran.topik"
+                                            required
+                                            class="form-control w-100"
+                                        >
+                                            <option
+                                                v-for="topik in items2"
+                                                :key="topik.topik_tugas_id"
+                                                :value="topik.topik_tugas_id"
+                                            >
+                                                {{ topik.judul }}
+                                            </option>
+                                        </select>
                                     </b-form-group>
-    
+
                                     <!-- Input Judul Tugas -->
                                     <b-form-group label="Judul Pembelajaran" label-for="judul-pembelajaran">
-                                        <b-form-input id="judul-pembelajaran" v-model="
-                                                    newPembelajaran.nama_mata_pelajaran
-                                                " required class="w-100"></b-form-input>
+                                        <b-form-input
+                                            id="judul-pembelajaran"
+                                            v-model="newPembelajaran.judul"
+                                            required
+                                            class="w-100"
+                                        ></b-form-input>
                                     </b-form-group>
-    
+
                                     <!-- Input Deskripsi -->
                                     <b-form-group label="Deskripsi Pembelajaran" label-for="deskripsi-pembelajaran">
-                                        <b-form-textarea id="deskripsi-pembelajaran" v-model="newPembelajaran.deskripsi" rows="3" required class="w-100"></b-form-textarea>
+                                        <b-form-textarea
+                                            id="deskripsi-pembelajaran"
+                                            v-model="newPembelajaran.deskripsi"
+                                            rows="3"
+                                            required
+                                            class="w-100"
+                                        ></b-form-textarea>
                                     </b-form-group>
-    
+
                                     <!-- Input Batas Penyerahan -->
                                     <b-form-group label="Batas Penyerahan Tugas" label-for="batas-penyerahan">
                                         <div class="mb-1">
-                                            <b-form-datepicker id="batas-penyerahan" v-model="
-                                                        newPembelajaran.deadlineDate
-                                                    " :locale="'id'" :state="
-                                                        !newPembelajaran.deadlineDate
-                                                            ? null
-                                                            : true
-                                                    " placeholder="Pilih Tanggal" required class="w-100"></b-form-datepicker>
+                                            <b-form-datepicker
+                                                id="batas-penyerahan"
+                                                v-model="newPembelajaran.deadline"
+                                                :locale="'id'"
+                                                :state="!newPembelajaran.deadline ? null : true"
+                                                placeholder="Pilih Tanggal"
+                                                required
+                                                class="w-100"
+                                            ></b-form-datepicker>
                                         </div>
                                         <div>
-                                            <b-form-timepicker id="batas-penyerahan-time" v-model="
-                                                        newPembelajaran.deadlineTime
-                                                    " :locale="'id'" :state="
-                                                        !newPembelajaran.deadlineTime
-                                                            ? null
-                                                            : true
-                                                    " placeholder="Pilih Jam" required class="w-100"></b-form-timepicker>
+                                            <b-form-timepicker
+                                                id="batas-penyerahan-time"
+                                                v-model="newPembelajaran.deadlineTime"
+                                                :locale="'id'"
+                                                :state="!newPembelajaran.deadlineTime ? null : true"
+                                                placeholder="Pilih Jam"
+                                                required
+                                                class="w-100"
+                                            ></b-form-timepicker>
                                         </div>
                                     </b-form-group>
-    
+
                                     <!-- Input Upload File -->
                                     <b-form-group label="Upload File" label-for="upload-file">
-                                        <b-form-file id="upload-file" v-model="newPembelajaran.file" required class="w-100"></b-form-file>
+                                        <b-form-file
+                                            id="upload-file"
+                                            v-model="newPembelajaran.file"
+                                            required
+                                            class="w-100"
+                                        ></b-form-file>
                                     </b-form-group>
-    
+
                                     <div class="d-flex justify-content-end">
                                         <b-button type="submit" variant="success">
                                             Tambahkan Tugas
@@ -137,7 +155,8 @@ Kelas.vue
                                     </div>
                                 </form>
                             </b-modal>
-    
+
+
                             <!-- Modal for adding new Topik -->
                             <b-modal v-model="showModalTopik" title="Tambah Topik" v-if="activeTab === 'ditugaskan'">
                                 <form @submit.prevent="submitTopik">
@@ -146,7 +165,7 @@ Kelas.vue
                                         <b-form-input id="topik" v-model="newTopik.judul_topik" required class="w-100"></b-form-input>
                                         <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="text" ></b-form-input>
                                     </b-form-group>
-    
+
                                     <div class="d-flex justify-content-end">
                                         <b-button type="submit" variant="success">
                                             Tambahkan Tugas
@@ -154,7 +173,7 @@ Kelas.vue
                                     </div>
                                 </form>
                             </b-modal>
-    
+
                             <!-- Belum Diserahkan -->
                             <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'belumDiserahkan'">
                                 <b-card-body>
@@ -172,7 +191,7 @@ Kelas.vue
                                     <b-button variant="warning" class="ml-auto" @click="showTaskDetails">Detail Tugas</b-button>
                                 </b-card-body>
                             </b-card>
-    
+
                             <!-- Selesai -->
                             <b-card class="mb-4 shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
                                 <b-card-body>
@@ -186,7 +205,7 @@ Kelas.vue
         </b-overlay>
     </b-card>
     </template>
-    
+
     <script>
     import {
         BCard,
@@ -206,12 +225,12 @@ Kelas.vue
         BFormTimepicker,
         BFormTextarea,
     } from "bootstrap-vue";
-    
+
     import Siswa from "../kelas-pembelajaran/Siswa.vue";
     import Datatable from "../../progress/Datatable.vue";
     import AddPtk from "./../modal/AddPtk.vue";
     import eventBus from "@core/utils/eventBus";
-    
+
     export default {
         components: {
             BCard,
@@ -235,7 +254,7 @@ Kelas.vue
             BOverlay,
             Siswa,
         },
-    
+
         data() {
             return {
                 pembelajaranId: null,
@@ -257,12 +276,13 @@ Kelas.vue
                 showModalTopik: false,
                 newPembelajaran: {
                     topik: "",
-                    nama_mata_pelajaran: "",
+                    judul: "",
                     deskripsi: "",
                     file: null,
-                    deadlineDate: null,
+                    deadline: null,
                     deadlineTime: null,
                 },
+                topikOptions: [],
                 newTopik: {
                     judul_topik: "",
                     pembelajaran_id: this.$route.query.pembelajaran_id,
@@ -279,7 +299,56 @@ Kelas.vue
             this.loadPostsData(this.pembelajaranId);
             eventBus.$on("modal-materi", this.handleEvent);
         },
+        mounted() {
+            this.fetchTopikOptions(); // Memanggil metode untuk mengambil data topik
+        },
         methods: {
+            submitTugas() {
+                // Validasi data
+                if (!this.newPembelajaran.topik || !this.newPembelajaran.judul ||
+                    !this.newPembelajaran.deskripsi ||!this.newPembelajaran.deadline || !this.newPembelajaran.file) {
+                    alert('Semua field harus diisi!');
+                    return;
+                }
+
+                // Membuat FormData untuk file upload
+                const formData = new FormData();
+                formData.append('topik', this.newPembelajaran.topik);
+                formData.append('judul', this.newPembelajaran.judul); // Change to 'judul'
+                formData.append('deskripsi', this.newPembelajaran.deskripsi);
+                formData.append('deadline', `${this.newPembelajaran.deadline}`); // Combine date and time
+                formData.append('file', this.newPembelajaran.file);
+
+                // Mengirim data ke server
+                // Dapatkan token CSRF dari meta tag
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                console.log(this.newPembelajaran.deadline);
+                this.$http.post('/tugas', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'X-CSRF-TOKEN': token // Sertakan CSRF token
+                    }
+                }).then(response => {
+                    console.log('Pembelajaran ditambahkan:', response);
+                    this.showModal = false; // Menutup modal setelah submit
+                    this.resetForm(); // Reset form
+                }).catch(error => {
+                    console.error('Error submitting form:', error);
+                });
+
+            },
+
+
+            // fetchTopikOptions() {
+            //     // Misalnya menggunakan Axios untuk mengambil data dari API
+            //     axios.get('/api/topik-tugas')
+            //         .then(response => {
+            //             this.topikOptions = response.data;
+            //         })
+            //         .catch(error => {
+            //             console.error('Error fetching topik options:', error);
+            //         });
+            // },
             setTab(tab) {
                 this.activeTab = tab;
             },
@@ -398,13 +467,13 @@ Kelas.vue
                     .then((response) => {
                         let getData = response.data;
                         console.log(getData)
-    
+
                         this.items2 = getData.topik.map((item) => ({
                             judul: item.judul_topik, // Make sure to map the correct field
                             topik_tugas_id: item.topik_tugas_id, // Make sure to map the correct field
                         }));
                         console.log("Data items2:", this.items2);
-    
+
                         this.meta = {
                             total: getData.total,
                             current_page: getData.current_page,
@@ -414,14 +483,14 @@ Kelas.vue
                             role_id: this.role_id,
                             roles: response.data.roles,
                         };
-    
+
                         this.isBusy = false;
                     })
                     .catch((error) => {
                         console.error("Error fetching data:", error);
                         this.isBusy = false;
                     });
-    
+
                 this.isBusy = true;
                 setTimeout(() => {
                     this.isBusy = false;
@@ -434,6 +503,7 @@ Kelas.vue
                     };
                 }, 1000);
             },
+
             handlePerPage(val) {
                 this.per_page = val;
                 this.loadPostsData();
@@ -453,13 +523,14 @@ Kelas.vue
                     this.loadPostsData();
                 }
             },
-            submitPembelajaran() {
+            submitTugas2() {
                 const payload = {
                     topik: this.newPembelajaran.topik,
-                    nama_mata_pelajaran: this.newPembelajaran.nama_mata_pelajaran,
+                    judul: this.newPembelajaran.judul,
                     deskripsi: this.newPembelajaran.deskripsi,
-                    deadlineDate: this.newPembelajaran.deadlineDate,
-                    deadlineTime: this.newPembelajaran.deadlineTime,
+                    // deadlineDate: this.newPembelajaran.deadlineDate,
+                    // deadlineTime: this.newPembelajaran.deadlineTime,
+                    deadline: this.newPembelajaran.deadline,
                     file: this.newPembelajaran.file,
                 };
                 console.log("Payload Pembelajaran:", payload);
@@ -469,20 +540,20 @@ Kelas.vue
             async handleDelete(id, key, route) {
                 try {
                     this.isBusy = true; // Display loader if necessary
-    
+
                     // Make a DELETE request to the specified route with the ID
                     const response = await this.$http.delete(`/topik/${id}`);
                     console.log(route);
                     console.log(id);
-    
+
                     console.log(`Item with key: ${key} and ID: ${id} successfully deleted:`, response);
-    
+
                     // Optionally, you might want to refresh the list of items after deletion
                     this.loadPostsData(this.$route.query.pembelajaran_id); // Reload data if needed
-    
+
                 } catch (error) {
                     console.error(`Error deleting item with key: ${key} and ID: ${id}:`, error);
-    
+
                     // Handle error
                     alert('An error occurred while deleting the item. Please try again.');
                 } finally {
@@ -494,7 +565,7 @@ Kelas.vue
                     judul_topik: this.newTopik.judul_topik,
                     pembelajaran_id: this.newTopik.pembelajaran_id,
                 };
-    
+
                 console.log("Data yang dikirim:", payload);
                 try {
                     this.isBusy = true; // Tampilkan loader jika diperlukan
@@ -517,10 +588,10 @@ Kelas.vue
             resetForm() {
                 this.newPembelajaran = {
                     topik: "",
-                    nama_mata_pelajaran: "",
+                    judul: "",
                     deskripsi: "",
                     file: null,
-                    deadlineDate: null,
+                    deadline: null,
                     deadlineTime: null,
                 };
                 this.newTopik = {
@@ -531,42 +602,42 @@ Kelas.vue
         },
     };
     </script>
-    
+
     <style scoped>
     .main-card {
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         border: none;
     }
-    
+
     .nav-pills-custom .nav-link.active {
         background-color: #007bff;
     }
-    
+
     .header-banner {
         background-color: #90daff;
         border-top-left-radius: 0.25rem;
         border-top-right-radius: 0.25rem;
     }
-    
+
     .sidebar-card,
     .post-card,
     .datatable-card {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border: none;
     }
-    
+
     .post-card .form-control {
         border: none;
         background-color: #f0f2f5;
     }
-    
+
     .type-cell {
         width: 40px;
         text-align: center;
     }
-    
+
     .modal-footer {
         display: none;
     }
     </style>
-    
+

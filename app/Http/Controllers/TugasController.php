@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tugas;
 use Illuminate\Http\Request;
+use Str;
 
 class TugasController extends Controller
 {
@@ -18,22 +19,76 @@ class TugasController extends Controller
         return view('tugas.create'); // Tampilkan form untuk membuat tugas baru
     }
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([ // Validasi input
+    //         'deadline' => 'required|date',
+    //         'judul' => 'required|string|max:255',
+    //         'lampiran_document' => 'nullable|string|max:255',
+    //         'id_rombongan_belajar' => 'required|exists:rombongan_belajar,id',
+    //         'deskripsi' => 'required|string',
+    //         'id_topik_tugas' => 'required|exists:topik_tugas,id',
+    //     ]);
+
+    //     Tugas::create($request->all()); // Simpan data tugas baru
+
+    //     return redirect()->route('tugas.index')
+    //         ->with('success', 'Tugas berhasil ditambahkan.'); // Redirect dengan pesan sukses
+    // }
+
+
     public function store(Request $request)
     {
-        $request->validate([ // Validasi input
-            'deadline' => 'required|date',
-            'judul' => 'required|string|max:255',
-            'lampiran_document' => 'nullable|string|max:255',
-            'id_rombongan_belajar' => 'required|exists:rombongan_belajar,id',
-            'deskripsi' => 'required|string',
-            'id_topik_tugas' => 'required|exists:topik_tugas,id',
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'topik' => 'required|uuid', // Assuming 'topik' is a UUID
+                'judul' => 'required|string|max:255', // Change 'nama_mata_pelajaran' to 'judul'
+                'deskripsi' => 'required|string', // This remains the same
+                'deadline' => 'required|date', // Change 'deadlineDate' to 'deadline'
+                // 'file' => 'required|file|mimes:pdf,doc,docx|max:2048', // File validation
+                'file' => 'required', // File validation
+            ]);
 
-        Tugas::create($request->all()); // Simpan data tugas baru
+            // Menyimpan file
+            $filePath = null; // Initialize filePath
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $filePath = $file->store('uploads', 'public'); // Simpan di folder 'public/uploads'
+            }
 
-        return redirect()->route('tugas.index')
-            ->with('success', 'Tugas berhasil ditambahkan.'); // Redirect dengan pesan sukses
+            // Menyimpan data pembelajaran
+            $tugas = Tugas::create([
+                // 'tugas_id' => Str::uuid(), // Tambahkan UUID secara manual
+                'topik_tugas_id' => $validated['topik'], // Assuming this is the correct field
+                'judul' => $validated['judul'], // Use 'judul' instead of 'nama_mata_pelajaran'
+                'deskripsi' => $validated['deskripsi'],
+                'deadline' => $validated['deadline'], // Use 'deadline' directly
+                'lampiran_document' => $filePath,
+            ]);
+
+            return response()->json([
+                'message' => 'Pembelajaran berhasil ditambahkan',
+                'data' => $tugas
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Jika validasi gagal, kirimkan respons error dengan pesan dan status 422
+            return response()->json([
+                'message' => 'Validasi gagal',
+                'errors' => $e->errors(), // Mengirimkan detail validasi yang gagal
+            ], 422);
+
+        } catch (\Exception $e) {
+            // Tangani semua jenis error lainnya
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat menyimpan data',
+                'error' => $e->getMessage(), // Menampilkan pesan error
+            ], 500);
+        }
     }
+
+
 
     public function show(Tugas $tugas)
     {
