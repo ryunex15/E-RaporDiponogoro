@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TopikTugas;
 use App\Models\Tugas;
 use Illuminate\Http\Request;
 
@@ -9,8 +10,26 @@ class TugasController extends Controller
 {
     public function index()
     {
-        $tugas = Tugas::all(); // Ambil semua data tugas
-        return view('tugas.index', compact('tugas')); // Tampilkan view dengan data tugas
+        $pembelajaran_id = request()->pembelajaran_id;
+
+        // Ambil data tugas
+        $tugas = Tugas::where('pembelajaran_id', $pembelajaran_id)->with('topikTugas')->get();
+
+        // // Ambil data topik terkait
+        // $topik = TopikTugas::where('pembelajaran_id', $pembelajaran_id)->get();
+
+        // // Gabungkan data topik ke dalam data tugas
+        // $tugas->each(function ($item) use ($topik) {
+        //     // Cari topik yang sesuai dengan tugas
+        //     $matchingTopik = $topik->firstWhere('id', $item->topik_id);
+        //     $item->judul_topik = $matchingTopik ? $matchingTopik->judul_topik : 'Topik Tidak Ditemukan'; // Menambahkan judul topik ke setiap tugas
+        // });
+
+        $data = [
+            "tugas" => $tugas,
+        ];
+        return response()->json($data);
+
     }
 
     public function create()
@@ -69,5 +88,6 @@ class TugasController extends Controller
         return redirect()->route('tugas.index')
             ->with('success', 'Tugas berhasil dihapus.'); // Redirect dengan pesan sukses
     }
-};
+}
+;
 
