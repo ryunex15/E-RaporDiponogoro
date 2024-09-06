@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Guru;
 use App\Models\Pembelajaran;
+use Illuminate\Http\Request;
 use App\Models\Peserta_didik;
 use App\Models\Anggota_rombel;
-use App\Models\TopikTugas;
-use App\Models\Guru;
-use Illuminate\Http\Request;
+use App\Http\Controllers\TopikTugas;
 
 class TopikTugasController extends Controller
 {
@@ -24,6 +24,12 @@ class TopikTugasController extends Controller
         return response()->json($data);
     }
 
+    public function getTopikTugasByPembelajaran($id)
+    {
+        $topikTugas = TopikTugas::where('pembelajaran_id', $id)->get();
+        return response()->json($topikTugas);
+    }
+
     public function create()
     {
         return view('topik_tugas.create');
@@ -34,11 +40,13 @@ class TopikTugasController extends Controller
        // Validate the request data
     $validated = $request->validate([
         'judul_topik' => 'required|string',
+        'pembelajaran_id' => 'required|string',
     ]);
 
     // Save the data to the database
     $topik = new TopikTugas();
     $topik->judul_topik = $validated['judul_topik'];
+    $topik->pembelajaran_id = $validated['pembelajaran_id'];
     $topik->save();
 
     $data = [
@@ -73,12 +81,23 @@ class TopikTugasController extends Controller
             ->with('success', 'Topik tugas berhasil diperbarui.');
     }
 
-    public function destroy(TopikTugas $topikTugas)
+    public function destroy($id)
     {
+        // Find the TopikTugas by ID
+        $topikTugas = TopikTugas::find($id);
+        
+        if (!$topikTugas) {
+            return response()->json([
+                'message' => 'Topik Tugas not found'
+            ], 404);
+        }
+        
+        // Delete the TopikTugas
         $topikTugas->delete();
-
-        return redirect()->route('topik_tugas.index')
-            ->with('success', 'Topik tugas berhasil dihapus.');
+        
+        return response()->json([
+            'message' => 'Topik Tugas deleted successfully'
+        ], 200);
     }
 
     public function getPd(){
