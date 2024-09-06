@@ -18,6 +18,7 @@ class TopikTugasController extends Controller
         $topik = TopikTugas::where("pembelajaran_id", $pembelajaran_id)->get();
 
         $data = [
+            "pembelajaran_id" => $pembelajaran_id,
             "topik"=> $topik,
             "id_mapel"=> $id_mapel,
         ];

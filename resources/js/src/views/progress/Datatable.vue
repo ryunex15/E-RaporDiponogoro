@@ -1,3 +1,5 @@
+progress/datatable.vue
+
 <template>
 <div>
     <b-row>
@@ -161,46 +163,40 @@ export default {
         }
     },
     methods: {
-    handleAction(item) {
-        this.$emit('action-clicked', item);
-        console.log('Action clicked:', item);
-
-        // Perbaikan pada path routing
-        this.$router.push({
-            path: /referensi/kelas-pembelajaran/kelas/tugas,
-            query: {
-                someParam: item.someValue
-            }
-        });
-
-        console.log(Navigating to: /details/${item.id});
-    },
-    loadPerPage(val) {
-        this.$emit('per_page', this.meta.per_page);
-    },
-    changePage(val) {
-        this.$emit('pagination', val);
-    },
-    handleDelete(item, route) {
-        this.$emit('delete-item', item, this.deleteIdKey, route);
-    },
-    // Fungsi search menggunakan lodash debounce
-    search: _.debounce(function (e) {
-        this.$emit('search', e);
-    }, 500),
-    // Menentukan class baris berdasarkan kondisi
-    rowClass(item, type) {
-        if (!item || type !== 'row') return;
-        if (item.induk_pembelajaran_id) return 'table-warning';
-    },
-    // Menghitung jumlah aspek
-    jumlahAspek(array) {
-        let total = 0; // Ubah variabel dari "Jumlah" ke "total"
-        array.forEach(function (value) {
-            total += value.aspek_budaya_kerja_count; // Tambahkan nilai setiap aspek
-        });
-        return total;
-    },
-},
+        handleAction(item) {
+            this.$emit('action-clicked', item);
+            console.log('Action clicked:', item);
+            this.$router.push({
+                path: "/referensi/kelas-pembelajaran/kelas/tugas",
+                query: {
+                    someParam: item.someValue
+                }
+            });
+            console.log(`Navigating to: /details/${item.id}`);
+        },
+        loadPerPage(val) {
+            this.$emit('per_page', this.meta.per_page)
+        },
+        changePage(val) {
+            this.$emit('pagination', val)
+        },
+        handleDelete(item, route) {
+            this.$emit('delete-item', item, this.deleteIdKey, route);
+        },
+        search: _.debounce(function (e) {
+            this.$emit('search', e)
+        }, 500),
+        rowClass(item, type) {
+            if (!item || type !== 'row') return
+            if (item.induk_pembelajaran_id) return 'table-warning'
+        },
+        jumlahAspek(array) {
+            var Jumlah = 0;
+            array.forEach(function (value) {
+                Jumlah = +value.aspek_budaya_kerja_count
+            })
+            return Jumlah
+        },
+    },
 }
 </script>

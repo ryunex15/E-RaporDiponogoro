@@ -1,52 +1,76 @@
+siswa.vue
+
 <template>
-<b-container fluid class="px-4">
-    <!-- Bagian Pengajar -->
-    <b-row class="my-4 align-items-center">
-        <b-col>
-            <h2 class="mb-0 ml-3">Pengajar</h2>
-        </b-col>
-        <b-col class="text-right d-flex align-items-center justify-content-end">
-            <b-button variant="light" size="sm" class="rounded-circle">
-                <b-icon icon="plus" font-scale="1.5">+</b-icon>
-            </b-button>
-        </b-col>
-    </b-row>
+    <b-container fluid class="px-4">
+        <!-- Bagian Pengajar -->
+        <b-row class="my-4 align-items-center">
+            <b-col>
+                <h2 class="mb-0 ml-3">Pengajar</h2>
+            </b-col>
+            <b-col
+                class="text-right d-flex align-items-center justify-content-end"
+            >
+                <b-button variant="light" size="sm" class="rounded-circle">
+                    <b-icon icon="plus" font-scale="1.5">+</b-icon>
+                </b-button>
+            </b-col>
+        </b-row>
 
-    <b-list-group class="mb-5">
-        <b-list-group-item v-for="(teacher, index) in teachers" :key="index" class="border-0 py-2 d-flex align-items-center">
-            <b-avatar :src="teacher.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
-            <div>
-                <div class="font-weight-bold">{{ teacher.name }}</div>
-                <div class="text-muted small"></div>
-            </div>
-        </b-list-group-item>
-        <hr class="my-4" />
-    </b-list-group>
+        <b-list-group class="mb-5">
+            <b-list-group-item
+                v-for="(teacher, index) in teachers"
+                :key="index"
+                class="border-0 py-2 d-flex align-items-center"
+            >
+                <b-avatar
+                    :src="teacher.avatar"
+                    size="3rem"
+                    class="mr-3 rounded-circle"
+                ></b-avatar>
+                <div>
+                    <div class="font-weight-bold">{{ teacher.name }}</div>
+                    <div class="text-muted small"></div>
+                </div>
+            </b-list-group-item>
+            <hr class="my-4" />
+        </b-list-group>
 
-    <!-- Bagian Siswa -->
-    <b-row class="my-4 align-items-center">
-        <b-col>
-            <h2 class="mb-0 ml-3">Siswa</h2>
-        </b-col>
-        <b-col class="text-right d-flex align-items-center justify-content-end">
-            <span class="text-muted mr-3 ml-3">{{ students.length }} siswa</span>
-            <b-button variant="light" size="sm" class="rounded-circle">
-                <b-icon icon="plus" font-scale="1.5">+</b-icon>
-            </b-button>
-        </b-col>
-    </b-row>
+        <!-- Bagian Siswa -->
+        <b-row class="my-4 align-items-center">
+            <b-col>
+                <h2 class="mb-0 ml-3">Siswa</h2>
+            </b-col>
+            <b-col
+                class="text-right d-flex align-items-center justify-content-end"
+            >
+                <span class="text-muted mr-3 ml-3"
+                    >{{ students.length }} siswa</span
+                >
+                <b-button variant="light" size="sm" class="rounded-circle">
+                    <b-icon icon="plus" font-scale="1.5">+</b-icon>
+                </b-button>
+            </b-col>
+        </b-row>
 
-    <b-list-group>
-        <b-list-group-item v-for="(student, index) in students" :key="index" class="border-0 py-3 d-flex align-items-center">
-            <b-avatar :src="student.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
-            <div>
-                <div class="font-weight-bold">{{ student.name }}</div>
-                <div class="text-muted small">{{ student.kelas }}</div>
-            </div>
-        </b-list-group-item>
-        <hr class="my-4" />
-    </b-list-group>
-</b-container>
+        <b-list-group>
+            <b-list-group-item
+                v-for="(student, index) in students"
+                :key="index"
+                class="border-0 py-3 d-flex align-items-center"
+            >
+                <b-avatar
+                    :src="student.avatar"
+                    size="3rem"
+                    class="mr-3 rounded-circle"
+                ></b-avatar>
+                <div>
+                    <div class="font-weight-bold">{{ student.name }}</div>
+                    <div class="text-muted small">{{ student.kelas }}</div>
+                </div>
+            </b-list-group-item>
+            <hr class="my-4" />
+        </b-list-group>
+    </b-container>
 </template>
 
 <script>
@@ -69,7 +93,7 @@ export default {
         };
     },
     created() {
-        this.pembelajaranId = this.$route.query.pembelajaranId;
+        this.pembelajaranId = this.$route.query.pembelajaran_id;
         this.loadPostsData(this.pembelajaranId);
     },
     methods: {
@@ -91,10 +115,10 @@ export default {
                 }));
 
                 // Map the teacher data
-                const guruData = Array.isArray(response.data.guru) ?
-                    response.data.guru :
-                    [response.data.guru];
-
+                const guruData = Array.isArray(response.data.guru)
+                    ? response.data.guru
+                    : [response.data.guru];
+                // ini nama guru
                 this.teachers = guruData.map((teacher) => ({
                     name: teacher.nama_lengkap || "Nama tidak tersedia",
                 }));
@@ -106,7 +130,7 @@ export default {
         },
     },
 };
-</script>
+</script> 
 
 <style scoped>
 .list-group-item {

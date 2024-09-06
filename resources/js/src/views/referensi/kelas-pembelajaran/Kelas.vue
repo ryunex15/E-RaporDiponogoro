@@ -1,3 +1,5 @@
+Kelas.vue
+
 <template>
 <b-card no-body class="main-card">
     <b-overlay :show="isBusy" rounded opacity="0.6" size="lg" spinner-variant="primary">
@@ -142,7 +144,7 @@
                                 <!-- Tabel Input Topik -->
                                 <b-form-group label="Topik tugas" label-for="topik">
                                     <b-form-input id="topik" v-model="newTopik.judul_topik" required class="w-100"></b-form-input>
-                                    <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="text" hidden></b-form-input>
+                                    <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="text" ></b-form-input>
                                 </b-form-group>
 
                                 <div class="d-flex justify-content-end">
@@ -263,7 +265,7 @@ export default {
             },
             newTopik: {
                 judul_topik: "",
-                pembelajaran_id: this.$route.query.pembelajaranId,
+                pembelajaran_id: this.$route.query.pembelajaran_id,
             },
             dynamicActions: {
                 showDelete: true,
@@ -469,15 +471,17 @@ export default {
                 this.isBusy = true; // Display loader if necessary
 
                 // Make a DELETE request to the specified route with the ID
-                const response = await this.$http.delete(${route}/${id});
+                const response = await this.$http.delete(`/topik/${id}`);
+                // console.log(route);
+                // console.log(id);
 
-                console.log(Item with key: ${key} and ID: ${id} successfully deleted:, response);
+                console.log(`Item with key: ${key} and ID: ${id} successfully deleted:`, response);
 
                 // Optionally, you might want to refresh the list of items after deletion
-                this.loadPostsData(); // Reload data if needed
+                this.loadPostsData(payload.pembelajaran_id); // Reload data if needed
 
             } catch (error) {
-                console.error(Error deleting item with key: ${key} and ID: ${id}:, error);
+                console.error(`Error deleting item with key: ${key} and ID: ${id}:`, error);
 
                 // Handle error
                 alert('An error occurred while deleting the item. Please try again.');
@@ -499,9 +503,10 @@ export default {
                     payload
                 ); // Ganti '/simpan-topik' dengan endpoint API yang sesuai
                 console.log("Data berhasil dikirim:", response);
+                console.log(payload.pembelajaran_id);
                 this.showModalTopik = false; // Tutup modal setelah berhasil
                 this.resetForm(); // Reset form
-                this.loadPostsData(); // Reload data jika diperlukan
+                this.loadPostsData(payload.pembelajaran_id); // Reload data jika diperlukan
             } catch (error) {
                 console.error("Terjadi kesalahan saat mengirim data:", error);
                 // Tangani error dengan menampilkan pesan atau melakukan tindakan lain
@@ -520,7 +525,7 @@ export default {
             };
             this.newTopik = {
                 judul_topik: "",
-                pembelajaran_id: "",
+                pembelajaran_id: this.$route.query.pembelajaran_id,
             };
         },
     },

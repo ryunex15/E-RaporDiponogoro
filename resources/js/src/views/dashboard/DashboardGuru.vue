@@ -1,6 +1,5 @@
 dashboardguru
 
-
 <template>
     <div>
         <b-card no-body>
