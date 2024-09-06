@@ -1,5 +1,3 @@
-siswa.vue
-
 <template>
     <b-container fluid class="px-4">
         <!-- Bagian Pengajar -->
@@ -130,7 +128,7 @@ export default {
         },
     },
 };
-</script> 
+</script>
 
 <style scoped>
 .list-group-item {
