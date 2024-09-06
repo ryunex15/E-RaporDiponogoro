@@ -93,7 +93,7 @@
         <!-- Modal for Detail Tugas -->
         <b-modal
             id="task-modal"
-            title="Detail Tugas"
+            title="Detail Tugas123"
             v-model="isDetailModalVisible"
             hide-footer
             centered
