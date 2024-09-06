@@ -272,7 +272,8 @@ export default {
         };
     },
     created() {
-        this.pembelajaranId = this.$route.query.pembelajaranId;
+        this.pembelajaranId = this.$route.query.pembelajaran_id;
+        console.log(this.pembelajaranId); // Lakukan sesuatu dengan pembelajaranId
         this.loadPostsData(this.pembelajaranId);
         eventBus.$on("modal-materi", this.handleEvent);
     },
@@ -394,6 +395,7 @@ export default {
                 })
                 .then((response) => {
                     let getData = response.data;
+                    console.log(getData)
 
                     this.items2 = getData.topik.map((item) => ({
                         judul: item.judul_topik, // Make sure to map the correct field
@@ -458,7 +460,7 @@ export default {
                 deadlineTime: this.newPembelajaran.deadlineTime,
                 file: this.newPembelajaran.file,
             };
-            console.log(payload);
+            console.log("Payload Pembelajaran:", payload);
             this.showModal = false;
             this.resetForm();
         },
@@ -467,32 +469,18 @@ export default {
                 this.isBusy = true; // Display loader if necessary
 
                 // Make a DELETE request to the specified route with the ID
-                const response = await this.$http.delete(topik / $ {
-                    id
-                });
+                const response = await this.$http.delete(${route}/${id});
 
-                console.log(Item with $ {
-                        key
-                    }
-                    $ {
-                        id
-                    }
-                    successfully deleted: , response);
+                console.log(Item with key: ${key} and ID: ${id} successfully deleted:, response);
 
                 // Optionally, you might want to refresh the list of items after deletion
                 this.loadPostsData(); // Reload data if needed
 
             } catch (error) {
-                console.error(Error deleting item with $ {
-                        key
-                    }
-                    $ {
-                        id
-                    }: , error);
+                console.error(Error deleting item with key: ${key} and ID: ${id}:, error);
 
                 // Handle error
                 alert('An error occurred while deleting the item. Please try again.');
-
             } finally {
                 this.isBusy = false; // Hide loader
             }
@@ -503,7 +491,7 @@ export default {
                 pembelajaran_id: this.newTopik.pembelajaran_id,
             };
 
-            console.log("Data berhasil dikirim: coba");
+            console.log("Data yang dikirim:", payload);
             try {
                 this.isBusy = true; // Tampilkan loader jika diperlukan
                 const response = await this.$http.post(
@@ -515,7 +503,7 @@ export default {
                 this.resetForm(); // Reset form
                 this.loadPostsData(); // Reload data jika diperlukan
             } catch (error) {
-                console.error("Terjadi kesalahan:", error);
+                console.error("Terjadi kesalahan saat mengirim data:", error);
                 // Tangani error dengan menampilkan pesan atau melakukan tindakan lain
             } finally {
                 this.isBusy = false; // Sembunyikan loader

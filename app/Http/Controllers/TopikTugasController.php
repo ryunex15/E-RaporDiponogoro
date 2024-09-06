@@ -6,7 +6,7 @@ use App\Models\Pembelajaran;
 use Illuminate\Http\Request;
 use App\Models\Peserta_didik;
 use App\Models\Anggota_rombel;
-use App\Http\Controllers\TopikTugas;
+use App\Models\TopikTugas;
 
 class TopikTugasController extends Controller
 {
@@ -85,16 +85,16 @@ class TopikTugasController extends Controller
     {
         // Find the TopikTugas by ID
         $topikTugas = TopikTugas::find($id);
-        
+
         if (!$topikTugas) {
             return response()->json([
                 'message' => 'Topik Tugas not found'
             ], 404);
         }
-        
+
         // Delete the TopikTugas
         $topikTugas->delete();
-        
+
         return response()->json([
             'message' => 'Topik Tugas deleted successfully'
         ], 200);
@@ -112,7 +112,7 @@ class TopikTugasController extends Controller
 
     $guru = Guru::where('guru_id', $guru_id)->first();
 
-    
+
 
     if (!$pembelajaran) {
         return response()->json(['message' => 'Pembelajaran not found'], 404);
@@ -129,7 +129,7 @@ class TopikTugasController extends Controller
 
     // Ambil data peserta didik berdasarkan peserta_didik_ids
     $pesertaDidik = Peserta_didik::whereIn('peserta_didik_id', $pesertaDidikIds)->orderBy('nama', 'ASC')->get();
-    
+
 
     // Menggabungkan semua data dalam array
     $data = [

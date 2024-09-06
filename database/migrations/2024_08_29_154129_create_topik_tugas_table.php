@@ -16,7 +16,10 @@ class CreateTopikTugasTable extends Migration
         Schema::create('topik_tugas', function (Blueprint $table) {
             $table->uuid('topik_tugas_id')->primary();
             $table->string('judul_topik');
+            $table->uuid('pembelajaran_id');
             $table->timestamps();
+
+            $table->foreign('pembelajaran_id')->references('pembelajaran_id')->on('pembelajaran')->onDelete('cascade');
         });
     }
 

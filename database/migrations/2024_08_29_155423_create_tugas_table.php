@@ -18,13 +18,11 @@ class CreateTugasTable extends Migration
             $table->date('deadline');
             $table->string('judul');
             $table->string('lampiran_document')->nullable();
-            $table->uuid('pembelajaran_id');
             $table->text('deskripsi');
             $table->uuid('topik_tugas_id');
             $table->timestamps();
 
             // Foreign keys
-            $table->foreign('pembelajaran_id')->references('pembelajaran_id')->on('pembelajaran')->onDelete('cascade');
             $table->foreign('topik_tugas_id')->references('topik_tugas_id')->on('topik_tugas')->onDelete('cascade');
         });
     }
