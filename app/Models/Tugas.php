@@ -27,7 +27,7 @@ class Tugas extends Model
 
     public function topikTugas()
     {
-        return $this->belongsTo(TopikTugas::class, 'id_topik_tugas');
+        return $this->belongsTo(TopikTugas::class, 'topik_tugas_id');
     }
 };
 
