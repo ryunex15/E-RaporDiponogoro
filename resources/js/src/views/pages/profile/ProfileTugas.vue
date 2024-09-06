@@ -19,16 +19,6 @@
                             Ditugaskan
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link text-sm text-md text-lg"
-                            :class="{ active: activeTab === 'selesai' }"
-                            href="#"
-                            @click.prevent="setTab('selesai')"
-                        >
-                            Selesai
-                        </a>
-                    </li>
                 </ul>
 
                 <div class="header-banner text-white p-4 mb-4 text-md-start">
@@ -43,47 +33,24 @@
                     <b-row>
                         <b-col md="12">
                             <!-- Ditugaskan -->
-                            <b-card
-                                class="mb-4 post-card shadow-sm rounded border-0"
-                                v-if="activeTab === 'ditugaskan'"
-                                v-for="(item, index) in topik"
-                                :key="index"
+                            <b-table
+                                striped
+                                hover
+                                :items="items"
+                                :fields="fields"
+                                small
                             >
-                                <b-card-body>
-                                    <p class="responsive-text">
-                                        <b>{{ item.judul_topik }}</b> -
-                                        Mempelajari Akupuntur.
-                                    </p>
+                                <template #cell(aksi)="row">
                                     <b-button
-                                        variant="info"
-                                        class="ml-auto"
-                                        @click="showTaskDetails"
-                                        >Detail Tugas</b-button
+                                        variant="primary"
+                                        @click="showTaskDetails(row.item)"
                                     >
-                                </b-card-body>
-                            </b-card>
+                                        View
+                                    </b-button>
+                                </template>
+                            </b-table>
 
-                            <!-- Selesai -->
-                            <b-card
-                                class="mb-4 post-card shadow-sm rounded border border-success"
-                                v-if="activeTab === 'selesai'"
-                            >
-                                <b-card-body>
-                                    <p class="responsive-text">
-                                        <b>Tugas 1</b> - Telah diserahkan.
-                                    </p>
-                                </b-card-body>
-                            </b-card>
-                            <b-card
-                                class="mb-4 post-card shadow-sm rounded border border-success"
-                                v-if="activeTab === 'selesai'"
-                            >
-                                <b-card-body>
-                                    <p class="responsive-text">
-                                        <b>Tugas 2</b> - Telah diserahkan.
-                                    </p>
-                                </b-card-body>
-                            </b-card>
+                            <!-- End list tabel disini -->
                         </b-col>
                     </b-row>
                 </div>
@@ -93,14 +60,14 @@
         <!-- Modal for Detail Tugas -->
         <b-modal
             id="task-modal"
-            title="Detail Tugas123"
+            title="Detail Tugas"
             v-model="isDetailModalVisible"
             hide-footer
             centered
         >
-            <h3>Mempelajari Akupuntur</h3>
-            <h5>Pemberi Materi : MR.Dudung Dzul</h5>
-            <p>Batas Penyerahan : Selasa, 3 September 2024</p>
+            <h3>{{ selectedTask.judul }}</h3>
+            <h5>Pemberi Materi : {{ selectedTask.pemateri }}</h5>
+            <p>Batas Penyerahan : {{ selectedTask.tanggal }}</p>
 
             <!-- Preview gambar tugas di sini -->
             <img
@@ -109,56 +76,11 @@
                 class="mb-4 w-25 d-block mx-auto"
             />
 
-            <h5>
-                Manfaat akupuntur juga bisa membantu meredakan nyeri sendi.
-                Akupuntur bisa dipakai untuk terapi penyembuhan cedera pada
-                lutut. Penderitanya perlu melakukan akupuntur secara berulang
-                untuk menurunkan gejala nyerinya.
-            </h5>
+            <h5>{{ selectedTask.topik }}</h5>
             <br />
             <b-button variant="secondary" @click="isDetailModalVisible = false"
                 >Tutup</b-button
             >
-        </b-modal>
-
-        <!-- Modal for Kirim Tugas -->
-        <b-modal
-            id="submit-modal"
-            title="Kirim Tugas"
-            v-model="isSubmitModalVisible"
-            hide-footer
-            centered
-        >
-            <b-form @submit.prevent="submitTask">
-                <b-form-group label="Nama" label-for="nama-input">
-                    <b-form-input
-                        id="nama-input"
-                        v-model="nama"
-                        required
-                    ></b-form-input>
-                </b-form-group>
-
-                <b-form-group label="Kelas" label-for="kelas-input">
-                    <b-form-input
-                        id="kelas-input"
-                        v-model="kelas"
-                        required
-                    ></b-form-input>
-                </b-form-group>
-
-                <b-form-group label="Lampirkan File" label-for="file-input">
-                    <b-form-file
-                        id="file-input"
-                        v-model="file"
-                        required
-                    ></b-form-file>
-                </b-form-group>
-
-                <b-button type="submit" variant="success">Kirim</b-button>
-                <b-button variant="danger" @click="isSubmitModalVisible = false"
-                    >Batal</b-button
-                >
-            </b-form>
         </b-modal>
     </b-card>
 </template>
@@ -172,10 +94,7 @@ import {
     BCol,
     BOverlay,
     BModal,
-    BForm,
-    BFormGroup,
-    BFormInput,
-    BFormFile,
+    BTable,
 } from "bootstrap-vue";
 
 export default {
@@ -187,44 +106,55 @@ export default {
         BCol,
         BOverlay,
         BModal,
-        BForm,
-        BFormGroup,
-        BFormInput,
-        BFormFile,
-    },
-
-    props: {
-        topik: {
-            type: Array,
-            default: () => [],
-        },
+        BTable,
     },
     data() {
         return {
             isBusy: false,
             activeTab: "ditugaskan",
             isDetailModalVisible: false,
-            isSubmitModalVisible: false,
-            nama: "",
-            kelas: "",
-            file: null,
-            items: [],
+            selectedTask: {},
+            items: [
+                {
+                    tipe: "Tugas",
+                    pemateri: "Dudung Dzulkifli",
+                    judul: "Materi baru: Section 3",
+                    topik: "Pemrograman Web",
+                    tanggal: "13 Apr 2023",
+                },
+                {
+                    tipe: "Materi",
+                    pemateri: "Dudung Dzulkifli",
+                    judul: "Materi baru: Section 2",
+                    topik: "Pemrograman Web",
+                    tanggal: "13 Apr 2023",
+                },
+                {
+                    tipe: "Tugas",
+                    pemateri: "Dudung Dzulkifli",
+                    judul: "Materi baru: Section 1",
+                    topik: "Pemrograman Web",
+                    tanggal: "13 Apr 2023",
+                },
+                // Add more data here
+            ],
+            fields: [
+                { key: "tipe", label: "TIPE" },
+                { key: "pemateri", label: "PEMATERI" },
+                { key: "judul", label: "JUDUL" },
+                { key: "topik", label: "TOPIK" },
+                { key: "tanggal", label: "TANGGAL" },
+                { key: "aksi", label: "AKSI" },
+            ],
         };
     },
     methods: {
         setTab(tab) {
             this.activeTab = tab;
         },
-        showTaskDetails() {
+        showTaskDetails(task) {
+            this.selectedTask = task;
             this.isDetailModalVisible = true;
-        },
-        showSubmitTask() {
-            this.isSubmitModalVisible = true;
-        },
-        submitTask() {
-            // Handle form submission here
-            this.isSubmitModalVisible = false;
-            alert("Tugas berhasil dikirim!");
         },
     },
 };

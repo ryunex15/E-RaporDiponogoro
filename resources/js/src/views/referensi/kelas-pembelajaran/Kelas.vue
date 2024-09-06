@@ -1,5 +1,3 @@
-Kelas.vue
-
 <template>
     <b-card no-body class="main-card">
         <b-overlay :show="isBusy" rounded opacity="0.6" size="lg" spinner-variant="primary">
@@ -264,7 +262,7 @@ Kelas.vue
                 isBusy: false,
                 fields: this.getFields(),
                 fields2: this.getFields2(),
-                items: this.getInitialItems(),
+                items:[],
                 items2: [],
                 meta: {},
                 current_page: 1,
@@ -373,17 +371,12 @@ Kelas.vue
             },
             getFields2() {
                 return [{
-                        key: "type",
-                        label: "Tipe",
+                        key: "id",
+                        label: "No",
                         sortable: true,
                     },
                     {
-                        key: "pemateri",
-                        label: "Pemateri",
-                        sortable: true,
-                    },
-                    {
-                        key: "title",
+                        key: "judul",
                         label: "Judul",
                         sortable: true,
                     },
@@ -393,7 +386,7 @@ Kelas.vue
                         sortable: true,
                     },
                     {
-                        key: "date",
+                        key: "tanggal",
                         label: "Tanggal",
                         sortable: true,
                     },
@@ -421,34 +414,7 @@ Kelas.vue
                         topik: "Pemograman Web",
                         date: "13 Apr 2023",
                     },
-                    {
-                        type: "Tugas",
-                        pemateri: "Dudung Dzulkifli",
-                        title: "Materi baru: Section 1",
-                        topik: "Pemograman Web",
-                        date: "13 Apr 2023",
-                    },
-                    {
-                        type: "Tugas",
-                        pemateri: "Dudung Dzulkifli",
-                        title: "Materi baru: Section 3",
-                        topik: "Pemograman Web",
-                        date: "13 Apr 2023",
-                    },
-                    {
-                        type: "Materi",
-                        pemateri: "Dudung Dzulkifli",
-                        title: "Materi baru: Section 2",
-                        topik: "Pemograman Web",
-                        date: "13 Apr 2023",
-                    },
-                    {
-                        type: "Tugas",
-                        pemateri: "Dudung Dzulkifli",
-                        title: "Materi baru: Section 1",
-                        topik: "Pemograman Web",
-                        date: "13 Apr 2023",
-                    },
+
                 ];
             },
             handleEvent() {
@@ -490,6 +456,43 @@ Kelas.vue
                         console.error("Error fetching data:", error);
                         this.isBusy = false;
                     });
+
+                    // fetch tugas
+                this.$http
+                    .get("/tugas", {
+                        params: {
+                            pembelajaran_id: pembelajaran_id,
+                        },
+                    })
+                    .then((response) => {
+                        let getData = response.data;
+                        console.log(getData)
+
+                        this.items = getData.tugas.map((item, index) => ({
+                            id : index + 1,
+                            judul: item.judul, // judul tugas
+                            tanggal: item.deadline, // deadline
+                            topik: item['topik_tugas'].judul_topik, // topik tugas
+                        }));
+                        console.log("Data items2:", this.items);
+
+                        this.meta = {
+                            total: getData.total,
+                            current_page: getData.current_page,
+                            per_page: getData.per_page,
+                            from: getData.from,
+                            to: getData.to,
+                            role_id: this.role_id,
+                            roles: response.data.roles,
+                        };
+
+                        this.isBusy = false;
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching data:", error);
+                        this.isBusy = false;
+                    });
+
 
                 this.isBusy = true;
                 setTimeout(() => {
@@ -640,4 +643,3 @@ Kelas.vue
         display: none;
     }
     </style>
-
