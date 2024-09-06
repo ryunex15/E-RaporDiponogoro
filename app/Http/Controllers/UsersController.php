@@ -406,8 +406,7 @@ class UsersController extends Controller
     
         // Fetch the topik based on both mata_pelajaran_id and pembelajaran_id
         $topikTugas = ($mata_pelajaran_id && $pembelajaran_id) 
-            ? TopikTugas::where('mata_pelajaran_id', $mata_pelajaran_id)
-                        ->where('pembelajaran_id', $pembelajaran_id)
+            ? TopikTugas::where('pembelajaran_id', $pembelajaran_id)
                         ->get()
             : collect(); // Return an empty collection if no mata_pelajaran_id or pembelajaran_id is found
     
