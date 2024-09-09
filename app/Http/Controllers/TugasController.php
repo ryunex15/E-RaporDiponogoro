@@ -67,6 +67,7 @@ class TugasController extends Controller
                 'deadline' => 'required|date', // Change 'deadlineDate' to 'deadline'
                 // 'file' => 'required|file|mimes:pdf,doc,docx|max:2048', // File validation
                 'file' => 'required', // File validation
+                'pembelajaran_id' => 'required', // File validation
             ]);
 
             // Menyimpan file
@@ -84,6 +85,7 @@ class TugasController extends Controller
                 'deskripsi' => $validated['deskripsi'],
                 'deadline' => $validated['deadline'], // Use 'deadline' directly
                 'lampiran_document' => $filePath,
+                'pembelajaran_id' => $validated['pembelajaran_id'],
             ]);
 
             return response()->json([

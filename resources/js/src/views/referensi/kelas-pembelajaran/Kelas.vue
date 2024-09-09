@@ -147,14 +147,14 @@
                                     </b-form-group>
 
                                     <!-- ambil id pembelajaran -->
-                                    <b-form-group label="" label-for="judul-pembelajaran">
+                                    <b-form-group label="testing" label-for="judul-pembelajaran">
                                         <b-form-input
                                             id="judul-pembelajaran"
                                             v-model="newPembelajaran.pembelajaran_id"
                                             required
                                             class="w-100"
+                                            hidde
                                             disabled
-                                            hidden
                                         ></b-form-input>
                                     </b-form-group>
 
@@ -329,6 +329,7 @@
                 formData.append('deskripsi', this.newPembelajaran.deskripsi);
                 formData.append('deadline', `${this.newPembelajaran.deadline}`); // Combine date and time
                 formData.append('file', this.newPembelajaran.file);
+                formData.append('pembelajaran_id', this.newPembelajaran.pembelajaran_id);
 
                 // Mengirim data ke server
                 // Dapatkan token CSRF dari meta tag
@@ -343,6 +344,8 @@
                     console.log('Pembelajaran ditambahkan:', response);
                     this.showModal = false; // Menutup modal setelah submit
                     this.resetForm(); // Reset form
+                    console.log(this.pembelajaranId);
+                    this.loadPostsData(this.pembelajaranId);
                 }).catch(error => {
                     console.error('Error submitting form:', error);
                 });
