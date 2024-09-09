@@ -20,6 +20,7 @@ class CreateTugasTable extends Migration
             $table->string('lampiran_document')->nullable();
             $table->text('deskripsi');
             $table->uuid('topik_tugas_id');
+            $table->uuid('pembelajaran_id');
             $table->timestamps();
 
             // Foreign keys

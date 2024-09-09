@@ -146,6 +146,18 @@
                                         ></b-form-file>
                                     </b-form-group>
 
+                                    <!-- ambil id pembelajaran -->
+                                    <b-form-group label="" label-for="judul-pembelajaran">
+                                        <b-form-input
+                                            id="judul-pembelajaran"
+                                            v-model="newPembelajaran.pembelajaran_id"
+                                            required
+                                            class="w-100"
+                                            disabled
+                                            hidden
+                                        ></b-form-input>
+                                    </b-form-group>
+
                                     <div class="d-flex justify-content-end">
                                         <b-button type="submit" variant="success">
                                             Tambahkan Tugas
@@ -273,6 +285,7 @@
                 showModal: false,
                 showModalTopik: false,
                 newPembelajaran: {
+                    pembelajaran_id: this.$route.query.pembelajaran_id,
                     topik: "",
                     judul: "",
                     deskripsi: "",

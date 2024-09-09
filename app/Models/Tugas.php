@@ -26,6 +26,7 @@ class Tugas extends Model
         'lampiran_document',
         'deskripsi',
         'topik_tugas_id',
+        'pembelajaran_id',
     ];
 
     protected static function boot()
