@@ -13,7 +13,7 @@
                 <profile-nilai :semester="semester" :pd="profileData.pd" v-if="activeTab === 2" :pembelajaran_id="pembelajaran_id" @kembali="handleKembali" />
                 <profile-teman :semester="semester" :pd="profileData.pd" v-if="activeTab === 3" />
                 <!-- <profile-tugas :semester="semester" :pd="profileData.pd" v-if="activeTab === 4" :tugas-data="tugasData" @tugas="handleTugas" /> -->
-                <profile-tugas :semester="semester" :pd="profileData.pd" v-if="activeTab === 4" :pembelajaran_id="pembelajaran_id" :topik="profileData.topik" @tugas="handleTugas" />
+                <profile-tugas :semester="semester" :pd="profileData.pd" v-if="activeTab === 4" :pembelajaran_id="pembelajaran_id" :tugas="data.tugas" :pembelajaran="profileData.pembelajaran"  @tugas="handleTugas" />
             </b-col>
         </b-row>
     </section>
@@ -21,7 +21,7 @@
 </div>
 </template>
 
-  
+
 <script>
 import {
     BRow,
@@ -68,7 +68,8 @@ export default {
             pekerjaan: [],
             pembelajaran_id: '',
             semester: [],
-            topik: [],
+            data: [],
+            pembelajaran: {},
         }
     },
     created() {
@@ -87,12 +88,13 @@ export default {
                     pembelajaran_id: pembelajaran_id
                 }
             }).then(res => {
-                let data = res.data;
-                console.log(data.topik);
+                let data = res.data.pembelajaran;
+                console.log(data);
                 this.profileData = res.data
+                this.pembelajaran = this.profileData.pembelajaran
                 this.pekerjaan = this.profileData.pekerjaan
                 this.semester = this.profileData.semester
-                this.topikTugas = this.profileData.topikTugas
+                // this.topikTugas = this.profileData.topikTugas
                 this.form.peserta_didik_id = this.profileData.pd.peserta_didik_id
                 this.form.status = this.profileData.pd.status
                 this.form.anak_ke = this.profileData.pd.anak_ke
@@ -103,7 +105,57 @@ export default {
                 this.form.telp_wali = this.profileData.pd.telp_wali
                 this.form.kerja_wali = this.profileData.pd.kerja_wali
 
-            })
+            });
+
+                    // fetch tugas
+                    this.$http
+                    .get("/tugas", {
+                        params: {
+                            pembelajaran_id: pembelajaran_id,
+                        },
+                    })
+                    .then((response) => {
+                        let getData = response.data;
+                        console.log(getData)
+                        this.data = response.data
+
+                        this.tugas = getData.tugas.map((item, index) => ({
+                            id : index + 1,
+                            judul: item.judul, // judul tugas
+                            tanggal: item.deadline, // deadline
+                            topik: item['topik_tugas'].judul_topik, // topik tugas
+                        }));
+                        console.log("tugas mapping:", this.tugas);
+
+                        // this.meta = {
+                        //     total: getData.total,
+                        //     current_page: getData.current_page,
+                        //     per_page: getData.per_page,
+                        //     from: getData.from,
+                        //     to: getData.to,
+                        //     role_id: this.role_id,
+                        //     roles: response.data.roles,
+                        // };
+
+                        this.isBusy = false;
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching data:", error);
+                        this.isBusy = false;
+                    });
+
+
+                this.isBusy = true;
+                setTimeout(() => {
+                    this.isBusy = false;
+                    this.meta = {
+                        total: this.data.tugas.length,
+                        current_page: this.current_page,
+                        per_page: this.per_page,
+                        from: 1,
+                        to: this.data.tugas.length,
+                    };
+                }, 1000);
         },
         handleTab(idx) {
             this.activeTab = idx
@@ -127,7 +179,7 @@ export default {
 /* eslint-disable global-require */
 </script>
 
-  
+
 <style lang="scss">
 @import '~@resources/scss/vue/pages/page-profile.scss';
 @import '~@resources/scss/vue/libs/vue-sweetalert.scss';

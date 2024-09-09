@@ -7,32 +7,45 @@
             size="lg"
             spinner-variant="primary"
         >
-            <b-card-body class="p-0">
-                <ul class="nav nav-pills nav-fill mb-3 nav-pills-custom">
-                    <li class="nav-item">
-                        <a
-                            class="nav-link text-sm text-md text-lg"
-                            :class="{ active: activeTab === 'ditugaskan' }"
-                            href="#"
-                            @click.prevent="setTab('ditugaskan')"
-                        >
-                            Ditugaskan
-                        </a>
-                    </li>
-                </ul>
+            <ul class="nav nav-pills nav-fill mb-3 nav-pills-custom">
+                <li class="nav-item">
+                    <a
+                        class="nav-link text-sm text-md text-lg"
+                        :class="{ active: activeTab === 'ditugaskan' }"
+                        href="#"
+                        @click.prevent="setTab('ditugaskan')"
+                    >
+                        Ditugaskan
+                    </a>
+                </li>
+            </ul>
+            <!-- Header Section -->
+            <div
+                v-if="pembelajaran"
+                class="header-banner text-white p-4 mb-4 text-md-start"
+            >
+                <h1 class="display-6 display-md-4 mb-1 text-white">
+                    {{ pembelajaran.nama_mata_pelajaran }}
+                </h1>
+                <p class="lead mb-0">
+                    Kelas:
+                    {{
+                        pembelajaran.rombongan_belajar_name || "Tidak tersedia"
+                    }}
+                </p>
+                <p class="mb-0">
+                    Guru : {{ pembelajaran.guru_name || "Tidak tersedia" }}
+                </p>
+            </div>
 
-                <div class="header-banner text-white p-4 mb-4 text-md-start">
-                    <h1 class="display-6 display-md-4 mb-1 text-white">
-                        Kelas X RPL 2
-                    </h1>
-                    <p class="lead mb-0">Pemrograman web</p>
-                    <p class="mb-0">Dudung Dzulkifli</p>
-                </div>
+            <!-- Tabs Section: Diletakkan setelah header -->
 
+            <!-- Content Section: Ini akan disembunyikan ketika tombol View diklik -->
+            <div v-show="!isTaskView">
                 <div class="container">
                     <b-row>
                         <b-col md="12">
-                            <!-- Ditugaskan -->
+                            <!-- Tabel untuk tugas -->
                             <b-table
                                 striped
                                 hover
@@ -43,104 +56,96 @@
                                 <template #cell(aksi)="row">
                                     <b-button
                                         variant="primary"
-                                        @click="showTaskDetails(row.item)"
+                                        @click="viewTask(row.item)"
                                     >
                                         View
                                     </b-button>
                                 </template>
                             </b-table>
-
-                            <!-- End list tabel disini -->
                         </b-col>
                     </b-row>
                 </div>
-            </b-card-body>
+            </div>
+
+            <!-- Task Detail Section: Ini akan ditampilkan ketika tombol View diklik -->
+            <div v-show="isTaskView">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2>{{ selectedTask.judul }}</h2>
+                                    <p>
+                                       {{pembelajaran.guru_name || "Tidak tersedia"}} •
+                                        <span>{{ formatDate(selectedTask.created_at) }}</span>
+                                    </p>
+                                    <p>100 poin</p>
+                                    <hr />
+                                    </p>
+                                    <p>{{selectedTask.deskripsi}}</p>
+                                    <hr />
+                                    <p>Lampiran File:</p>
+                                    <p>
+                                        {{selectedTask.file}}
+                                    </p>
+                                    <hr />
+                                    <b-form-textarea
+                                        id="input-with-placeholder"
+                                        placeholder="Tambahkan komentar kelas"
+                                        rows="3"
+                                        max-rows="6"
+                                    ></b-form-textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <b-button variant="secondary mt-2" @click="backToList"
+                    >Kembali</b-button
+                >
+            </div>
         </b-overlay>
-
-        <!-- Modal for Detail Tugas -->
-        <b-modal
-            id="task-modal"
-            title="Detail Tugas"
-            v-model="isDetailModalVisible"
-            hide-footer
-            centered
-        >
-            <h3>{{ selectedTask.judul }}</h3>
-            <h5>Pemberi Materi : {{ selectedTask.pemateri }}</h5>
-            <p>Batas Penyerahan : {{ selectedTask.tanggal }}</p>
-
-            <!-- Preview gambar tugas di sini -->
-            <img
-                src="/images/tutwuri.png"
-                alt="Deskripsi Gambar"
-                class="mb-4 w-25 d-block mx-auto"
-            />
-
-            <h5>{{ selectedTask.topik }}</h5>
-            <br />
-            <b-button variant="secondary" @click="isDetailModalVisible = false"
-                >Tutup</b-button
-            >
-        </b-modal>
     </b-card>
 </template>
 
 <script>
-import {
-    BCard,
-    BCardBody,
-    BButton,
-    BRow,
-    BCol,
-    BOverlay,
-    BModal,
-    BTable,
-} from "bootstrap-vue";
+import { BCard, BOverlay, BTable, BRow, BCol, BButton, BFormTextarea } from "bootstrap-vue";
 
 export default {
     components: {
         BCard,
-        BCardBody,
-        BButton,
+        BOverlay,
+        BTable,
         BRow,
         BCol,
-        BOverlay,
-        BModal,
-        BTable,
+        BButton,
+        BFormTextarea,
     },
+
+    props: {
+        pembelajaran_id: {
+            type: String,
+            required: true,
+        },
+        tugas: {
+            type: Array,
+            default: () => [],
+        },
+        pembelajaran: {
+            type: Object,
+            default: () => ({}),
+        },
+    },
+
     data() {
         return {
             isBusy: false,
             activeTab: "ditugaskan",
-            isDetailModalVisible: false,
+            isTaskView: false, // State untuk menampilkan halaman detail tugas
             selectedTask: {},
-            items: [
-                {
-                    tipe: "Tugas",
-                    pemateri: "Dudung Dzulkifli",
-                    judul: "Materi baru: Section 3",
-                    topik: "Pemrograman Web",
-                    tanggal: "13 Apr 2023",
-                },
-                {
-                    tipe: "Materi",
-                    pemateri: "Dudung Dzulkifli",
-                    judul: "Materi baru: Section 2",
-                    topik: "Pemrograman Web",
-                    tanggal: "13 Apr 2023",
-                },
-                {
-                    tipe: "Tugas",
-                    pemateri: "Dudung Dzulkifli",
-                    judul: "Materi baru: Section 1",
-                    topik: "Pemrograman Web",
-                    tanggal: "13 Apr 2023",
-                },
-                // Add more data here
-            ],
+            items: [],
             fields: [
-                { key: "tipe", label: "TIPE" },
-                { key: "pemateri", label: "PEMATERI" },
+                { key: "id", label: "ID" },
                 { key: "judul", label: "JUDUL" },
                 { key: "topik", label: "TOPIK" },
                 { key: "tanggal", label: "TANGGAL" },
@@ -148,14 +153,43 @@ export default {
             ],
         };
     },
+
+    watch: {
+        tugas(newTugas) {
+            this.items = newTugas.map((tugas, index) => ({
+                id: index + 1,
+                judul: tugas.judul,
+                topik: tugas["topik_tugas"].judul_topik,
+                tanggal: tugas.deadline,
+                deskripsi: tugas.deskripsi || "Deskripsi tidak tersedia", // Menambahkan deskripsi jika ada
+                file: tugas.lampiran_document || "Deskripsi tidak tersedia", // Menambahkan deskripsi jika ada
+                created_at: tugas.created_at || "ya", // Menambahkan deskripsi jika ada
+            }));
+        },
+    },
+
     methods: {
+        
         setTab(tab) {
             this.activeTab = tab;
         },
-        showTaskDetails(task) {
+        viewTask(task) {
             this.selectedTask = task;
-            this.isDetailModalVisible = true;
+            this.isTaskView = true; // Menampilkan halaman detail tugas
         },
+        backToList() {
+            this.isTaskView = false; // Kembali ke daftar tugas
+        },
+        formatDate(date) {
+      if (!date) return "-"; // Tampilkan dash jika tanggal tidak tersedia
+      
+      const formattedDate = new Date(date).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+      });
+
+      return formattedDate;
+    },
     },
 };
 </script>
@@ -172,17 +206,5 @@ export default {
 .header-banner {
     background-color: #f78b20e4;
     border-radius: 10px;
-}
-
-.responsive-text {
-    font-size: 1rem;
-}
-
-.post-card {
-    transition: box-shadow 0.3s ease-in-out;
-}
-
-.post-card:hover {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 </style>

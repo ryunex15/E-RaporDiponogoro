@@ -26,56 +26,62 @@ class UsersController extends Controller
     public function index()
     {
         $team = Team::where('name', request()->periode_aktif)->first();
-        $where = function($query){
+        $where = function ($query) {
             $query->whereRoleIs(['guru', 'siswa', 'tu'], request()->periode_aktif);
             $query->where('sekolah_id', request()->sekolah_id);
         };
-        $data = User::with(['roles' => function($query) use ($team){
-            $query->wherePivot('team_id', $team->id);
-        }])->where($where)->orderBy(request()->sortby, request()->sortbydesc)
-        ->when(request()->q, function($query) use ($where){
-            $query->where($where);
-            $query->where('name', 'ILIKE', '%' . request()->q . '%');
-            $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
-            $query->where($where);
-            $query->orWhere('nisn', 'ILIKE', '%' . request()->q . '%');
-            $query->where($where);
-            $query->orWhere('email', 'ILIKE', '%' . request()->q . '%');
-            $query->where($where);
-        })->when(request()->role_id, function($ptk) {
-            if(request()->role_id !== 'all'){
-                $ptk->whereRoleIs(request()->role_id, request()->periode_aktif);
+        $data = User::with([
+            'roles' => function ($query) use ($team) {
+                $query->wherePivot('team_id', $team->id);
             }
-        })->paginate(request()->per_page);
-        $roles = Role::whereNotIn('id', [1,2,6])->get();
+        ])->where($where)->orderBy(request()->sortby, request()->sortbydesc)
+            ->when(request()->q, function ($query) use ($where) {
+                $query->where($where);
+                $query->where('name', 'ILIKE', '%' . request()->q . '%');
+                $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
+                $query->where($where);
+                $query->orWhere('nisn', 'ILIKE', '%' . request()->q . '%');
+                $query->where($where);
+                $query->orWhere('email', 'ILIKE', '%' . request()->q . '%');
+                $query->where($where);
+            })->when(request()->role_id, function ($ptk) {
+                if (request()->role_id !== 'all') {
+                    $ptk->whereRoleIs(request()->role_id, request()->periode_aktif);
+                }
+            })->paginate(request()->per_page);
+        $roles = Role::whereNotIn('id', [1, 2, 6])->get();
         return response()->json(['status' => 'success', 'data' => $data, 'roles' => $roles]);
     }
-    public function generate(){
-        $function = 'generate_'.request()->aksi;
+    public function generate()
+    {
+        $function = 'generate_' . request()->aksi;
         $data = $this->{$function}();
         return response()->json($data);
     }
-    private function generate_ptk(){
+    private function generate_ptk()
+    {
         $insert = 0;
-        $data = Guru::where(function($query){
-            $query->whereDoesntHave('ptk_keluar', function($query){
+        $data = Guru::where(function ($query) {
+            $query->whereDoesntHave('ptk_keluar', function ($query) {
                 $query->where('semester_id', request()->semester_id);
             });
             $query->where('sekolah_id', request()->sekolah_id);
             $query->whereNotNull('email');
-        })->with(['bimbing_pd' => function($query){
-            $query->whereHas('akt_pd', function($query){
-                $query->whereHas('anggota_akt_pd', function($query){
-                    $query->whereHas('siswa', function($query){
-                        $query->whereHas('anggota_rombel', function($query){
-                            $query->where('semester_id', request()->semester_id);
+        })->with([
+                    'bimbing_pd' => function ($query) {
+                        $query->whereHas('akt_pd', function ($query) {
+                            $query->whereHas('anggota_akt_pd', function ($query) {
+                                $query->whereHas('siswa', function ($query) {
+                                    $query->whereHas('anggota_rombel', function ($query) {
+                                        $query->where('semester_id', request()->semester_id);
+                                    });
+                                });
+                            });
                         });
-                    });
-                });
-            });
-        }])->get();
+                    }
+                ])->get();
         $jenis_tu = jenis_gtk('tendik');
-		$asesor = jenis_gtk('asesor');
+        $asesor = jenis_gtk('asesor');
         $PembinaRole = Role::where('name', 'pembina_ekskul')->first();
         $p5Role = Role::where('name', 'guru-p5')->first();
         $WalasRole = Role::where('name', 'wali')->first();
@@ -83,76 +89,76 @@ class UsersController extends Controller
         $adminRole = Role::where('name', 'admin')->first();
         $pembimbingRole = Role::where('name', 'pembimbing')->first();
         $all_role = ['pembina_ekskul', 'guru-p5', 'wali', 'admin', 'pembimbing'];
-        if($data){
-            foreach($data as $d){
+        if ($data) {
+            foreach ($data as $d) {
                 $insert++;
                 $new_password = strtolower(Str::random(8));
                 $user = User::where('guru_id', $d->guru_id)->first();
                 $user_email = $this->check_email($d, 'guru_id');
-                if($user){
+                if ($user) {
                     //$user->email = $user_email;
                     $user->name = $d->nama_lengkap;
                     $user->save();
                 } else {
                     $user = User::create([
                         'name' => $d->nama_lengkap,
-						'email' => $user_email,
-						'nuptk'	=> $d->nuptk,
-						'password' => bcrypt($new_password),
-						'last_sync'	=> now(),
-						'sekolah_id'	=> request()->sekolah_id,
-						'password_dapo'	=> md5($new_password),
-						'guru_id'	=> $d->guru_id,
-						'default_password' => $new_password,
+                        'email' => $user_email,
+                        'nuptk' => $d->nuptk,
+                        'password' => bcrypt($new_password),
+                        'last_sync' => now(),
+                        'sekolah_id' => request()->sekolah_id,
+                        'password_dapo' => md5($new_password),
+                        'guru_id' => $d->guru_id,
+                        'default_password' => $new_password,
                     ]);
                 }
                 //$user->detachRole($adminRole, request()->periode_aktif);
                 $user->detachRoles($all_role, request()->periode_aktif);
-                if($jenis_tu->contains($d->jenis_ptk_id)){
+                if ($jenis_tu->contains($d->jenis_ptk_id)) {
                     $role = Role::where('name', 'tu')->first();
-                } elseif($asesor->contains($d->jenis_ptk_id)){
+                } elseif ($asesor->contains($d->jenis_ptk_id)) {
                     $role = Role::where('name', 'user')->first();
                 } else {
                     $role = Role::where('name', 'guru')->first();
                 }
-                if(!$user->hasRole($role, request()->periode_aktif)){
+                if (!$user->hasRole($role, request()->periode_aktif)) {
                     $user->attachRole($role, request()->periode_aktif);
                 }
                 $find_rombel = Rombongan_belajar::where('guru_id', $d->guru_id)->where('semester_id', request()->semester_id)->where('jenis_rombel', 1)->first();
-				if($find_rombel){
-                    if(!$user->hasRole($WalasRole, request()->periode_aktif)){
+                if ($find_rombel) {
+                    if (!$user->hasRole($WalasRole, request()->periode_aktif)) {
                         $user->attachRole($WalasRole, request()->periode_aktif);
                     }
                 } else {
                     $user->detachRole($WalasRole, request()->periode_aktif);
                 }
                 $find_pilihan = Rombongan_belajar::where('guru_id', $d->guru_id)->where('semester_id', request()->semester_id)->where('jenis_rombel', 16)->first();
-				if($find_pilihan){
-                    if(!$user->hasRole($PilihanRole, request()->periode_aktif)){
+                if ($find_pilihan) {
+                    if (!$user->hasRole($PilihanRole, request()->periode_aktif)) {
                         $user->attachRole($PilihanRole, request()->periode_aktif);
                     }
                 } else {
                     $user->detachRole($PilihanRole, request()->periode_aktif);
                 }
                 $find_mapel_p5 = Pembelajaran::where('guru_id', $d->guru_id)->where('semester_id', request()->semester_id)->where('mata_pelajaran_id', 200040000)->has('tema')->first();
-                if($find_mapel_p5){
-                    if(!$user->hasRole($p5Role, request()->periode_aktif)){
+                if ($find_mapel_p5) {
+                    if (!$user->hasRole($p5Role, request()->periode_aktif)) {
                         $user->attachRole($p5Role, request()->periode_aktif);
                     }
                 } else {
                     $user->detachRole($p5Role, request()->periode_aktif);
                 }
                 $find_mapel_pkl = Pembelajaran::where('guru_id', $d->guru_id)->where('semester_id', request()->semester_id)->where('mata_pelajaran_id', 800001000)->first();
-                if($find_mapel_pkl){
-                    if(!$user->hasRole($pembimbingRole, request()->periode_aktif)){
+                if ($find_mapel_pkl) {
+                    if (!$user->hasRole($pembimbingRole, request()->periode_aktif)) {
                         $user->attachRole($pembimbingRole, request()->periode_aktif);
                     }
                 } else {
                     $user->detachRole($pembimbingRole, request()->periode_aktif);
                 }
                 $find_ekskul = Ekstrakurikuler::where('guru_id', $d->guru_id)->where('semester_id', request()->semester_id)->first();
-                if($find_ekskul){
-                    if(!$user->hasRole($PembinaRole, request()->periode_aktif)){
+                if ($find_ekskul) {
+                    if (!$user->hasRole($PembinaRole, request()->periode_aktif)) {
                         $user->attachRole($PembinaRole, request()->periode_aktif);
                     }
                 } else {
@@ -169,7 +175,7 @@ class UsersController extends Controller
                 }*/
             }
         }
-        if($insert){
+        if ($insert) {
             $data = [
                 'icon' => 'success',
                 'title' => 'Berhasil!',
@@ -184,49 +190,50 @@ class UsersController extends Controller
         }
         return $data;
     }
-    private function generate_pd(){
+    private function generate_pd()
+    {
         $insert = 0;
         $role = Role::where('name', 'siswa')->first();
         $adminRole = Role::where('name', 'admin')->first();
-        Peserta_didik::where(function($query){
-            $query->whereDoesntHave('pd_keluar', function($query){
+        Peserta_didik::where(function ($query) {
+            $query->whereDoesntHave('pd_keluar', function ($query) {
                 $query->where('semester_id', request()->semester_id);
             });
             $query->where('sekolah_id', request()->sekolah_id);
         })->orderBy('peserta_didik_id')->chunk(100, function ($data) use ($role, $adminRole, &$insert) {
-            foreach($data as $d){
+            foreach ($data as $d) {
                 $insert++;
                 $new_password = strtolower(Str::random(8));
                 $user = User::where('peserta_didik_id', $d->peserta_didik_id)->first();
-                if(!$user){
+                if (!$user) {
                     $user_email = $this->check_email($d, 'peserta_didik_id');
                     $user = User::create([
                         'name' => $d->nama,
-						'email' => $user_email,
-						'nisn'	=> $d->nisn,
-						'password' => bcrypt($new_password),
-						'last_sync'	=> now(),
-						'sekolah_id'	=> request()->sekolah_id,
-						'password_dapo'	=> md5($new_password),
-						'peserta_didik_id'	=> $d->peserta_didik_id,
-						'default_password' => $new_password,
+                        'email' => $user_email,
+                        'nisn' => $d->nisn,
+                        'password' => bcrypt($new_password),
+                        'last_sync' => now(),
+                        'sekolah_id' => request()->sekolah_id,
+                        'password_dapo' => md5($new_password),
+                        'peserta_didik_id' => $d->peserta_didik_id,
+                        'default_password' => $new_password,
                     ]);
-                } elseif(!$user->email){
+                } elseif (!$user->email) {
                     $user_email = $this->check_email($d, 'peserta_didik_id');
                     $user->email = $user_email;
                     $user->save();
                 }
-                if(!$d->email){
+                if (!$d->email) {
                     $d->email = $user->email;
                     $d->save();
                 }
                 $user->detachRole($adminRole, request()->periode_aktif);
-                if(!$user->hasRole($role, request()->periode_aktif)){
+                if (!$user->hasRole($role, request()->periode_aktif)) {
                     $user->attachRole($role, request()->periode_aktif);
                 }
             }
         });
-        if($insert){
+        if ($insert) {
             $data = [
                 'icon' => 'success',
                 'title' => 'Berhasil!',
@@ -241,51 +248,52 @@ class UsersController extends Controller
         }
         return $data;
     }
-    private function generate_pdOld(){
+    private function generate_pdOld()
+    {
         $insert = 0;
-        $data = Peserta_didik::where(function($query){
-            $query->whereDoesntHave('pd_keluar', function($query){
+        $data = Peserta_didik::where(function ($query) {
+            $query->whereDoesntHave('pd_keluar', function ($query) {
                 $query->where('semester_id', request()->semester_id);
             });
             $query->where('sekolah_id', request()->sekolah_id);
         })->get();
-        
+
         $role = Role::where('name', 'siswa')->first();
         $adminRole = Role::where('name', 'admin')->first();
-        if($data){
-            foreach($data as $d){
+        if ($data) {
+            foreach ($data as $d) {
                 $insert++;
                 $new_password = strtolower(Str::random(8));
                 $user = User::where('peserta_didik_id', $d->peserta_didik_id)->first();
-                if(!$user){
+                if (!$user) {
                     $user_email = $this->check_email($d, 'peserta_didik_id');
                     $user = User::create([
                         'name' => $d->nama,
-						'email' => $user_email,
-						'nisn'	=> $d->nisn,
-						'password' => bcrypt($new_password),
-						'last_sync'	=> now(),
-						'sekolah_id'	=> request()->sekolah_id,
-						'password_dapo'	=> md5($new_password),
-						'peserta_didik_id'	=> $d->peserta_didik_id,
-						'default_password' => $new_password,
+                        'email' => $user_email,
+                        'nisn' => $d->nisn,
+                        'password' => bcrypt($new_password),
+                        'last_sync' => now(),
+                        'sekolah_id' => request()->sekolah_id,
+                        'password_dapo' => md5($new_password),
+                        'peserta_didik_id' => $d->peserta_didik_id,
+                        'default_password' => $new_password,
                     ]);
-                } elseif(!$user->email){
+                } elseif (!$user->email) {
                     $user_email = $this->check_email($d, 'peserta_didik_id');
                     $user->email = $user_email;
                     $user->save();
                 }
-                if(!$d->email){
+                if (!$d->email) {
                     $d->email = $user->email;
                     $d->save();
                 }
                 $user->detachRole($adminRole, request()->periode_aktif);
-                if(!$user->hasRole($role, request()->periode_aktif)){
+                if (!$user->hasRole($role, request()->periode_aktif)) {
                     $user->attachRole($role, request()->periode_aktif);
                 }
             }
         }
-        if($insert){
+        if ($insert) {
             $data = [
                 'icon' => 'success',
                 'title' => 'Berhasil!',
@@ -300,12 +308,13 @@ class UsersController extends Controller
         }
         return $data;
     }
-    public function detil(){
+    public function detil()
+    {
         $team = Team::where('name', request()->periode_aktif)->first();
         $user = User::with(['roles'])->find(request()->user_id);
         $user_roles = $user->rolesTeams;
         $roles = [];
-        if($user->guru_id){
+        if ($user->guru_id) {
             $roles = Role::select('id as value', 'display_name as text')->whereIn('name', ['waka', 'kaprog', 'internal'])->orderBy('id')->get();
         }
         /*
@@ -322,10 +331,11 @@ class UsersController extends Controller
         ];
         return response()->json($data);
     }
-    public function update(){
+    public function update()
+    {
         $user = User::find(request()->user_id);
-        foreach(request()->akses as $akses){
-            if(!$user->hasRole($akses, request()->periode_aktif)){
+        foreach (request()->akses as $akses) {
+            if (!$user->hasRole($akses, request()->periode_aktif)) {
                 $user->attachRole($akses, request()->periode_aktif);
             }
         }
@@ -336,13 +346,14 @@ class UsersController extends Controller
         ];
         return response()->json($data);
     }
-    public function reset_password(){
+    public function reset_password()
+    {
         $user = User::find(request()->user_id);
-        if(!$user->default_password){
+        if (!$user->default_password) {
             $user->default_password = strtolower(Str::random(8));
         }
         $user->password = bcrypt($user->default_password);
-        if($user->save()){
+        if ($user->save()) {
             $data = [
                 'icon' => 'success',
                 'title' => 'Berhasil!',
@@ -357,7 +368,8 @@ class UsersController extends Controller
         }
         return response()->json($data);
     }
-    public function hapusAkses(){
+    public function hapusAkses()
+    {
         $user = User::find(request()->user_id);
         $user->detachRole(request()->role, request()->periode_aktif);
         $data = [
@@ -367,49 +379,75 @@ class UsersController extends Controller
         ];
         return response()->json($data);
     }
-    private function check_email($user, $field){
+    private function check_email($user, $field)
+    {
         $loggedUser = auth()->user();
         $random = Str::random(8);
-		$user->email = ($user->email != $loggedUser->email) ? $user->email : strtolower($random).'@erapor-smk.net';
-		$user->email = strtolower($user->email);
-        if($field == 'guru_id'){
+        $user->email = ($user->email != $loggedUser->email) ? $user->email : strtolower($random) . '@erapor-smk.net';
+        $user->email = strtolower($user->email);
+        if ($field == 'guru_id') {
             $find_user_email = User::where('email', $user->email)->where($field, '<>', $user->ptk_id)->first();
-		} else {
+        } else {
             $find_user_email = User::where('email', $user->email)->where($field, '<>', $user->peserta_didik_id)->first();
-		}
+        }
         $find_user_email = User::where('email', $user->email)->first();
-		if($find_user_email){
-			$user->email = strtolower($random).'@erapor-smk.net';
-		}
+        if ($find_user_email) {
+            $user->email = strtolower($random) . '@erapor-smk.net';
+        }
         return $user->email;
     }
-    public function profil(){
+    public function profil()
+    {
         return response()->json(auth()->user());
     }
-    private function callback(){
-        return function($query){
-           $query->whereHas('anggota_rombel', function($query){
-              $query->where('peserta_didik_id', auth()->user()->peserta_didik_id);
-           });
+    private function callback()
+    {
+        return function ($query) {
+            $query->whereHas('anggota_rombel', function ($query) {
+                $query->where('peserta_didik_id', auth()->user()->peserta_didik_id);
+            });
         };
     }
     public function profil_pd()
     {
         $user = auth()->user();
         $pembelajaran_id = request()->pembelajaran_id;
-    
+
         // Retrieve the pembelajaran record
         $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->first();
-    
-        // If pembelajaran is found, get the mata_pelajaran_id
-        $mata_pelajaran_id = $pembelajaran ? $pembelajaran->mata_pelajaran_id : null;
-    
-        // Fetch the topik based on both mata_pelajaran_id and pembelajaran_id
-        $topikTugas = ($mata_pelajaran_id && $pembelajaran_id) 
-            ? TopikTugas::where('pembelajaran_id', $pembelajaran_id)
-                        ->get()
+
+        // Initialize variables for guru and rombongan belajar names
+        $guruName = null;
+        $rombonganBelajarName = null;
+
+        // If pembelajaran is found, get additional details
+        if ($pembelajaran) {
+            $mata_pelajaran_id = $pembelajaran->mata_pelajaran_id;
+            $guru_id = $pembelajaran->guru_id;
+            $rombongan_belajar_id = $pembelajaran->rombongan_belajar_id;
+
+            // Fetch the guru name based on guru_id
+            $guruName = $guru_id
+                ? Guru::where('guru_id', $guru_id)->pluck('nama')->first()
+                : null;
+
+            // Fetch the rombongan belajar name based on rombongan_belajar_id
+            $rombonganBelajarName = $rombongan_belajar_id
+                ? Rombongan_belajar::where('rombongan_belajar_id', $rombongan_belajar_id)->pluck('nama')->first()
+                : null;
+
+            // Update pembelajaran data with additional details
+            $pembelajaran = $pembelajaran->toArray();
+            $pembelajaran['guru_name'] = $guruName;
+            $pembelajaran['rombongan_belajar_name'] = $rombonganBelajarName;
+        }
+
+        // Fetch topik tugas based on mata_pelajaran_id and pembelajaran_id
+        $mata_pelajaran_id = $pembelajaran ? $pembelajaran['mata_pelajaran_id'] : null;
+        $topikTugas = ($mata_pelajaran_id && $pembelajaran_id)
+            ? TopikTugas::where('pembelajaran_id', $pembelajaran_id)->get()
             : collect(); // Return an empty collection if no mata_pelajaran_id or pembelajaran_id is found
-    
+
         $data = [
             'pembelajaran' => $pembelajaran,
             'header' => [
@@ -421,9 +459,9 @@ class UsersController extends Controller
             'pekerjaan' => Pekerjaan::orderBy('pekerjaan_id')->get(),
             'topik' => $topikTugas,
             'pd' => Peserta_didik::with([
-                'pekerjaan_ayah', 
-                'pekerjaan_ibu', 
-                'agama', 
+                'pekerjaan_ayah',
+                'pekerjaan_ibu',
+                'agama',
                 'kelas' => function ($query) {
                     $query->where('jenis_rombel', 1);
                     $query->where('rombongan_belajar.semester_id', request()->semester_id);
@@ -460,14 +498,15 @@ class UsersController extends Controller
                 });
             })->orderBy('semester_id')->get(),
         ];
-    
+
         return response()->json($data);
     }
-    
-    
-    public function update_profile(){
+
+
+    public function update_profile()
+    {
         $user = auth()->user();
-        if(request()->has('name')){
+        if (request()->has('name')) {
             request()->validate(
                 [
                     'name' => ['required', 'string', 'max:255'],
@@ -487,11 +526,11 @@ class UsersController extends Controller
             //$user->email = request()->email;
             $user->email = request()->email;
             //profile-photos
-            if(request()->photo){
+            if (request()->photo) {
                 $photo = request()->photo->store('public/profile-photos');
-                $user->profile_photo_path = 'profile-photos/'.basename($photo);
+                $user->profile_photo_path = 'profile-photos/' . basename($photo);
             }
-            if($user->save()){
+            if ($user->save()) {
                 $data = [
                     'icon' => 'success',
                     'title' => 'Berhasil!',
@@ -522,7 +561,7 @@ class UsersController extends Controller
             ];
             $validator = Validator::make(request()->all(), $rules, $message)->validated();
             $user->password = Hash::make(request()->password);
-            if($user->save()){
+            if ($user->save()) {
                 $data = [
                     'success' => TRUE,
                     'icon' => 'success',
@@ -546,44 +585,46 @@ class UsersController extends Controller
         ];
         return response()->json($data);
     }
-    public function nilai_semester(){
-        $data = Rombongan_belajar::where(function($query){
+    public function nilai_semester()
+    {
+        $data = Rombongan_belajar::where(function ($query) {
             $query->where('semester_id', request()->semester_id);
             $query->where('jenis_rombel', 1);
-            $query->whereHas('anggota_rombel', function($query){
+            $query->whereHas('anggota_rombel', function ($query) {
                 $query->where('peserta_didik_id', request()->user()->peserta_didik_id);
             });
         })->with([
-            'kurikulum',
-            'wali_kelas' => function($query){
-               $query->select('guru_id', 'nama');
-            },
-            'pembelajaran' => function($query){
-                $query->whereNotNull('kelompok_id');
-                $query->whereNotNull('no_urut');
-                $query->orderBy('mata_pelajaran_id');
-                $query->with([
-                    'guru' => function($query){
-                        $query->select('guru_id', 'nama');
-                    }, 
-                    'pengajar' => function($query){
+                    'kurikulum',
+                    'wali_kelas' => function ($query) {
                         $query->select('guru_id', 'nama');
                     },
-                    'nilai_akhir_pengetahuan' => $this->callback(),
-                    'nilai_akhir_keterampilan' => $this->callback(),
-                    'nilai_akhir_kurmer' => $this->callback(),
-                ]);
-            },
-         ])->first();
+                    'pembelajaran' => function ($query) {
+                        $query->whereNotNull('kelompok_id');
+                        $query->whereNotNull('no_urut');
+                        $query->orderBy('mata_pelajaran_id');
+                        $query->with([
+                            'guru' => function ($query) {
+                                $query->select('guru_id', 'nama');
+                            },
+                            'pengajar' => function ($query) {
+                                $query->select('guru_id', 'nama');
+                            },
+                            'nilai_akhir_pengetahuan' => $this->callback(),
+                            'nilai_akhir_keterampilan' => $this->callback(),
+                            'nilai_akhir_kurmer' => $this->callback(),
+                        ]);
+                    },
+                ])->first();
         return response()->json($data);
     }
-    public function teman_sekelas(){
-        $data = Peserta_didik::where(function($query){
-            $query->whereHas('anggota_rombel', function($query){
+    public function teman_sekelas()
+    {
+        $data = Peserta_didik::where(function ($query) {
+            $query->whereHas('anggota_rombel', function ($query) {
                 $query->where('semester_id', request()->semester_id);
-                $query->whereHas('rombongan_belajar', function($query){
+                $query->whereHas('rombongan_belajar', function ($query) {
                     $query->where('jenis_rombel', 1);
-                    $query->whereHas('anggota_rombel', function($query){
+                    $query->whereHas('anggota_rombel', function ($query) {
                         $query->where('peserta_didik_id', request()->user()->peserta_didik_id);
                     });
                 });
