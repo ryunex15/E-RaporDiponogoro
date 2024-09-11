@@ -110,6 +110,20 @@ class RombelController extends Controller
             'rombel' => $rombel,
         ]);
     }
+
+    public function getPembelajaranById($id) {
+        $data = Pembelajaran::where('pembelajaran_id', $id)->with(['guru', 'pengajar','rombongan_belajar' ])->first();
+        return response()->json([
+            'data' => $data,
+            'total' => $data->count(), // Adjust this if needed
+            'current_page' => 1, // Adjust or remove based on your pagination needs
+            'per_page' => $data->count(), // Adjust based on your needs
+            'from' => 1, // Adjust as necessary
+            'to' => $data->count(), // Adjust as necessary
+            'roles' => [], // Add roles if applicable
+        ]);
+    }
+
     public function simpan_pembelajaran(){
         $insert = 0;
         foreach(request()->nama as $pembelajaran_id => $nama){

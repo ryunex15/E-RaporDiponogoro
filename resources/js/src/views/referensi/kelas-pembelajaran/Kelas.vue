@@ -21,10 +21,9 @@
                 </ul>
 
                 <div class="header-banner text-white p-4 mb-4">
-                    <h1 class="mb-1">Kelas X RPL 2</h1>
-                    <p class="mb-0">Pemrograman web</p>
-                    <p class="mb-0">Dudung Dzulkifli</p>
-                    <p class="mb-0">{{ pembelajaranId }}</p>
+                    <h1 class="mb-1">{{items4.rombongan_belajar.nama}}</h1>
+                    <p class="mb-0">{{items4.nama_mata_pelajaran}}</p>
+                    <p class="mb-0">{{items4.pengajar.nama_lengkap}}</p>
                 </div>
 
                 <div class="container-fluid">
@@ -56,7 +55,7 @@
                             </b-card>
                             <b-card class="mb-4 datatable-card w-100" v-if="activeTab === 'belumDiserahkan'">
                                 <b-card-body>
-                                    <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items" :fields="fields2" :meta="meta" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" />
+                                    <datatable :isAsesor="isAsesor" :isBusy="isBusy" :items="items" :fields="fields2" :meta="meta" :actions="dynamicActionsTugas" @per_page="handlePerPage" @pagination="handlePagination" @search="handleSearch" @sort="handleSort" @delete-item-tugas="handleDeleteTugas" :delete-id-key="'tugas_id'" />
                                 </b-card-body>
                             </b-card>
 
@@ -153,7 +152,7 @@
                                             v-model="newPembelajaran.pembelajaran_id"
                                             required
                                             class="w-100"
-                                            hidde
+                                            hidden
                                             disabled
                                         ></b-form-input>
                                     </b-form-group>
@@ -183,24 +182,6 @@
                                     </div>
                                 </form>
                             </b-modal>
-
-                            <!-- Belum Diserahkan -->
-                            <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'belumDiserahkan'">
-                                <b-card-body>
-                                    <p class="responsive-text">
-                                        <b>Dummy Tugas 1</b> - Deskripsi tugas 1
-                                    </p>
-                                    <b-button variant="warning" class="ml-auto" @click="showTaskDetails">Detail Tugas</b-button>
-                                </b-card-body>
-                            </b-card>
-                            <b-card class="mb-4 post-card shadow-sm rounded border-0" v-if="activeTab === 'belumDiserahkan'">
-                                <b-card-body>
-                                    <p class="responsive-text">
-                                        <b>Dummy Tugas 2</b> - Deskripsi tugas 2
-                                    </p>
-                                    <b-button variant="warning" class="ml-auto" @click="showTaskDetails">Detail Tugas</b-button>
-                                </b-card-body>
-                            </b-card>
 
                             <!-- Selesai -->
                             <b-card class="mb-4 shadow-sm rounded border-0" v-if="activeTab === 'selesai'">
@@ -276,6 +257,8 @@
                 fields2: this.getFields2(),
                 items:[],
                 items2: [],
+                items3: [],
+                items4: {},
                 meta: {},
                 current_page: 1,
                 per_page: 10,
@@ -302,12 +285,17 @@
                     showDelete: true,
                     deleteRoute: '/topik/', // Base route for delete
                 },
+                dynamicActionsTugas: {
+                    showDeleteTugas: true,
+                    deleteRoute: '/tugas/', // Base route for delete
+                },
             };
         },
         created() {
             this.pembelajaranId = this.$route.query.pembelajaran_id;
-            console.log(this.pembelajaranId); // Lakukan sesuatu dengan pembelajaranId
+            console.log('coba', this.pembelajaranId); // Lakukan sesuatu dengan pembelajaranId
             this.loadPostsData(this.pembelajaranId);
+            this.loadPostsDataPembelajaran(this.pembelajaranId);
             eventBus.$on("modal-materi", this.handleEvent);
         },
         mounted() {
@@ -438,6 +426,7 @@
             },
             handleReload() {
                 this.loadPostsData();
+                this.loadPostsDataPembelajaran();
             },
             loadPostsData(pembelajaran_id) {
                 this.$http
@@ -448,7 +437,7 @@
                     })
                     .then((response) => {
                         let getData = response.data;
-                        console.log(getData)
+                        console.log('coba2', getData)
 
                         this.items2 = getData.topik.map((item) => ({
                             judul: item.judul_topik, // Make sure to map the correct field
@@ -486,11 +475,93 @@
 
                         this.items = getData.tugas.map((item, index) => ({
                             id : index + 1,
+                            tugas_id : item.tugas_id,
                             judul: item.judul, // judul tugas
                             tanggal: item.deadline, // deadline
                             topik: item['topik_tugas'].judul_topik, // topik tugas
                         }));
-                        console.log("Data items2:", this.items);
+                        console.log("Data items444:", this.items);
+
+                        this.meta = {
+                            total: getData.total,
+                            current_page: getData.current_page,
+                            per_page: getData.per_page,
+                            from: getData.from,
+                            to: getData.to,
+                            role_id: this.role_id,
+                            roles: response.data.roles,
+                        };
+
+                        this.isBusy = false;
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching data:", error);
+                        this.isBusy = false;
+                    });
+
+
+                this.isBusy = true;
+                setTimeout(() => {
+                    this.isBusy = false;
+                    this.meta = {
+                        total: this.items.length,
+                        current_page: this.current_page,
+                        per_page: this.per_page,
+                        from: 1,
+                        to: this.items.length,
+                    };
+                }, 1000);
+            },
+            loadPostsDataPembelajaran(pembelajaran_id) {
+                this.$http
+                    .get("/pembelajaran/" + pembelajaran_id, {
+                    })
+                    .then((response) => {
+                        let getData = response.data;
+                        console.log('coba22', getData);
+                        this.items4 = getData.data;
+                        // this.items2 = getData.topik.map((item) => ({
+                        //     judul: item.judul_topik, // Make sure to map the correct field
+                        //     topik_tugas_id: item.topik_tugas_id, // Make sure to map the correct field
+                        // }));
+                        console.log("Data items nih:", this.items4);
+
+                        this.meta = {
+                            total: getData.total,
+                            current_page: getData.current_page,
+                            per_page: getData.per_page,
+                            from: getData.from,
+                            to: getData.to,
+                            role_id: this.role_id,
+                            roles: response.data.roles,
+                        };
+
+                        this.isBusy = false;
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching data:", error);
+                        this.isBusy = false;
+                    });
+
+                    // fetch tugas
+                this.$http
+                    .get("/tugas", {
+                        params: {
+                            pembelajaran_id: pembelajaran_id,
+                        },
+                    })
+                    .then((response) => {
+                        let getData = response.data;
+                        console.log(getData)
+
+                        this.items = getData.tugas.map((item, index) => ({
+                            id : index + 1,
+                            tugas_id : item.tugas_id,
+                            judul: item.judul, // judul tugas
+                            tanggal: item.deadline, // deadline
+                            topik: item['topik_tugas'].judul_topik, // topik tugas
+                        }));
+                        console.log("Data items444:", this.items);
 
                         this.meta = {
                             total: getData.total,
@@ -577,6 +648,29 @@
                     alert('An error occurred while deleting the item. Please try again.');
                 } finally {
                     this.isBusy = false; // Hide loader
+                }
+            },
+            async handleDeleteTugas(id, key, route) {
+                try {
+                    this.isBusy = true; // Tampilkan loader jika diperlukan
+
+                    // Buat request DELETE ke route tugas yang sesuai dengan ID
+                    const response = await this.$http.delete(route + id);
+                    console.log(`Route: ${route}`);
+                    console.log(`ID: ${id}`);
+
+                    console.log(`Item with key: ${key} and ID: ${id} successfully deleted:`, response);
+
+                    // Opsi tambahan: Refresh daftar item setelah penghapusan
+                    this.loadPostsData(this.$route.query.pembelajaran_id); // Reload data jika diperlukan
+
+                } catch (error) {
+                    console.error(`Error deleting item with key: ${key} and ID: ${id}:`, error);
+
+                    // Tangani error
+                    alert('Terjadi kesalahan saat menghapus item. Silakan coba lagi.');
+                } finally {
+                    this.isBusy = false; // Sembunyikan loader
                 }
             },
             async submitTopik() {

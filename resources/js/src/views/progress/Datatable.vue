@@ -16,7 +16,7 @@
                         <strong>Loading...</strong>
                     </div>
                 </template>
-    
+
                 <!-- New Actions Button Column -->
                 <template v-slot:cell(actions)="row">
                     <b-button variant="primary" size="sm" @click="handleAction(row.item)">View</b-button>
@@ -29,8 +29,11 @@
                     <b-button v-if="actions.showDelete" variant="danger" size="sm" @click="handleDelete(row.item.topik_tugas_id, 'id', actions.deleteRoute)">
                         Delete {{ row.index + 1 }}
                     </b-button>
+                    <b-button v-if="actions.showDeleteTugas" variant="danger" size="sm" @click="handleDeleteTugas(row.item.tugas_id, '/tugas/', actions.deleteRoute)">
+                        Delete Tugas {{ row.index + 1 }}
+                    </b-button>
                 </template>
-    
+
                 <!-- Existing Columns -->
                 <template v-slot:cell(jurusan)="row">
                     {{ row.item.paket_ukk.jurusan.nama_jurusan }}
@@ -98,7 +101,7 @@
         </b-row>
     </div>
     </template>
-    
+
     <script>
     import _ from 'lodash'
     import {
@@ -112,7 +115,7 @@
         BOverlay
     } from 'bootstrap-vue'
     import vSelect from 'vue-select'
-    
+
     export default {
         components: {
             BRow,
@@ -151,6 +154,10 @@
             deleteIdKey: {
                 type: String,
                 default: 'id' // Default ID key
+            },
+            deleteIdKeyTugas: {
+                type: String,
+                default: 'id' // Default ID key
             }
         },
         data() {
@@ -164,7 +171,7 @@
         handleAction(item) {
             this.$emit('action-clicked', item);
             console.log('Action clicked:', item);
-    
+
             // Perbaikan pada path routing
             this.$router.push({
                 path: `/referensi/kelas-pembelajaran/kelas/tugas`,
@@ -172,7 +179,7 @@
                     someParam: item.someValue
                 }
             });
-    
+
             console.log(`Navigating to: /details/${item.id}`);
         },
         loadPerPage(val) {
@@ -182,7 +189,12 @@
             this.$emit('pagination', val);
         },
         handleDelete(item, route) {
+            // console.log('coba', item, route);
             this.$emit('delete-item', item, this.deleteIdKey, route);
+        },
+        handleDeleteTugas(item, route) {
+            console.log('coba', item,this.deleteIdKeyTugas, route, this.deleteIdKeyTugas);
+            this.$emit('delete-item-tugas', item, this.deleteIdKeyTugas, route);
         },
         // Fungsi search menggunakan lodash debounce
         search: _.debounce(function (e) {
@@ -204,4 +216,3 @@
     },
     }
     </script>
-    

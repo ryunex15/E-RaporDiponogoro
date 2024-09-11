@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TopikTugas;
 use App\Models\Tugas;
 use Illuminate\Http\Request;
+use Storage;
 use Str;
 
 class TugasController extends Controller
@@ -138,13 +139,42 @@ class TugasController extends Controller
             ->with('success', 'Tugas berhasil diperbarui.'); // Redirect dengan pesan sukses
     }
 
-    public function destroy(Tugas $tugas)
+    public function destroy($id)
     {
-        $tugas->delete(); // Hapus tugas
+        try {
+            // Cari tugas berdasarkan ID
+            $tugas = Tugas::findOrFail($id);
 
-        return redirect()->route('tugas.index')
-            ->with('success', 'Tugas berhasil dihapus.'); // Redirect dengan pesan sukses
+            // Hapus file lampiran jika ada
+            if ($tugas->lampiran_document) {
+                // Cek apakah file ada di storage dan hapus
+                if (Storage::disk('public')->exists($tugas->lampiran_document)) {
+                    Storage::disk('public')->delete($tugas->lampiran_document);
+                }
+            }
+
+            // Hapus data tugas dari database
+            $tugas->delete();
+
+            return response()->json([
+                'message' => 'Tugas berhasil dihapus',
+            ], 200);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Jika data tugas tidak ditemukan
+            return response()->json([
+                'message' => 'Tugas tidak ditemukan',
+            ], 404);
+
+        } catch (\Exception $e) {
+            // Tangani semua jenis error lainnya
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat menghapus data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 }
 ;
 

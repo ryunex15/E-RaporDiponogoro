@@ -39,6 +39,8 @@ Route::delete('/topik/{id}', [TopikTugasController::class, 'destroy'])->name('to
 
 Route::get('/tugas', [TugasController::class, 'index']);
 Route::post('/tugas', [TugasController::class, 'store']);
+Route::delete('/tugas/{id}', [TugasController::class, 'destroy'])->name('tugas.destroy');
+Route::get('/pembelajaran/{id}', [RombelController::class, 'getPembelajaranById']);
 
 
 Route::get('sekolah', [DashboardController::class, 'hitung_sekolah']);
