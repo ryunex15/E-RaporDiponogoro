@@ -146,7 +146,7 @@
                                     </b-form-group>
 
                                     <!-- ambil id pembelajaran -->
-                                    <b-form-group label="testing" label-for="judul-pembelajaran">
+                                    <b-form-group label="" label-for="judul-pembelajaran">
                                         <b-form-input
                                             id="judul-pembelajaran"
                                             v-model="newPembelajaran.pembelajaran_id"
@@ -710,6 +710,7 @@
                     file: null,
                     deadline: null,
                     deadlineTime: null,
+                    pembelajaran_id: this.$route.query.pembelajaran_id,
                 };
                 this.newTopik = {
                     judul_topik: "",
