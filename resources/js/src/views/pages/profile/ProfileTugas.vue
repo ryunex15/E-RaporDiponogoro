@@ -19,6 +19,7 @@
                     </a>
                 </li>
             </ul>
+
             <!-- Header Section -->
             <div
                 v-if="pembelajaran"
@@ -34,11 +35,9 @@
                     }}
                 </p>
                 <p class="mb-0">
-                    Guru : {{ pembelajaran.guru_name || "Tidak tersedia" }}
+                    Guru: {{ pembelajaran.guru_name || "Tidak tersedia" }}
                 </p>
             </div>
-
-            <!-- Tabs Section: Diletakkan setelah header -->
 
             <!-- Content Section: Ini akan disembunyikan ketika tombol View diklik -->
             <div v-show="!isTaskView">
@@ -67,7 +66,7 @@
                 </div>
             </div>
 
-            <!-- Task Detail Section: Ini akan ditampilkan ketika tombol View diklik -->
+            <!-- Task View Section -->
             <div v-show="isTaskView">
                 <div class="container-fluid">
                     <div class="row">
@@ -76,40 +75,126 @@
                                 <div class="card-body">
                                     <h2>{{ selectedTask.judul }}</h2>
                                     <p>
-                                       {{pembelajaran.guru_name || "Tidak tersedia"}} •
-                                        <span>{{ formatDate(selectedTask.created_at) }}</span>
+                                        {{
+                                            pembelajaran.guru_name ||
+                                            "Tidak tersedia"
+                                        }}
+                                        •
+                                        <span>{{
+                                            formatDate(selectedTask.created_at)
+                                        }}</span>
                                     </p>
                                     <p>100 poin</p>
                                     <hr />
-                                    </p>
-                                    <p>{{selectedTask.deskripsi}}</p>
+                                    <p>{{ selectedTask.deskripsi }}</p>
                                     <hr />
                                     <p>Lampiran File:</p>
-                                    <p>
-                                        {{selectedTask.file}}
-                                    </p>
+
+                                    <!-- Menampilkan gambar -->
+                                    <div
+                                        v-if="
+                                            getFileType(selectedTask.file) ===
+                                            'image'
+                                        "
+                                    >
+                                        <img
+                                            :src="
+                                                getImageUrl(selectedTask.file)
+                                            "
+                                            alt="gambar"
+                                            class="img-fluid"
+                                        />
+                                    </div>
+
+                                    <!-- Menampilkan preview PDF -->
+                                    <div
+                                        v-else-if="
+                                            getFileType(selectedTask.file) ===
+                                            'pdf'
+                                        "
+                                    >
+                                        <!-- <iframe
+                                            :src="
+                                                getImageUrl(selectedTask.file)
+                                            "
+                                            width="100%"
+                                            height="600px"
+                                            frameborder="0"
+                                        ></iframe> -->
+                                        <strong class="text-xl fw-bold">
+                                            Preview saat ini tidak tersedia
+                                            untuk PDF.
+                                        </strong>
+                                    </div>
+
+                                    <!-- Menampilkan preview DOCX -->
+                                    <div
+                                        v-else-if="
+                                            getFileType(selectedTask.file) ===
+                                            'docx'
+                                        "
+                                    >
+                                        <strong class="text-xl fw-bold">
+                                            Preview saat ini tidak tersedia
+                                            untuk DOCX.
+                                        </strong>
+                                    </div>
+
+                                    <!-- Jika tipe file tidak dikenali
+                                    <div v-else>
+                                        <p>
+                                            Dokumen:
+                                            <a
+                                                :href="getImageUrl(selectedTask.file)"
+                                                target="_blank"
+                                                @click.prevent="handleDownload(selectedTask.file)"
+                                            >
+                                                {{ getFileName(selectedTask.file) }}
+                                            </a>
+                                        </p>
+                                    </div> -->
+
+                                    <!-- Download Button -->
+                                    <div v-if="selectedTask.file" >
+                                        <b-button
+                                            variant="success" class="mt-2"
+                                            @click="
+                                                handleDownload(
+                                                    selectedTask.file
+                                                )
+                                            "
+                                        >
+                                            Download
+                                        </b-button>
+                                    </div>
+
                                     <hr />
-                                    <b-form-textarea
-                                        id="input-with-placeholder"
-                                        placeholder="Tambahkan komentar kelas"
-                                        rows="3"
-                                        max-rows="6"
-                                    ></b-form-textarea>
+                                    <b-button
+                                        variant="secondary mt-2"
+                                        @click="backToList"
+                                    >
+                                        Kembali
+                                    </b-button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <b-button variant="secondary mt-2" @click="backToList"
-                    >Kembali</b-button
-                >
             </div>
         </b-overlay>
     </b-card>
 </template>
 
 <script>
-import { BCard, BOverlay, BTable, BRow, BCol, BButton, BFormTextarea } from "bootstrap-vue";
+import {
+    BCard,
+    BOverlay,
+    BTable,
+    BRow,
+    BCol,
+    BButton,
+    BFormTextarea,
+} from "bootstrap-vue";
 
 export default {
     components: {
@@ -161,15 +246,14 @@ export default {
                 judul: tugas.judul,
                 topik: tugas["topik_tugas"].judul_topik,
                 tanggal: tugas.deadline,
-                deskripsi: tugas.deskripsi || "Deskripsi tidak tersedia", // Menambahkan deskripsi jika ada
-                file: tugas.lampiran_document || "Deskripsi tidak tersedia", // Menambahkan deskripsi jika ada
-                created_at: tugas.created_at || "ya", // Menambahkan deskripsi jika ada
+                deskripsi: tugas.deskripsi || "Deskripsi tidak tersedia",
+                file: tugas.lampiran_document || "Deskripsi tidak tersedia",
+                created_at: tugas.created_at,
             }));
         },
     },
 
     methods: {
-        
         setTab(tab) {
             this.activeTab = tab;
         },
@@ -181,15 +265,46 @@ export default {
             this.isTaskView = false; // Kembali ke daftar tugas
         },
         formatDate(date) {
-      if (!date) return "-"; // Tampilkan dash jika tanggal tidak tersedia
-      
-      const formattedDate = new Date(date).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-      });
+            if (!date) return "-";
 
-      return formattedDate;
-    },
+            const formattedDate = new Date(date).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+            });
+
+            return formattedDate;
+        },
+
+        getImageUrl(filePath) {
+            return filePath ? `/storage/${filePath}` : "";
+        },
+
+        getFileName(filePath) {
+            if (typeof filePath === "string" && filePath.trim() !== "") {
+                return filePath.split("/").pop();
+            }
+            return "Nama file tidak tersedia";
+        },
+
+        getFileType(filePath) {
+            if (typeof filePath !== "string") return "unknown";
+            const extension = filePath.split(".").pop().toLowerCase();
+            const imageExtensions = ["jpg", "jpeg", "png", "gif"];
+            if (imageExtensions.includes(extension)) return "image";
+            if (extension === "pdf") return "pdf";
+            if (extension === "docx") return "docx";
+            return "unknown";
+        },
+
+        handleDownload(filePath) {
+            // Trigger file download manually
+            const link = document.createElement("a");
+            link.href = this.getImageUrl(filePath);
+            link.download = this.getFileName(filePath);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
     },
 };
 </script>
