@@ -16,16 +16,8 @@ class TugasController extends Controller
 
         // Ambil data tugas
         $tugas = Tugas::where('pembelajaran_id', $pembelajaran_id)->with('topikTugas')->get();
+        
 
-        // // Ambil data topik terkait
-        // $topik = TopikTugas::where('pembelajaran_id', $pembelajaran_id)->get();
-
-        // // Gabungkan data topik ke dalam data tugas
-        // $tugas->each(function ($item) use ($topik) {
-        //     // Cari topik yang sesuai dengan tugas
-        //     $matchingTopik = $topik->firstWhere('id', $item->topik_id);
-        //     $item->judul_topik = $matchingTopik ? $matchingTopik->judul_topik : 'Topik Tidak Ditemukan'; // Menambahkan judul topik ke setiap tugas
-        // });
 
         $data = [
             "tugas" => $tugas,

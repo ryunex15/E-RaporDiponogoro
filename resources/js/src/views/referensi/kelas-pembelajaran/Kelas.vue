@@ -478,6 +478,10 @@
                             tugas_id : item.tugas_id,
                             judul: item.judul, // judul tugas
                             tanggal: item.deadline, // deadline
+                            file: item.lampiran_document || "tidak tersedia", // deadline
+                            deskripsi: item.deskripsi || "tidak tersedia", // deadline
+                            created_at: item.created_at || "tidak tersedia", // deadline
+                            updated_at: item.updated_at || "tidak tersedia", // deadline
                             topik: item['topik_tugas'].judul_topik, // topik tugas
                         }));
                         console.log("Data items444:", this.items);
