@@ -72,7 +72,15 @@
 </template>
 
 <script>
+import { BAvatar, BButton, BListGroup, BListGroupItem } from 'bootstrap-vue';
+
 export default {
+    components: {
+           BAvatar,
+           BListGroup,
+           BButton,
+           BListGroupItem,
+        },
     props: {
         pd: {
             type: Array,
@@ -113,13 +121,15 @@ export default {
                 }));
 
                 // Map the teacher data
-                const guruData = Array.isArray(response.data.guru)
-                    ? response.data.guru
-                    : [response.data.guru];
+                const pengajar = Array.isArray(response.data.pembelajaran.pengajar)
+                    ? response.data.pembelajaran.pengajar
+                    : [response.data.pembelajaran.pengajar];
                 // ini nama guru
-                this.teachers = guruData.map((teacher) => ({
+                this.teachers = pengajar.map((teacher) => ({
                     name: teacher.nama_lengkap || "Nama tidak tersedia",
                 }));
+
+                console.log(response.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {

@@ -38,6 +38,7 @@ Route::post('/simpan-topik', [TopikTugasController::class, 'store']);
 Route::delete('/topik/{id}', [TopikTugasController::class, 'destroy'])->name('topik.destroy');
 
 Route::get('/tugas', [TugasController::class, 'index']);
+Route::get('/detail', [TugasController::class, 'detail']);
 Route::post('/tugas', [TugasController::class, 'store']);
 Route::delete('/tugas/{id}', [TugasController::class, 'destroy'])->name('tugas.destroy');
 Route::get('/pembelajaran/{id}', [RombelController::class, 'getPembelajaranById']);

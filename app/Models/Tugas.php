@@ -49,5 +49,11 @@ class Tugas extends Model
     {
         return $this->belongsTo(TopikTugas::class, 'topik_tugas_id');
     }
+
+      // Relasi ke model Pembelajaran
+      public function pembelajaran()
+      {
+          return $this->belongsTo(Pembelajaran::class, 'pembelajaran_id');
+      }
 };
 

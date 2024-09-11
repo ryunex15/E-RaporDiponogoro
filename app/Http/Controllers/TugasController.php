@@ -26,6 +26,23 @@ class TugasController extends Controller
 
     }
 
+    public function detail(Request $request)
+    {
+        $id_tugas = $request->id_tugas;
+        // $tugas = Tugas::find($id_tugas);
+        $tugas = Tugas::where('tugas_id', $id_tugas)
+        ->with('pembelajaran.pengajar') // Include relasi pembelajaran dan pengajar
+        ->first();
+
+    if ($tugas) {
+        $data = [
+            'tugas' => $tugas,
+            'pengajar' => $tugas->pembelajaran->pengajar, // Data pengajar terkait
+        ];
+        
+        return response()->json($data);
+    }
+}
     public function create()
     {
         return view('tugas.create'); // Tampilkan form untuk membuat tugas baru

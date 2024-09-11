@@ -106,7 +106,7 @@ class TopikTugasController extends Controller
     $pembelajaran_id = request()->input('pembelajaran_id');
 
     // Ambil data pembelajaran berdasarkan pembelajaran_id
-    $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->first();
+    $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->with('pengajar')->first();
 
     // ambil guru yang mengampu mapel
     $guru_id = $pembelajaran->guru_id;
