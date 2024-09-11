@@ -35,7 +35,7 @@
                     }}
                 </p>
                 <p class="mb-0">
-                    Guru: {{ pembelajaran.guru_name || "Tidak tersedia" }}
+                    Guru: {{ pembelajaran.pengajar.nama_lengkap || "Tidak tersedia" }}
                 </p>
             </div>
 
@@ -76,7 +76,7 @@
                                     <h2>{{ selectedTask.judul }}</h2>
                                     <p>
                                         {{
-                                            pembelajaran.guru_name ||
+                                            pembelajaran.pengajar.nama_lengkap ||
                                             "Tidak tersedia"
                                         }}
                                         •

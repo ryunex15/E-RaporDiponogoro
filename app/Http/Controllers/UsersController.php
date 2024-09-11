@@ -414,7 +414,7 @@ class UsersController extends Controller
         $pembelajaran_id = request()->pembelajaran_id;
 
         // Retrieve the pembelajaran record
-        $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->first();
+        $pembelajaran = Pembelajaran::where('pembelajaran_id', $pembelajaran_id)->with('pengajar')->first();
 
         // Initialize variables for guru and rombongan belajar names
         $guruName = null;
