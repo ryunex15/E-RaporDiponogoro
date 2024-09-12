@@ -28,15 +28,7 @@
                         </p>
                         <p>100 poin</p>
                         <hr />
-                        <p v-html="convertToLink(selectedTask.deskripsi)">
-                                        {{
-                                            convertToLink(
-                                                items.tugas
-                                        ? items.tugas.deskripsi
-                                        : "tidak tersedia"
-                                            )
-                                        }}
-                                    </p>
+                        <p v-html="convertToLink(items.tugas ? items.tugas.deskripsi : 'tidak tersedia')"></p>
                         <hr />
                         <p>Lampiran File:</p>
                         <!-- Menampilkan gambar -->
