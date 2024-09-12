@@ -86,7 +86,13 @@
                                     </p>
                                     <p>100 poin</p>
                                     <hr />
-                                    <p>{{ selectedTask.deskripsi }}</p>
+                                    <p v-html="convertToLink(selectedTask.deskripsi)">
+                                        {{
+                                            convertToLink(
+                                                selectedTask.deskripsi
+                                            )
+                                        }}
+                                    </p>
                                     <hr />
                                     <p>Lampiran File:</p>
 
@@ -305,6 +311,19 @@ export default {
             link.click();
             document.body.removeChild(link);
         },
+        convertToLink(text) {
+            // Cek apakah text ada dan merupakan string
+            if (!text || typeof text !== "string") {
+                return text; // Jika text undefined atau bukan string, kembalikan seperti semula
+            }
+
+            const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+            return text.replace(urlRegex, (url) => {
+                let href = url.startsWith("www.") ? `http://${url}` : url;
+                return `<a href="${href}" target="_blank">${url}</a>`; // Mengembalikan string dengan tag <a>
+            });
+        },
+        
     },
 };
 </script>
