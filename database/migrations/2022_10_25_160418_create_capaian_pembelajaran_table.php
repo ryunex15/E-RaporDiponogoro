@@ -13,7 +13,7 @@ class CreateCapaianPembelajaranTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.capaian_pembelajaran', function (Blueprint $table) {
+        Schema::create('capaian_pembelajaran', function (Blueprint $table) {
             $table->bigInteger('cp_id');
             $table->integer('mata_pelajaran_id');
             $table->string('fase', 5);
@@ -22,8 +22,8 @@ class CreateCapaianPembelajaranTable extends Migration
             $table->decimal('aktif', 1, 0)->default(1);
             $table->timestamps();
             $table->timestamp('last_sync');
-			$table->primary('cp_id');
-            $table->foreign('mata_pelajaran_id')->references('mata_pelajaran_id')->on('ref.mata_pelajaran')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->primary('cp_id');
+            $table->foreign('mata_pelajaran_id')->references('mata_pelajaran_id')->on('mata_pelajaran')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 
@@ -34,6 +34,6 @@ class CreateCapaianPembelajaranTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.capaian_pembelajaran');
+        Schema::dropIfExists('capaian_pembelajaran');
     }
 }

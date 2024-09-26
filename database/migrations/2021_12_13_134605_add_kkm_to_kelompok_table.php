@@ -13,7 +13,7 @@ class AddKkmToKelompokTable extends Migration
      */
     public function up()
     {
-        Schema::table('ref.kelompok', function (Blueprint $table) {
+        Schema::table('kelompok', function (Blueprint $table) {
             $table->smallInteger('kkm')->nullable();
         });
     }
@@ -25,7 +25,7 @@ class AddKkmToKelompokTable extends Migration
      */
     public function down()
     {
-        Schema::table('ref.kelompok', function (Blueprint $table) {
+        Schema::table('kelompok', function (Blueprint $table) {
             $table->dropColumn('kkm');
         });
     }

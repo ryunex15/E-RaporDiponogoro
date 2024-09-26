@@ -9,7 +9,7 @@ class Agama extends Model
 {
     use HasFactory;
     public $incrementing = false;
-	protected $table = 'ref.agama';
-	protected $primaryKey = 'agama_id';
+    protected $table = 'agama';
+    protected $primaryKey = 'agama_id';
     protected $guarded = [];
 }

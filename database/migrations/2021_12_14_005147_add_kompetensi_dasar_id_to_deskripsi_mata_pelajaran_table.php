@@ -15,7 +15,7 @@ class AddKompetensiDasarIdToDeskripsiMataPelajaranTable extends Migration
     {
         Schema::table('deskripsi_mata_pelajaran', function (Blueprint $table) {
             $table->uuid('kompetensi_dasar_id')->nullable();
-            $table->foreign('kompetensi_dasar_id')->references('kompetensi_dasar_id')->on('ref.kompetensi_dasar')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('kompetensi_dasar_id')->references('kompetensi_dasar_id')->on('kompetensi_dasar')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

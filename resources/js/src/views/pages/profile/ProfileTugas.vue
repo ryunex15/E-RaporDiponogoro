@@ -1,30 +1,17 @@
 <template>
     <b-card no-body class="main-card">
-        <b-overlay
-            :show="isBusy"
-            rounded
-            opacity="0.6"
-            size="lg"
-            spinner-variant="primary"
-        >
+        <b-overlay :show="isBusy" rounded opacity="0.6" size="lg" spinner-variant="primary">
             <ul class="nav nav-pills nav-fill mb-3 nav-pills-custom">
                 <li class="nav-item">
-                    <a
-                        class="nav-link text-sm text-md text-lg"
-                        :class="{ active: activeTab === 'ditugaskan' }"
-                        href="#"
-                        @click.prevent="setTab('ditugaskan')"
-                    >
+                    <a class="nav-link text-sm text-md text-lg" :class="{ active: activeTab === 'ditugaskan' }" href="#"
+                        @click.prevent="setTab('ditugaskan')">
                         Ditugaskan
                     </a>
                 </li>
             </ul>
 
             <!-- Header Section -->
-            <div
-                v-if="pembelajaran"
-                class="header-banner text-white p-4 mb-4 text-md-start"
-            >
+            <div v-if="pembelajaran" class="header-banner text-white p-4 mb-4 text-md-start">
                 <h1 class="display-6 display-md-4 mb-1 text-white">
                     {{ pembelajaran.nama_mata_pelajaran }}
                 </h1>
@@ -45,18 +32,9 @@
                     <b-row>
                         <b-col md="12">
                             <!-- Tabel untuk tugas -->
-                            <b-table
-                                striped
-                                hover
-                                :items="items"
-                                :fields="fields"
-                                small
-                            >
+                            <b-table striped hover :items="items" :fields="fields" small>
                                 <template #cell(aksi)="row">
-                                    <b-button
-                                        variant="primary"
-                                        @click="viewTask(row.item)"
-                                    >
+                                    <b-button variant="primary" @click="viewTask(row.item)">
                                         View
                                     </b-button>
                                 </template>
@@ -82,43 +60,34 @@
                                         •
                                         <span>{{
                                             formatDate(selectedTask.created_at)
-                                        }}</span>
+                                            }}</span>
                                     </p>
                                     <p>100 poin</p>
                                     <hr />
                                     <p v-html="convertToLink(selectedTask.deskripsi)">
                                         {{
-                                            convertToLink(
-                                                selectedTask.deskripsi
-                                            )
+                                        convertToLink(
+                                        selectedTask.deskripsi
+                                        )
                                         }}
                                     </p>
                                     <hr />
                                     <p>Lampiran File:</p>
 
                                     <!-- Menampilkan gambar -->
-                                    <div
-                                        v-if="
-                                            getFileType(selectedTask.file) ===
-                                            'image'
-                                        "
-                                    >
-                                        <img
-                                            :src="
-                                                getImageUrl(selectedTask.file)
-                                            "
-                                            alt="gambar"
-                                            class="img-fluid"
-                                        />
+                                    <div v-if="
+                                        getFileType(selectedTask.file) ===
+                                        'image'
+                                    ">
+                                        <img :src="getImageUrl(selectedTask.file)
+                                            " alt="gambar" class="img-fluid" />
                                     </div>
 
                                     <!-- Menampilkan preview PDF -->
-                                    <div
-                                        v-else-if="
-                                            getFileType(selectedTask.file) ===
-                                            'pdf'
-                                        "
-                                    >
+                                    <div v-else-if="
+                                        getFileType(selectedTask.file) ===
+                                        'pdf'
+                                    ">
                                         <!-- <iframe
                                             :src="
                                                 getImageUrl(selectedTask.file)
@@ -134,12 +103,10 @@
                                     </div>
 
                                     <!-- Menampilkan preview DOCX -->
-                                    <div
-                                        v-else-if="
-                                            getFileType(selectedTask.file) ===
-                                            'docx'
-                                        "
-                                    >
+                                    <div v-else-if="
+                                        getFileType(selectedTask.file) ===
+                                        'docx'
+                                    ">
                                         <strong class="text-xl fw-bold">
                                             Preview saat ini tidak tersedia
                                             untuk DOCX.
@@ -161,27 +128,47 @@
                                     </div> -->
 
                                     <!-- Download Button -->
-                                    <div v-if="selectedTask.file" >
-                                        <b-button
-                                            variant="success" class="mt-2"
-                                            @click="
-                                                handleDownload(
-                                                    selectedTask.file
-                                                )
-                                            "
-                                        >
+                                    <div v-if="selectedTask.file">
+                                        <b-button variant="success" class="mt-2" @click="
+                                            handleDownload(
+                                                selectedTask.file
+                                            )
+                                            ">
                                             Download
+                                        </b-button>
+                                        <b-button variant="success" class="ml-2 mt-2" @click="showModal = true">
+                                            Kirim Tugas
                                         </b-button>
                                     </div>
 
                                     <hr />
-                                    <b-button
-                                        variant="secondary mt-2"
-                                        @click="backToList"
-                                    >
+                                    <b-button variant="secondary mt-2" @click="backToList">
                                         Kembali
                                     </b-button>
                                 </div>
+
+                                <!-- Modal untuk kirim tuags -->
+                                <b-modal v-model="showModal" title="Kirim tugas" v-if="activeTab === 'ditugaskan'">
+                                    <form @submit.prevent="submitTopik">
+                                        <!-- Tabel Input Topik -->
+                                        <b-form-group label="id_pembelajaran" label-for="id_pembelajaran">
+                                            <b-form-input id="id_pembelajaran" required class="w-100"></b-form-input>
+                                        </b-form-group>
+                                        <b-form-group label="Topik tugas" label-for="topik">
+                                            <b-form-input id="topik" required class="w-100"></b-form-input>
+                                        </b-form-group>
+                                        <!-- Input Upload File -->
+                                        <b-form-group label="Upload File" label-for="upload-file">
+                                            <b-form-file id="upload-file" required class="w-100"></b-form-file>
+                                        </b-form-group>
+
+                                        <div class="d-flex justify-content-end">
+                                            <b-button type="submit" variant="success">
+                                                Tambahkan Topik
+                                            </b-button>
+                                        </div>
+                                    </form>
+                                </b-modal>
                             </div>
                         </div>
                     </div>
@@ -200,6 +187,10 @@ import {
     BCol,
     BButton,
     BFormTextarea,
+    BModal,
+    BFormGroup,
+    BFormInput,
+    BFormFile,
 } from "bootstrap-vue";
 
 export default {
@@ -211,6 +202,11 @@ export default {
         BCol,
         BButton,
         BFormTextarea,
+        BModal,
+        BFormGroup,
+        BFormInput,
+        BFormFile,
+
     },
 
     props: {
@@ -232,6 +228,7 @@ export default {
         return {
             isBusy: false,
             activeTab: "ditugaskan",
+            showModal: false,
             isTaskView: false, // State untuk menampilkan halaman detail tugas
             selectedTask: {},
             items: [],
@@ -269,6 +266,9 @@ export default {
         },
         backToList() {
             this.isTaskView = false; // Kembali ke daftar tugas
+        },
+        handleKirim(pembelajaran_id) {
+            console.log(pembelajaran_id);
         },
         formatDate(date) {
             if (!date) return "-";
@@ -323,7 +323,7 @@ export default {
                 return `<a href="${href}" target="_blank">${url}</a>`; // Mengembalikan string dengan tag <a>
             });
         },
-        
+
     },
 };
 </script>

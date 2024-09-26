@@ -31,7 +31,7 @@ class CreateEkstrakurikulerTable extends Migration
 			$table->timestamp('last_sync');
 			$table->foreign('sekolah_id')->references('sekolah_id')->on('sekolah')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('semester_id')->references('semester_id')->on('ref.semester')
+			$table->foreign('semester_id')->references('semester_id')->on('semester')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
 			$table->foreign('guru_id')->references('guru_id')->on('guru')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');

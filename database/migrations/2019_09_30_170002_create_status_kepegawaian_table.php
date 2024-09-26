@@ -13,13 +13,13 @@ class CreateStatusKepegawaianTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.status_kepegawaian', function (Blueprint $table) {
-			$table->smallInteger('status_kepegawaian_id');
-			$table->string('nama', 30);
-			$table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
-			$table->primary('status_kepegawaian_id');
+        Schema::create('status_kepegawaian', function (Blueprint $table) {
+            $table->smallInteger('status_kepegawaian_id');
+            $table->string('nama', 30);
+            $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('last_sync');
+            $table->primary('status_kepegawaian_id');
         });
     }
 
@@ -30,6 +30,6 @@ class CreateStatusKepegawaianTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.status_kepegawaian');
+        Schema::dropIfExists('status_kepegawaian');
     }
 }

@@ -83,6 +83,8 @@ export default {
     }
   },
   created() {
+        console.log(this.data_siswa);
+
     this.form.user_id = this.user.user_id
     this.form.guru_id = this.user.guru_id
     this.form.sekolah_id = this.user.sekolah_id

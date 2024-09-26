@@ -19,7 +19,7 @@ class ChangeSettingsTable extends Migration
             $table->uuid('sekolah_id')->nullable();
             $table->string('semester_id', 5)->nullable();
             $table->foreign('sekolah_id')->references('sekolah_id')->on('sekolah')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign('semester_id')->references('semester_id')->on('ref.semester')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('semester_id')->references('semester_id')->on('semester')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
         Schema::table('settings', function (Blueprint $table) {
             $table->increments('id');

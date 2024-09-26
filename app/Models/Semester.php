@@ -9,7 +9,7 @@ class Semester extends Model
 {
     use HasFactory;
     public $incrementing = false;
-	protected $table = 'ref.semester';
+	protected $table = 'semester';
 	protected $primaryKey = 'semester_id';
 	protected $guarded = [];
 	

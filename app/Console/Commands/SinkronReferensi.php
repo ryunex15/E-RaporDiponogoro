@@ -45,16 +45,16 @@ class SinkronReferensi extends Command
     {
         $list_data = [
             'semua_data',
-            'ref.jurusan', 
-            'ref.kurikulum', 
-            'ref.mata_pelajaran', 
-            'ref.mst_wilayah', 
+            'jurusan',
+            'kurikulum',
+            'mata_pelajaran',
+            'mst_wilayah',
             //'kompetensi_dasar', 
             //'capaian_pembelajaran'
         ];
         $email = $this->ask('Email Administrator:');
         $user = User::where('email', $email)->first();
-        if(!$user){
+        if (!$user) {
             return $this->error('Email tidak terdaftar');
         }
         $satuan = $this->choice(
@@ -62,9 +62,9 @@ class SinkronReferensi extends Command
             $list_data
         );
         $data = collect($list_data);
-        if($satuan == 'semua_data'){
+        if ($satuan == 'semua_data') {
             $data->forget(0);
-            foreach($data->all() as $d){
+            foreach ($data->all() as $d) {
                 $this->proses_data($d, $user->sekolah_id);
             }
         } else {
@@ -109,22 +109,23 @@ class SinkronReferensi extends Command
             );            
         }*/
     }
-    private function proses_data($table, $sekolah_id){
+    private function proses_data($table, $sekolah_id)
+    {
         $dapodik = $this->ambil_data($table, $sekolah_id);
-        if($dapodik){
-            $this->info("\n".'Memperoses referensi '.$table.' ('.$dapodik->total.')');
+        if ($dapodik) {
+            $this->info("\n" . 'Memperoses referensi ' . $table . ' (' . $dapodik->total . ')');
             $bar = $this->output->createProgressBar($dapodik->total);
             $bar->start();
-            $function = 'simpan_'.str_replace('ref.', '', $table);
-            foreach($dapodik->data as $data){
+            $function = 'simpan_' . str_replace('ref.', '', $table);
+            foreach ($dapodik->data as $data) {
                 $this->{$function}($data, $table);
                 $bar->advance();
             }
-            $i=1;
-            for($i=2;$i<=$dapodik->last_page;$i++){
+            $i = 1;
+            for ($i = 2; $i <= $dapodik->last_page; $i++) {
                 $dapodik = $this->ambil_data($table, $sekolah_id, $i);
-                if($dapodik){
-                    foreach($dapodik->data as $data){
+                if ($dapodik) {
+                    foreach ($dapodik->data as $data) {
                         $this->{$function}($data, $table);
                         $bar->advance();
                     }
@@ -133,7 +134,8 @@ class SinkronReferensi extends Command
             $bar->finish();
         }
     }
-    private function ambil_data($table, $sekolah_id, $page = NULL){
+    private function ambil_data($table, $sekolah_id, $page = NULL)
+    {
         $data = [
             'table' => $table,
             'where' => '',
@@ -143,14 +145,15 @@ class SinkronReferensi extends Command
             'satuan' => '',
             'sekolah_id' => $sekolah_id,
         ];
-        if($page){
-            $response = http_client('referensi?page='.$page, $data);
+        if ($page) {
+            $response = http_client('referensi?page=' . $page, $data);
         } else {
             $response = http_client('referensi', $data);
         }
         return $response->dapodik;
     }
-    public function simpan_jurusan($data, $table){
+    public function simpan_jurusan($data, $table)
+    {
         Jurusan::updateOrCreate(
             [
                 'jurusan_id' => $data->jurusan_id
@@ -170,41 +173,44 @@ class SinkronReferensi extends Command
             ]
         );
     }
-    public function simpan_kurikulum($data, $table){
+    public function simpan_kurikulum($data, $table)
+    {
         Kurikulum::updateOrCreate(
             [
                 'kurikulum_id' => $data->kurikulum_id
             ],
             [
-                'nama_kurikulum'			=> $data->nama_kurikulum,
-                'mulai_berlaku'				=> $data->mulai_berlaku,
-                'sistem_sks'				=> $data->sistem_sks,
-                'total_sks'					=> $data->total_sks,
-                'jenjang_pendidikan_id'		=> $data->jenjang_pendidikan_id,
-                'jurusan_id'				=> $data->jurusan_id,
-                'deleted_at'				=> $data->expired_date,
-                'last_sync'					=> Carbon::now()->subDays(30),
+                'nama_kurikulum' => $data->nama_kurikulum,
+                'mulai_berlaku' => $data->mulai_berlaku,
+                'sistem_sks' => $data->sistem_sks,
+                'total_sks' => $data->total_sks,
+                'jenjang_pendidikan_id' => $data->jenjang_pendidikan_id,
+                'jurusan_id' => $data->jurusan_id,
+                'deleted_at' => $data->expired_date,
+                'last_sync' => Carbon::now()->subDays(30),
             ]
         );
     }
-    public function simpan_mata_pelajaran($data, $table){
+    public function simpan_mata_pelajaran($data, $table)
+    {
         Mata_pelajaran::updateOrCreate(
             [
                 'mata_pelajaran_id' => $data->mata_pelajaran_id,
             ],
             [
-                'jurusan_id' 				=> $data->jurusan_id,
-                'nama'						=> $data->nama,
-                'pilihan_sekolah'			=> $data->pilihan_sekolah,
-                'pilihan_kepengawasan'		=> $data->pilihan_kepengawasan,
-                'pilihan_buku'				=> $data->pilihan_buku,
-                'pilihan_evaluasi'			=> $data->pilihan_evaluasi,
-                'deleted_at'				=> $data->expired_date,
-                'last_sync'					=> Carbon::now()->subDays(30),
+                'jurusan_id' => $data->jurusan_id,
+                'nama' => $data->nama,
+                'pilihan_sekolah' => $data->pilihan_sekolah,
+                'pilihan_kepengawasan' => $data->pilihan_kepengawasan,
+                'pilihan_buku' => $data->pilihan_buku,
+                'pilihan_evaluasi' => $data->pilihan_evaluasi,
+                'deleted_at' => $data->expired_date,
+                'last_sync' => Carbon::now()->subDays(30),
             ]
         );
     }
-    public function simpan_mst_wilayah($data, $table){
+    public function simpan_mst_wilayah($data, $table)
+    {
         try {
             Mst_wilayah::updateOrCreate(
                 [
@@ -225,7 +231,7 @@ class SinkronReferensi extends Command
                 ]
             );
         } catch (\Throwable $e) {
-            $this->error('Sinkronisasi gagal. Status server: '.$e->getMessage());
+            $this->error('Sinkronisasi gagal. Status server: ' . $e->getMessage());
         }
     }
 }

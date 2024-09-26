@@ -21,7 +21,7 @@ class CreateStatusPenilaianTable extends Migration
             $table->timestamps();
             $table->primary('status_penilaian_id');
             $table->foreign('sekolah_id')->references('sekolah_id')->on('sekolah')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign('semester_id')->references('semester_id')->on('ref.semester')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('semester_id')->references('semester_id')->on('semester')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

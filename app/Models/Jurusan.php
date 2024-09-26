@@ -9,11 +9,11 @@ class Jurusan extends Model
 {
     use HasFactory;
     public $incrementing = false;
-	public $keyType = 'string';
-	protected $table = 'ref.jurusan';
-	protected $primaryKey = 'jurusan_id';
-	protected $guarded = [];
-	public function parent()
+    public $keyType = 'string';
+    protected $table = 'jurusan';
+    protected $primaryKey = 'jurusan_id';
+    protected $guarded = [];
+    public function parent()
     {
         return $this->belongsTo(Jurusan::class, 'jurusan_induk', 'jurusan_id');
     }

@@ -6,15 +6,15 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreatePesertaDidikTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('peserta_didik', function (Blueprint $table) {
-            $table->uuid('peserta_didik_id');
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		Schema::create('peserta_didik', function (Blueprint $table) {
+			$table->uuid('peserta_didik_id');
 			$table->uuid('peserta_didik_id_dapodik')->nullable();
 			$table->uuid('sekolah_id');
 			$table->string('nama');
@@ -48,36 +48,36 @@ class CreatePesertaDidikTable extends Migration
 			$table->string('telp_wali')->nullable();
 			$table->integer('kerja_wali')->nullable();
 			$table->string('photo')->nullable();
-			$table->decimal('active', 1,0)->nullable()->default('1');
+			$table->decimal('active', 1, 0)->nullable()->default('1');
 			$table->uuid('peserta_didik_id_migrasi')->nullable();
 			$table->timestamps();
 			$table->softDeletes();
 			$table->timestamp('last_sync');
-			$table->foreign('kode_wilayah')->references('kode_wilayah')->on('ref.mst_wilayah')
+			$table->foreign('kode_wilayah')->references('kode_wilayah')->on('mst_wilayah')
 				->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('kerja_ayah')->references('pekerjaan_id')->on('ref.pekerjaan')
+			$table->foreign('kerja_ayah')->references('pekerjaan_id')->on('pekerjaan')
 				->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('kerja_ibu')->references('pekerjaan_id')->on('ref.pekerjaan')
+			$table->foreign('kerja_ibu')->references('pekerjaan_id')->on('pekerjaan')
 				->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('kerja_wali')->references('pekerjaan_id')->on('ref.pekerjaan')
+			$table->foreign('kerja_wali')->references('pekerjaan_id')->on('pekerjaan')
 				->onUpdate('CASCADE')->onDelete('CASCADE');
 			$table->primary('peserta_didik_id');
-        });
-    }
+		});
+	}
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
 		Schema::table('peserta_didik', function (Blueprint $table) {
-            $table->dropForeign(['kerja_wali']);
-            $table->dropForeign(['kerja_ibu']);
-            $table->dropForeign(['kerja_ayah']);
-            $table->dropForeign(['kode_wilayah']);
-        });
-        Schema::dropIfExists('peserta_didik');
-    }
+			$table->dropForeign(['kerja_wali']);
+			$table->dropForeign(['kerja_ibu']);
+			$table->dropForeign(['kerja_ayah']);
+			$table->dropForeign(['kode_wilayah']);
+		});
+		Schema::dropIfExists('peserta_didik');
+	}
 }

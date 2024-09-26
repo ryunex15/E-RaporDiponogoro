@@ -32,19 +32,11 @@
                             <b-card class="mb-0 post-card shadow-sm rounded border-0 w-100" v-if="activeTab === 'ditugaskan'">
                                 <!-- Button to trigger the modal -->
                                 <b-button variant="success" @click="showModalTopik = true" class="rounded-pill w-100 mt-2">Tambah Topik</b-button>
-                                <b-card-body class="d-flex align-items-center">
-                                    <b-img src="https://lh3.googleusercontent.com/a/ACg8ocLPS5kaZwaq3HcNkgRsgIOdS-Z_0x5irL74fZzP1raa6VTKkKWM=s40-c" rounded="circle" width="50" height="50" class="mr-3" alt="Avatar" />
-                                    <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1 w-100" aria-label="Announcement input" />
-                                </b-card-body>
                             </b-card>
 
                             <b-card class="mb-0 post-card shadow-sm rounded border-0 w-100" v-if="activeTab === 'belumDiserahkan'">
                                 <!-- Button to trigger the modal -->
                                 <b-button variant="success" @click="showModal = true" class="rounded-pill w-100">Tambah Pembelajaran</b-button>
-                                <b-card-body class="d-flex align-items-center">
-                                    <b-img src="https://lh3.googleusercontent.com/a/ACg8ocLPS5kaZwaq3HcNkgRsgIOdS-Z_0x5irL74fZzP1raa6VTKkKWM=s40-c" rounded="circle" width="50" height="50" class="mr-3" alt="Avatar" />
-                                    <b-form-input placeholder="Umumkan sesuatu kepada kelas Anda" class="rounded-pill flex-grow-1 w-100" aria-label="Announcement input" />
-                                </b-card-body>
                             </b-card>
 
                             <b-card class="mb-4 datatable-card w-100" v-if="activeTab === 'ditugaskan'">
@@ -172,12 +164,12 @@
                                     <!-- Tabel Input Topik -->
                                     <b-form-group label="Topik tugas" label-for="topik">
                                         <b-form-input id="topik" v-model="newTopik.judul_topik" required class="w-100"></b-form-input>
-                                        <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="text" ></b-form-input>
+                                        <b-form-input id="topik" v-model="newTopik.pembelajaran_id" class="w-100 mt-2" required type="text" hidden disabled ></b-form-input>
                                     </b-form-group>
 
                                     <div class="d-flex justify-content-end">
                                         <b-button type="submit" variant="success">
-                                            Tambahkan Tugas
+                                            Tambahkan Topik
                                         </b-button>
                                     </div>
                                 </form>
@@ -286,6 +278,7 @@
                     deleteRoute: '/topik/', // Base route for delete
                 },
                 dynamicActionsTugas: {
+                    showView: true,
                     showDeleteTugas: true,
                     deleteRoute: '/tugas/', // Base route for delete
                 },

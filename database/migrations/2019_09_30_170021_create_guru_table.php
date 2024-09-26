@@ -6,17 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateGuruTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('guru', function (Blueprint $table) {
-            $table->uuid('guru_id');
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		Schema::create('guru', function (Blueprint $table) {
+			$table->uuid('guru_id');
 			$table->uuid('guru_id_dapodik')->nullable();
-            $table->uuid('sekolah_id');
+			$table->uuid('sekolah_id');
 			$table->string('nama');
 			$table->string('nuptk');
 			$table->string('nip')->nullable();
@@ -43,22 +43,22 @@ class CreateGuruTable extends Migration
 			$table->timestamps();
 			$table->softDeletes();
 			$table->timestamp('last_sync');
-            $table->primary('guru_id');
-			$table->foreign('kode_wilayah')->references('kode_wilayah')->on('ref.mst_wilayah')
-                ->onUpdate('CASCADE')->onDelete('CASCADE');
-        });
-    }
+			$table->primary('guru_id');
+			$table->foreign('kode_wilayah')->references('kode_wilayah')->on('mst_wilayah')
+				->onUpdate('CASCADE')->onDelete('CASCADE');
+		});
+	}
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
 		Schema::table('guru', function (Blueprint $table) {
-            $table->dropForeign(['kode_wilayah']);
-        });
-        Schema::dropIfExists('guru');
-    }
+			$table->dropForeign(['kode_wilayah']);
+		});
+		Schema::dropIfExists('guru');
+	}
 }

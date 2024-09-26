@@ -16,9 +16,9 @@ class JabatanPtkSeeder extends Seeder
     public function run()
     {
         $json = File::get('database/data/jabatan_ptk.json');
-		$data = json_decode($json);
-        foreach($data as $obj){
-            DB::table('ref.jabatan_ptk')->updateOrInsert(
+        $data = json_decode($json);
+        foreach ($data as $obj) {
+            DB::table('jabatan_ptk')->updateOrInsert(
                 ['jabatan_ptk_id' => $obj->jabatan_ptk_id],
                 [
                     'nama' => $obj->nama,

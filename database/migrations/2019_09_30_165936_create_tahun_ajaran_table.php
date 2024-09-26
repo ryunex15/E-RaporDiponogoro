@@ -13,14 +13,14 @@ class CreateTahunAjaranTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.tahun_ajaran', function (Blueprint $table) {
+        Schema::create('tahun_ajaran', function (Blueprint $table) {
             $table->decimal('tahun_ajaran_id', 4, 0);
             $table->string('nama', 10);
-			$table->decimal('periode_aktif', 1, 0);
-			$table->date('tanggal_mulai');
-			$table->date('tanggal_selesai');
-			$table->timestamps();
-			$table->timestamp('last_sync');
+            $table->decimal('periode_aktif', 1, 0);
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->timestamps();
+            $table->timestamp('last_sync');
             $table->primary('tahun_ajaran_id');
         });
     }
@@ -32,6 +32,6 @@ class CreateTahunAjaranTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.tahun_ajaran');
+        Schema::dropIfExists('tahun_ajaran');
     }
 }

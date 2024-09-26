@@ -13,12 +13,12 @@ class CreatePekerjaanTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.pekerjaan', function (Blueprint $table) {
-			$table->integer('pekerjaan_id');
-			$table->string('nama', 25);
-			$table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
+        Schema::create('pekerjaan', function (Blueprint $table) {
+            $table->integer('pekerjaan_id');
+            $table->string('nama', 25);
+            $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('last_sync');
             $table->primary('pekerjaan_id');
         });
     }
@@ -30,6 +30,6 @@ class CreatePekerjaanTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.pekerjaan');
+        Schema::dropIfExists('pekerjaan');
     }
 }

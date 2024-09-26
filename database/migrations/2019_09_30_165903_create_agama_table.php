@@ -13,12 +13,12 @@ class CreateAgamaTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.agama', function (Blueprint $table) {
-			$table->increments('agama_id');
-			$table->string('nama');
-			$table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
+        Schema::create('agama', function (Blueprint $table) {
+            $table->increments('agama_id');
+            $table->string('nama');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('last_sync');
         });
     }
 
@@ -29,6 +29,6 @@ class CreateAgamaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.agama');
+        Schema::dropIfExists('agama');
     }
 }

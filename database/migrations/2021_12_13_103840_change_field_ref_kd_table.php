@@ -13,7 +13,7 @@ class ChangeFieldRefKdTable extends Migration
      */
     public function up()
     {
-        Schema::table('ref.kompetensi_dasar', function(Blueprint $table) {
+        Schema::table('kompetensi_dasar', function (Blueprint $table) {
             $table->text('id_kompetensi')->change();
         });
     }
@@ -25,6 +25,6 @@ class ChangeFieldRefKdTable extends Migration
      */
     public function down()
     {
-        
+
     }
 }

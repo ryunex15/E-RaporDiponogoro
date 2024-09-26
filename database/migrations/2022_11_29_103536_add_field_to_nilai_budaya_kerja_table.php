@@ -20,7 +20,7 @@ class AddFieldToNilaiBudayaKerjaTable extends Migration
             $table->date('tanggal')->nullable();
             $table->text('deskripsi')->nullable();
             $table->foreign('guru_id')->references('guru_id')->on('guru')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign('budaya_kerja_id')->references('budaya_kerja_id')->on('ref.budaya_kerja')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('budaya_kerja_id')->references('budaya_kerja_id')->on('budaya_kerja')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

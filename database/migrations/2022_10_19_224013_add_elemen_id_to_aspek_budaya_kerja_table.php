@@ -15,7 +15,7 @@ class AddElemenIdToAspekBudayaKerjaTable extends Migration
     {
         Schema::table('aspek_budaya_kerja', function (Blueprint $table) {
             $table->smallInteger('elemen_id')->nullable();
-            $table->foreign('elemen_id')->references('elemen_id')->on('ref.elemen_budaya_kerja')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('elemen_id')->references('elemen_id')->on('elemen_budaya_kerja')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

@@ -15,18 +15,18 @@ class CreateUnitUkkTable extends Migration
     {
         Schema::create('unit_ukk', function (Blueprint $table) {
             $table->uuid('unit_ukk_id');
-			$table->uuid('sekolah_id')->nullable();
-			$table->uuid('paket_ukk_id');
-			$table->string('kode_unit');
-			$table->string('nama_unit');
-			$table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
-			$table->foreign('sekolah_id')->references('sekolah_id')->on('sekolah')
+            $table->uuid('sekolah_id')->nullable();
+            $table->uuid('paket_ukk_id');
+            $table->string('kode_unit');
+            $table->string('nama_unit');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('last_sync');
+            $table->foreign('sekolah_id')->references('sekolah_id')->on('sekolah')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('paket_ukk_id')->references('paket_ukk_id')->on('ref.paket_ukk')
+            $table->foreign('paket_ukk_id')->references('paket_ukk_id')->on('paket_ukk')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->primary('unit_ukk_id');
+            $table->primary('unit_ukk_id');
         });
     }
 
@@ -39,7 +39,7 @@ class CreateUnitUkkTable extends Migration
     {
         Schema::table('unit_ukk', function (Blueprint $table) {
             $table->dropForeign(['paket_ukk_id']);
-			$table->dropForeign(['sekolah_id']);
+            $table->dropForeign(['sekolah_id']);
         });
         Schema::dropIfExists('unit_ukk');
     }

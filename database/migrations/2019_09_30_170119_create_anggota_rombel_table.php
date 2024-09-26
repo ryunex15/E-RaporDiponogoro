@@ -31,7 +31,7 @@ class CreateAnggotaRombelTable extends Migration
 				->onUpdate('CASCADE')->onDelete('CASCADE');
 			$table->foreign('rombongan_belajar_id')->references('rombongan_belajar_id')->on('rombongan_belajar')
 				->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('semester_id')->references('semester_id')->on('ref.semester')
+			$table->foreign('semester_id')->references('semester_id')->on('semester')
 				->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }

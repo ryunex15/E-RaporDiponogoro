@@ -6,15 +6,15 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateSekolahTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('sekolah', function (Blueprint $table) {
-            $table->uuid('sekolah_id');
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		Schema::create('sekolah', function (Blueprint $table) {
+			$table->uuid('sekolah_id');
 			$table->string('npsn');
 			$table->string('nama');
 			$table->string('nss')->nullable();
@@ -38,22 +38,22 @@ class CreateSekolahTable extends Migration
 			$table->timestamps();
 			$table->softDeletes();
 			$table->timestamp('last_sync');
-            $table->primary('sekolah_id');
-			$table->foreign('kode_wilayah')->references('kode_wilayah')->on('ref.mst_wilayah')
-                ->onUpdate('CASCADE')->onDelete('CASCADE');
-        });
-    }
+			$table->primary('sekolah_id');
+			$table->foreign('kode_wilayah')->references('kode_wilayah')->on('mst_wilayah')
+				->onUpdate('CASCADE')->onDelete('CASCADE');
+		});
+	}
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
 		Schema::table('sekolah', function (Blueprint $table) {
-            $table->dropForeign(['kode_wilayah']);
-        });
-        Schema::dropIfExists('sekolah');
-    }
+			$table->dropForeign(['kode_wilayah']);
+		});
+		Schema::dropIfExists('sekolah');
+	}
 }

@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sikap extends Model
 {
-    use HasFactory;
-    protected $table = 'ref.sikap';
+	use HasFactory;
+	protected $table = 'sikap';
 	protected $primaryKey = 'sikap_id';
 	protected $guarded = [];
-	public function sikap(){
+	public function sikap()
+	{
 		return $this->hasMany(Sikap::class, 'sikap_induk', 'sikap_id');
 	}
 	public function nilai_sikap()

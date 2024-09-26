@@ -8,7 +8,7 @@ export const $themeBreakpoints = {}
 // APP CONFIG
 export const $themeConfig = {
   app: {
-    appName: 'e-Rapor SMK', // Will update name in navigation menu (Branding)
+    appName: 'SIMAKS', // Will update name in navigation menu (Branding)
     appVersion: app_version, // Will update name in navigation menu (Branding)
     // eslint-disable-next-line global-require
     //appLogoKemdikbud: '/images/logo/logo-name.svg', // Will update logo in navigation menu (Branding)

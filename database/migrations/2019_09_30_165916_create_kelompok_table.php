@@ -13,13 +13,13 @@ class CreateKelompokTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.kelompok', function (Blueprint $table) {
-			$table->increments('kelompok_id');
-			$table->string('nama_kelompok');
-			$table->integer('kurikulum');
-			$table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
+        Schema::create('kelompok', function (Blueprint $table) {
+            $table->increments('kelompok_id');
+            $table->string('nama_kelompok');
+            $table->integer('kurikulum');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('last_sync');
         });
     }
 
@@ -30,6 +30,6 @@ class CreateKelompokTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.kelompok');
+        Schema::dropIfExists('kelompok');
     }
 }

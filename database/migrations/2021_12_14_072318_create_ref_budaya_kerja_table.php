@@ -13,12 +13,12 @@ class CreateRefBudayaKerjaTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.budaya_kerja', function (Blueprint $table) {
+        Schema::create('budaya_kerja', function (Blueprint $table) {
             $table->smallInteger('budaya_kerja_id');
             $table->string('aspek');
             $table->timestamps();
             $table->softDeletes();
-			$table->timestamp('last_sync');
+            $table->timestamp('last_sync');
             $table->primary('budaya_kerja_id');
         });
     }
@@ -30,6 +30,6 @@ class CreateRefBudayaKerjaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.budaya_kerja');
+        Schema::dropIfExists('budaya_kerja');
     }
 }

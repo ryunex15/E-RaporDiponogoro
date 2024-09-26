@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Jenis_ptk extends Model
 {
-    use HasFactory;
-    public $incrementing = false;
-	protected $table = 'ref.jenis_ptk';
+	use HasFactory;
+	public $incrementing = false;
+	protected $table = 'jenis_ptk';
 	protected $primaryKey = 'jenis_ptk_id';
 	protected $guarded = [];
 }

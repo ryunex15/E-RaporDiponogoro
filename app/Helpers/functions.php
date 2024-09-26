@@ -1,4 +1,4 @@
-<?php 
+<?php
 use Carbon\Carbon;
 use App\Models\Setting;
 use App\Models\Peserta_didik;
@@ -9,31 +9,34 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Http;
-function semester_id(){
+function semester_id()
+{
     $data = Semester::where('periode_aktif', 1)->first();
     return $data->semester_id;
 }
-function get_setting($key, $sekolah_id = NULL, $semester_id = NULL){
-    $data = Setting::where(function($query) use ($key, $sekolah_id, $semester_id){
+function get_setting($key, $sekolah_id = NULL, $semester_id = NULL)
+{
+    $data = Setting::where(function ($query) use ($key, $sekolah_id, $semester_id) {
         $query->where('key', $key);
-        if($sekolah_id){
+        if ($sekolah_id) {
             $query->where('sekolah_id', $sekolah_id);
         }
-        if($semester_id){
+        if ($semester_id) {
             $query->where('semester_id', $semester_id);
         }
     })->first();
     return ($data) ? $data->value : NULL;
 }
-function filter_agama_siswa($pembelajaran_id, $rombongan_belajar_id){
+function filter_agama_siswa($pembelajaran_id, $rombongan_belajar_id)
+{
     $ref_agama = Agama::all();
-	$agama_id = [];
-	foreach ($ref_agama as $agama) {
+    $agama_id = [];
+    foreach ($ref_agama as $agama) {
         $nama_agama = str_replace('Budha', 'Buddha', $agama->nama);
         $agama_id[$agama->agama_id] = $nama_agama;
     }
     $get_mapel = Pembelajaran::with('mata_pelajaran')->find($pembelajaran_id);
-    if($get_mapel){
+    if ($get_mapel) {
         $nama_mapel = str_replace('Pendidikan Agama', '', $get_mapel->mata_pelajaran->nama);
         $nama_mapel = str_replace('KongHuChu', 'Konghuchu', $nama_mapel);
         $nama_mapel = str_replace('Kong Hu Chu', 'Konghuchu', $nama_mapel);
@@ -45,20 +48,22 @@ function filter_agama_siswa($pembelajaran_id, $rombongan_belajar_id){
     }
     return $agama_id;
 }
-function mapel_agama(){
-	return ['100014000', '100014140', '100015000', '100015010', '100016000', '100016010', '109011000', '109011010', '100011000', '100011070', '100013000', '100013010', '100012000', '100012050'];
+function mapel_agama()
+{
+    return ['100014000', '100014140', '100015000', '100015010', '100016000', '100016010', '109011000', '109011010', '100011000', '100011070', '100013000', '100013010', '100012000', '100012050'];
 }
-function filter_pembelajaran_agama($agama_siswa, $nama_agama){
+function filter_pembelajaran_agama($agama_siswa, $nama_agama)
+{
     $nama_agama = str_replace('Budha', 'Buddha', $nama_agama);
-	$nama_agama = str_replace('Pendidikan Agama', '', $nama_agama);
-	$nama_agama = str_replace('dan Budi Pekerti', '', $nama_agama);
-	$nama_agama = str_replace('Pendidikan Kepercayaan', '', $nama_agama);
-	$nama_agama = str_replace('terhadap', 'kpd', $nama_agama);
-	$nama_agama = str_replace('KongHuChu', 'Konghuchu', $nama_agama);
-	$nama_agama = str_replace('Kong Hu Chu', 'Konghuchu', $nama_agama);
-	$nama_agama = trim($nama_agama);
-	$agama_siswa = str_replace('KongHuChu', 'Konghuchu', $agama_siswa);
-	$agama_siswa = str_replace('Kong Hu Chu', 'Konghuchu', $agama_siswa);
+    $nama_agama = str_replace('Pendidikan Agama', '', $nama_agama);
+    $nama_agama = str_replace('dan Budi Pekerti', '', $nama_agama);
+    $nama_agama = str_replace('Pendidikan Kepercayaan', '', $nama_agama);
+    $nama_agama = str_replace('terhadap', 'kpd', $nama_agama);
+    $nama_agama = str_replace('KongHuChu', 'Konghuchu', $nama_agama);
+    $nama_agama = str_replace('Kong Hu Chu', 'Konghuchu', $nama_agama);
+    $nama_agama = trim($nama_agama);
+    $agama_siswa = str_replace('KongHuChu', 'Konghuchu', $agama_siswa);
+    $agama_siswa = str_replace('Kong Hu Chu', 'Konghuchu', $agama_siswa);
     $agama_siswa = str_replace('Kepercayaan ', '', $agama_siswa);
     if ($agama_siswa == $nama_agama) {
         return true;
@@ -66,17 +71,20 @@ function filter_pembelajaran_agama($agama_siswa, $nama_agama){
         return false;
     }
 }
-function jenis_gtk($query){
+function jenis_gtk($query)
+{
     $data['tendik'] = array(11, 30, 40, 41, 42, 43, 44, 57, 58, 59);
     $data['guru'] = array(3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 20, 25, 26, 51, 52, 53, 54, 56);
     $data['instruktur'] = array(97);
     $data['asesor'] = array(98);
     return collect($data[$query]);
 }
-function bilangan_bulat($angka){
+function bilangan_bulat($angka)
+{
     return number_format($angka, 0);
 }
-function nilai_ekskul($nilai){
+function nilai_ekskul($nilai)
+{
     $predikat = [
         1 => 'Sangat Baik',
         2 => 'Baik',
@@ -85,41 +93,44 @@ function nilai_ekskul($nilai){
     ];
     return $predikat[$nilai];
 }
-function terbilang($angka){
-    if($angka){
-        return ucwords(Terbilang::make(number_format($angka,0)));
+function terbilang($angka)
+{
+    if ($angka) {
+        return ucwords(Terbilang::make(number_format($angka, 0)));
     }
 }
-function predikat($kkm, $nilai, $produktif = NULL){
+function predikat($kkm, $nilai, $produktif = NULL)
+{
     $nilai = strtoupper($nilai);
     if ($produktif) {
         $result = array(
-            'A+'	=> 100, // 95 - 100
-            'A'		=> 94, // 90 - 94
-            'A-'	=> 89, // 85 - 89
-            'B+'	=> 84, // 80 - 84
-            'B'		=> 79, // 75 - 79
-            'B-'	=> 74, // 70 - 74
-            'C'		=> 69, // 65 - 69
-            'D'		=> 64, // 0 - 59
+            'A+' => 100, // 95 - 100
+            'A' => 94, // 90 - 94
+            'A-' => 89, // 85 - 89
+            'B+' => 84, // 80 - 84
+            'B' => 79, // 75 - 79
+            'B-' => 74, // 70 - 74
+            'C' => 69, // 65 - 69
+            'D' => 64, // 0 - 59
         );
     } else {
         $result = array(
-            'A+'	=> 100, // 95 - 100
-            'A'		=> 94, // 90 - 94
-            'A-'	=> 89, // 85 - 89
-            'B+'	=> 84, // 80 - 84
-            'B'		=> 79, // 75 - 79
-            'B-'	=> 74, // 70 - 74
-            'C'		=> 69, // 60 - 69
-            'D'		=> 59, // 0 - 59
+            'A+' => 100, // 95 - 100
+            'A' => 94, // 90 - 94
+            'A-' => 89, // 85 - 89
+            'B+' => 84, // 80 - 84
+            'B' => 79, // 75 - 79
+            'B-' => 74, // 70 - 74
+            'C' => 69, // 60 - 69
+            'D' => 59, // 0 - 59
         );
     }
     if ($result[$nilai] > 100)
         $result[$nilai] = 100;
     return $result[$nilai];
 }
-function konversi_huruf($kkm, $nilai, $produktif = NULL, $semester_id = NULL){
+function konversi_huruf($kkm, $nilai, $produktif = NULL, $semester_id = NULL)
+{
     $check_2018 = check_2018($semester_id);
     if ($check_2018) {
         $show = 'predikat';
@@ -131,53 +142,54 @@ function konversi_huruf($kkm, $nilai, $produktif = NULL, $semester_id = NULL){
         $c = predikat($kkm, 'C') + 1;
         $d = predikat($kkm, 'D', $produktif) + 1;
         if ($nilai == 0) {
-            $predikat 	= '-';
+            $predikat = '-';
         } elseif ($nilai >= $a) { //$settings->a_min){ //86
-            $predikat 	= 'A+';
+            $predikat = 'A+';
         } elseif ($nilai >= $a_min) { //$settings->a_min){ //86
-            $predikat 	= 'A';
+            $predikat = 'A';
         } elseif ($nilai >= $b_plus) { //$settings->a_min){ //86
-            $predikat 	= 'A-';
+            $predikat = 'A-';
         } elseif ($nilai >= $b) { //$settings->a_min){ //86
-            $predikat 	= 'B+';
+            $predikat = 'B+';
         } elseif ($nilai >= $b_min) { //$settings->a_min){ //86
-            $predikat 	= 'B';
+            $predikat = 'B';
         } elseif ($nilai >= $c) { //$settings->a_min){ //86
-            $predikat 	= 'B-';
+            $predikat = 'B-';
         } elseif ($nilai >= $d) { //$settings->a_min){ //86
-            $predikat 	= 'C';
+            $predikat = 'C';
         } elseif ($nilai < $d) { //$settings->a_min){ //86
-            $predikat 	= 'D';
+            $predikat = 'D';
         }
     } else {
         $b = predikat($kkm, 'b') + 1;
         $c = predikat($kkm, 'c') + 1;
         $d = predikat($kkm, 'd') + 1;
         if ($nilai == 0) {
-            $predikat 	= '-';
-            $sikap		= '-';
-            $sikap_full	= '-';
+            $predikat = '-';
+            $sikap = '-';
+            $sikap_full = '-';
         } elseif ($nilai >= $b) { //$settings->a_min){ //86
-            $predikat 	= 'A';
-            $sikap		= 'SB';
-            $sikap_full	= 'Sangat Baik';
+            $predikat = 'A';
+            $sikap = 'SB';
+            $sikap_full = 'Sangat Baik';
         } elseif ($nilai >= $c) { //71
-            $predikat 	= 'B';
-            $sikap		= 'B';
-            $sikap_full	= 'Baik';
+            $predikat = 'B';
+            $sikap = 'B';
+            $sikap_full = 'Baik';
         } elseif ($nilai >= $d) { //56
-            $predikat 	= 'C';
-            $sikap		= 'C';
-            $sikap_full	= 'Cukup';
+            $predikat = 'C';
+            $sikap = 'C';
+            $sikap_full = 'Cukup';
         } elseif ($nilai < $d) { //56
-            $predikat 	= 'D';
-            $sikap		= 'K';
-            $sikap_full	= 'Kurang';
+            $predikat = 'D';
+            $sikap = 'K';
+            $sikap_full = 'Kurang';
         }
     }
-    return $predikat;		
+    return $predikat;
 }
-function status_kenaikan($status){
+function status_kenaikan($status)
+{
     if ($status == 1) {
         $status_teks = 'Naik ke kelas';
     } elseif ($status == 2) {
@@ -189,7 +201,8 @@ function status_kenaikan($status){
     }
     return $status_teks;
 }
-function warna_dimensi($id){
+function warna_dimensi($id)
+{
     $data = [
         1 => 'primary',
         2 => 'success',
@@ -203,15 +216,15 @@ function warna_dimensi($id){
 function opsi_budaya($n)
 {
     if (!$n) {
-        $predikat 	= '-';
+        $predikat = '-';
     } elseif ($n >= 4) {
-        $predikat 	= '<span class="badge bg-green">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+        $predikat = '<span class="badge bg-green">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
     } elseif ($n >= 3) {
-        $predikat 	= '<span class="badge bg-red">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+        $predikat = '<span class="badge bg-red">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
     } elseif ($n >= 2) {
-        $predikat 	= '<span class="badge bg-blue">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+        $predikat = '<span class="badge bg-blue">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
     } elseif ($n >= 1) {
-        $predikat 	= '<span class="badge bg-yellow">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+        $predikat = '<span class="badge bg-yellow">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
     }
     return $predikat;
 }
@@ -236,9 +249,9 @@ function get_kkm($kelompok_id, $kkm, $semester_id)
 }
 function status_label($status)
 {
-    if ($status == '1') :
+    if ($status == '1'):
         $label = '<span class="btn btn-sm btn-success"> Aktif </span>';
-    elseif ($status == '0') :
+    elseif ($status == '0'):
         $label = '<span class="btn btn-sm btn-danger"> Non Aktif </span>';
     endif;
     return $label;
@@ -247,44 +260,49 @@ function keterangan_ukk($n, $lang = 'ID')
 {
     if ($lang == 'ID') {
         if (!$n) {
-            $predikat 	= '';
+            $predikat = '';
         } elseif ($n >= 90) {
-            $predikat 	= 'Sangat Kompeten';
+            $predikat = 'Sangat Kompeten';
         } elseif ($n >= 75 && $n <= 89) {
-            $predikat 	= 'Kompeten';
+            $predikat = 'Kompeten';
         } elseif ($n >= 70 && $n <= 74) {
-            $predikat 	= 'Cukup Kompeten';
+            $predikat = 'Cukup Kompeten';
         } elseif ($n < 70) {
-            $predikat 	= 'Belum Kompeten';
+            $predikat = 'Belum Kompeten';
         }
     } else {
         if (!$n) {
-            $predikat 	= '';
+            $predikat = '';
         } elseif ($n >= 90) {
-            $predikat 	= 'Highly Competent';
+            $predikat = 'Highly Competent';
         } elseif ($n >= 75 && $n <= 89) {
-            $predikat 	= 'Competent';
+            $predikat = 'Competent';
         } elseif ($n >= 70 && $n <= 74) {
-            $predikat 	= 'Partly Competent';
+            $predikat = 'Partly Competent';
         } elseif ($n < 70) {
-            $predikat 	= 'Not Yet Competent';
+            $predikat = 'Not Yet Competent';
         }
     }
     return $predikat;
 }
-function prepare_send($str){
+function prepare_send($str)
+{
     return rawurlencode(base64_encode(gzcompress(encryptor(serialize($str)))));
 }
-function prepare_receive($str){
+function prepare_receive($str)
+{
     return unserialize(decryptor(gzuncompress(base64_decode(rawurldecode($str)))));
 }
-function encryptor($str){
+function encryptor($str)
+{
     return $str;
 }
-function decryptor($str){
+function decryptor($str)
+{
     return $str;
 }
-function clean($string){
+function clean($string)
+{
     $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
     $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
     return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
@@ -326,11 +344,12 @@ function sebaran_tooltip($input, $a, $b, $c)
     }
     return $result;
 }
-function tingkat_kelas($kelas_10, $kelas_11, $kelas_12, $kelas_13){
+function tingkat_kelas($kelas_10, $kelas_11, $kelas_12, $kelas_13)
+{
     $data = collect([
         ['kelas' => $kelas_10, 'tingkat' => 10],
-        ['kelas' => $kelas_11, 'tingkat' => 11], 
-        ['kelas' => $kelas_12, 'tingkat' => 12], 
+        ['kelas' => $kelas_11, 'tingkat' => 11],
+        ['kelas' => $kelas_12, 'tingkat' => 12],
         ['kelas' => $kelas_13, 'tingkat' => 13]
     ]);
     $filtered = $data->filter(function ($value, $key) {
@@ -341,11 +360,12 @@ function tingkat_kelas($kelas_10, $kelas_11, $kelas_12, $kelas_13){
     //dd($filtered->all());
     return $filtered->implode('tingkat', ', ');
 }
-function table_sync(){
+function table_sync()
+{
     return [
-        'ref.paket_ukk',
-        'ref.kompetensi_dasar',
-        'ref.capaian_pembelajaran',
+        'paket_ukk',
+        'kompetensi_dasar',
+        'capaian_pembelajaran',
         'users',
         'unit_ukk',
         'tujuan_pembelajaran',
@@ -409,19 +429,20 @@ function table_sync(){
         'absensi',
     ];
 }
-function get_table($table, $sekolah_id, $tahun_ajaran_id, $semester_id, $count = NULL){
-    $request = DB::table($table)->where(function($query) use ($table, $sekolah_id, $tahun_ajaran_id, $semester_id){
-        if(in_array($table, ['ref.kompetensi_dasar'])){
+function get_table($table, $sekolah_id, $tahun_ajaran_id, $semester_id, $count = NULL)
+{
+    $request = DB::table($table)->where(function ($query) use ($table, $sekolah_id, $tahun_ajaran_id, $semester_id) {
+        if (in_array($table, ['kompetensi_dasar'])) {
             $query->whereExists(function ($query) {
                 $query->select(DB::raw(1))
-                      ->from('users')
-                      ->whereColumn('ref.kompetensi_dasar.user_id', 'users.user_id');
+                    ->from('users')
+                    ->whereColumn('kompetensi_dasar.user_id', 'users.user_id');
             });
         }
-        if(in_array($table, ['ref.paket_ukk', 'users']) || Schema::hasColumn($table, 'sekolah_id')){
+        if (in_array($table, ['paket_ukk', 'users']) || Schema::hasColumn($table, 'sekolah_id')) {
             $query->where('sekolah_id', $sekolah_id);
         }
-        if(in_array($table, ['ref.capaian_pembelajaran'])){
+        if (in_array($table, ['capaian_pembelajaran'])) {
             $query->where('is_dir', 0);
         }
         if (Schema::hasColumn($table, 'tahun_ajaran_id')) {
@@ -434,60 +455,68 @@ function get_table($table, $sekolah_id, $tahun_ajaran_id, $semester_id, $count =
             $query->whereRaw('updated_at > last_sync');
         }
     });
-    if($count){
+    if ($count) {
         return $request->count();
     } else {
         return $request->get();
     }
 }
-function nama_table($table){
+function nama_table($table)
+{
     $data = str_replace('_', ' ', $table);
     $data = str_replace('ref.', '', $data);
     return ucwords($data);
 }
-function http_client($satuan, $data_sync){
+function http_client($satuan, $data_sync)
+{
     $response = Http::withOptions([
         'verify' => false,
         //'debug' => config('app.debug') ? fopen('php://stderr', 'w') : FALSE,
     ])->withHeaders([
-        'x-api-key' => $data_sync['sekolah_id'],
-    ])->retry(3, 100)->post(config('erapor.api_url').$satuan, $data_sync);
+                'x-api-key' => $data_sync['sekolah_id'],
+            ])->retry(3, 100)->post(config('erapor.api_url') . $satuan, $data_sync);
     return $response->object();
 }
-function http_dashboard($satuan, $data_sync){
+function http_dashboard($satuan, $data_sync)
+{
     $response = Http::withOptions([
         'verify' => false,
         //'debug' => config('app.debug') ? fopen('php://stderr', 'w') : FALSE,
-    ])->retry(3, 100)->post(config('erapor.dashboard_url').$satuan, $data_sync);
+    ])->retry(3, 100)->post(config('erapor.dashboard_url') . $satuan, $data_sync);
     return $response->object();
 }
-function merdeka($nama_kurikulum){
+function merdeka($nama_kurikulum)
+{
     return Str::contains($nama_kurikulum, 'Merdeka');
 }
-function loggedUser(){
+function loggedUser()
+{
     return auth()->user();
 }
-function get_fase($tingkat){
-    if(in_array($tingkat, [1,2])){
+function get_fase($tingkat)
+{
+    if (in_array($tingkat, [1, 2])) {
         $fase = 'A';
-    } elseif(in_array($tingkat, [3,4])){
+    } elseif (in_array($tingkat, [3, 4])) {
         $fase = 'B';
-    } elseif(in_array($tingkat, [5,6])){
+    } elseif (in_array($tingkat, [5, 6])) {
         $fase = 'C';
-    } elseif(in_array($tingkat, [7,8,9])){
+    } elseif (in_array($tingkat, [7, 8, 9])) {
         $fase = 'D';
-    } elseif($tingkat == 10){
+    } elseif ($tingkat == 10) {
         $fase = 'E';
     } else {
         $fase = 'F';
     }
     return $fase;
 }
-function hasRole($roles, $team){
+function hasRole($roles, $team)
+{
     return auth()->user()->hasRole($roles, $team);
 }
-function array_filter_recursive($array, $callback = null, $remove_empty_arrays = false){
-    foreach ($array as $key => & $value) { // mind the reference
+function array_filter_recursive($array, $callback = null, $remove_empty_arrays = false)
+{
+    foreach ($array as $key => &$value) { // mind the reference
         if (is_array($value)) {
             $value = array_filter_recursive($value, $callback, $remove_empty_arrays);
             if ($remove_empty_arrays && !(bool) $value) {
@@ -504,15 +533,17 @@ function array_filter_recursive($array, $callback = null, $remove_empty_arrays =
     unset($value); // kill the reference
     return $array;
 }
-function check_2018($semester_id){
-	$tahun = substr($semester_id, 0, 4);
-	if ($tahun >= 2018) {
+function check_2018($semester_id)
+{
+    $tahun = substr($semester_id, 0, 4);
+    if ($tahun >= 2018) {
         return true;
     } else {
         return false;
     }
 }
-function jam_sinkron(){
+function jam_sinkron()
+{
     $timezone = config('app.timezone');
     $start = Carbon::create(date('Y'), date('m'), date('d'), '00', '00', '01', 'Asia/Jakarta');
     $end = Carbon::create(date('Y'), date('m'), date('d'), '03', '00', '00', 'Asia/Jakarta');
@@ -520,13 +551,16 @@ function jam_sinkron(){
     $jam_sinkron = Carbon::now()->timezone($timezone)->isBetween($start, $end, false);
     return $jam_sinkron;
 }
-function is_ppa($semester_id){
+function is_ppa($semester_id)
+{
     return ($semester_id >= 20221);
 }
-function get_string_between($string, $start, $end){
+function get_string_between($string, $start, $end)
+{
     $string = ' ' . $string;
     $ini = strpos($string, $start);
-    if ($ini == 0) return '';
+    if ($ini == 0)
+        return '';
     $ini += strlen($start);
     $len = strpos($string, $end, $ini) - $ini;
     return substr($string, $ini, $len);

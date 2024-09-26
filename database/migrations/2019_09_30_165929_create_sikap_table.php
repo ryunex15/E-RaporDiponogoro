@@ -13,15 +13,15 @@ class CreateSikapTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.sikap', function (Blueprint $table) {
-			$table->increments('sikap_id');
-			$table->string('butir_sikap');
-			$table->integer('sikap_induk')->nullable();
-			$table->integer('sikap_id_migrasi')->nullable();
-			$table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
-			$table->foreign('sikap_induk')->references('sikap_id')->on('ref.sikap')->onUpdate('NO ACTION')->onDelete('NO ACTION');
+        Schema::create('sikap', function (Blueprint $table) {
+            $table->increments('sikap_id');
+            $table->string('butir_sikap');
+            $table->integer('sikap_induk')->nullable();
+            $table->integer('sikap_id_migrasi')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('last_sync');
+            $table->foreign('sikap_induk')->references('sikap_id')->on('sikap')->onUpdate('NO ACTION')->onDelete('NO ACTION');
         });
     }
 
@@ -32,9 +32,9 @@ class CreateSikapTable extends Migration
      */
     public function down()
     {
-        Schema::table('ref.sikap', function (Blueprint $table) {
+        Schema::table('sikap', function (Blueprint $table) {
             //
         });
-		Schema::dropIfExists('ref.sikap');
+        Schema::dropIfExists('sikap');
     }
 }

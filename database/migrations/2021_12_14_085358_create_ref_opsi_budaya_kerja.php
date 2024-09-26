@@ -13,7 +13,7 @@ class CreateRefOpsiBudayaKerja extends Migration
      */
     public function up()
     {
-        Schema::create('ref.opsi_budaya_kerja', function (Blueprint $table) {
+        Schema::create('opsi_budaya_kerja', function (Blueprint $table) {
             $table->smallInteger('opsi_id');
             $table->string('kode', 10);
             $table->string('nama', 100);
@@ -21,7 +21,7 @@ class CreateRefOpsiBudayaKerja extends Migration
             $table->string('warna', 10);
             $table->timestamps();
             $table->softDeletes();
-			$table->timestamp('last_sync');
+            $table->timestamp('last_sync');
             $table->primary('opsi_id');
         });
     }
@@ -33,6 +33,6 @@ class CreateRefOpsiBudayaKerja extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref.opsi_budaya_kerja');
+        Schema::dropIfExists('opsi_budaya_kerja');
     }
 }

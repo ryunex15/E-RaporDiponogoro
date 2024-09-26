@@ -24,7 +24,6 @@
                                 <b-th class="text-center"
                                     >Jml Peserta Didik Dinilai</b-th
                                 >
-                                <b-th class="text-center">Detil Siswa</b-th>
                                 <b-th class="text-center">Detil Kelas</b-th>
                             </b-tr>
                         </b-thead>
@@ -67,15 +66,6 @@
                                                 item.pd_dinilai
                                             }}</b-td>
                                         </template>
-                                        <b-td class="text-center">
-                                            <b-button
-                                                variant="success"
-                                                size="sm"
-                                                @click="detil(item)"
-                                            >
-                                                Detil Siswa
-                                            </b-button>
-                                        </b-td>
                                         <b-td class="text-center">
                                             <router-link
                                                 :to="{

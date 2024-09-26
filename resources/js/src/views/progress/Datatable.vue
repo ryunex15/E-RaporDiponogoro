@@ -43,6 +43,7 @@
                 <!-- New Actions Button Column -->
                 <template v-slot:cell(actions)="row">
                     <b-button
+                        v-if="actions.showView"
                         variant="primary"
                         size="sm"
                         @click="handleAction(row.item)"

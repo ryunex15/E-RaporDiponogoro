@@ -15,7 +15,7 @@ class AddFieldToCatatanBudayaKerjaTable extends Migration
     {
         Schema::table('catatan_budaya_kerja', function (Blueprint $table) {
             $table->smallInteger('budaya_kerja_id')->nullable();
-            $table->foreign('budaya_kerja_id')->references('budaya_kerja_id')->on('ref.budaya_kerja')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('budaya_kerja_id')->references('budaya_kerja_id')->on('budaya_kerja')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

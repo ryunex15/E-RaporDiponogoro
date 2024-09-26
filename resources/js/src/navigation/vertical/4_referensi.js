@@ -139,13 +139,6 @@ export default [
         },
         {
           icon: 'hand-point-right',
-          title: 'Kelas Pembelajaran',
-          route: 'referensi-kelas-pembelajaran',
-          resource: 'Guru',
-          action: 'read',
-        },
-        {
-          icon: 'hand-point-right',
           title: 'Uji Kompetensi Keahlian',
           route: 'referensi-ukk',
           resource: 'Kaprog',

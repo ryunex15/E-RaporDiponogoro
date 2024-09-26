@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Mata_pelajaran extends Model
 {
-    use HasFactory;
-    public $incrementing = false;
-	protected $table = 'ref.mata_pelajaran';
+	use HasFactory;
+	public $incrementing = false;
+	protected $table = 'mata_pelajaran';
 	protected $primaryKey = 'mata_pelajaran_id';
 	protected $guarded = [];
-	
+
 	public function pembelajaran()
 	{
 		return $this->hasOne(Pembelajaran::class, 'mata_pelajaran_id', 'mata_pelajaran_id');
 	}
-	
+
 	public function mata_pelajaran_kurikulum()
 	{
 		return $this->hasMany(Mata_pelajaran_kurikulum::class, 'mata_pelajaran_id', 'mata_pelajaran_id');

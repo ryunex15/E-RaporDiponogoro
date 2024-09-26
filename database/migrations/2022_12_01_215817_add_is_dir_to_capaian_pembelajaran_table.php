@@ -13,7 +13,7 @@ class AddIsDirToCapaianPembelajaranTable extends Migration
      */
     public function up()
     {
-        Schema::table('ref.capaian_pembelajaran', function (Blueprint $table) {
+        Schema::table('capaian_pembelajaran', function (Blueprint $table) {
             $table->decimal('is_dir', 1, 0)->nullable()->default(0);
         });
     }
@@ -25,7 +25,7 @@ class AddIsDirToCapaianPembelajaranTable extends Migration
      */
     public function down()
     {
-        Schema::table('ref.capaian_pembelajaran', function (Blueprint $table) {
+        Schema::table('capaian_pembelajaran', function (Blueprint $table) {
             $table->dropColumn(['is_dir']);
         });
     }

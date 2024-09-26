@@ -13,14 +13,14 @@ class CreateGelarAkademikTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.gelar_akademik', function (Blueprint $table) {
+        Schema::create('gelar_akademik', function (Blueprint $table) {
             $table->bigIncrements('gelar_akademik_id');
             $table->string('kode', 10);
             $table->string('nama', 40);
-			$table->decimal('posisi_gelar', 1, 0);
+            $table->decimal('posisi_gelar', 1, 0);
             $table->timestamps();
-			$table->softDeletes();
-			$table->timestamp('last_sync');
+            $table->softDeletes();
+            $table->timestamp('last_sync');
         });
     }
 
@@ -31,6 +31,6 @@ class CreateGelarAkademikTable extends Migration
      */
     public function down()
     {
-        Schema::drop('ref.gelar_akademik');
+        Schema::drop('gelar_akademik');
     }
 }

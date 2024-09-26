@@ -50,53 +50,55 @@ class KirimErapor extends Command
         $tahun_ajaran_id = $this->argument('tahun_ajaran_id');
         $semester_id = $this->argument('semester_id');
         $user_id = $this->argument('user_id');
-        if(!$table){
+        if (!$table) {
             $email = $this->ask('Email Administrator');
             $user = User::where('email', $email)->first();
-            if($user){
+            if ($user) {
                 $semester = Semester::where('periode_aktif', 1)->first();
-                if($user->hasRole('admin', $semester->nama)){
-                    $sekolah = Sekolah::with(['user' => function($query) use ($semester){
-                        $query->whereRoleIs('admin', $semester->nama);
-                    }])->find($user->sekolah_id);
-                    if($sekolah){
+                if ($user->hasRole('admin', $semester->nama)) {
+                    $sekolah = Sekolah::with([
+                        'user' => function ($query) use ($semester) {
+                            $query->whereRoleIs('admin', $semester->nama);
+                        }
+                    ])->find($user->sekolah_id);
+                    if ($sekolah) {
                         $response = NULL;
                         try {
                             $spinner = $this->spinner(100);
-                            $spinner->setMessage('Mengecek koneksi ke Server Direktorat...'."\n");
+                            $spinner->setMessage('Mengecek koneksi ke Server Direktorat...' . "\n");
                             $spinner->start();
-                            for ($i=0; $i < 100; $i++) { 
+                            for ($i = 0; $i < 100; $i++) {
                                 $spinner->advance();
                             }
                             $data_sync = [
-                                'username_dapo'		=> $user->email,
-                                'password_dapo'		=> $user->password,
-                                'npsn'				=> $user->sekolah->npsn,
-                                'tahun_ajaran_id'	=> $semester->tahun_ajaran_id,
-                                'semester_id'		=> $semester->semester_id,
-                                'sekolah_id'		=> $sekolah->sekolah_id,
-                                'kirim'              => TRUE,
+                                'username_dapo' => $user->email,
+                                'password_dapo' => $user->password,
+                                'npsn' => $user->sekolah->npsn,
+                                'tahun_ajaran_id' => $semester->tahun_ajaran_id,
+                                'semester_id' => $semester->semester_id,
+                                'sekolah_id' => $sekolah->sekolah_id,
+                                'kirim' => TRUE,
                             ];
                             $response = http_client('status', $data_sync);
                             $spinner->finish();
                         } catch (\Throwable $th) {
                             $this->error('Terdeteksi ada repositori belum terinstall di aplikasi. Silahkan jalankan "composer update" di Command Prompt ini!');
                             exit;
-                        }        
-                        if($response){
-                            if($response->message){
+                        }
+                        if ($response) {
+                            if ($response->message) {
                                 $this->error($response->message);
                                 exit;
                             } else {
                                 $table_sync = table_sync();
-                                if ($this->option('force')){
-                                    foreach($table_sync as $table){
+                                if ($this->option('force')) {
+                                    foreach ($table_sync as $table) {
                                         $force = $this->getTableForce($user->user_id, $table, $user->sekolah_id, $semester->tahun_ajaran_id, $semester->semester_id);
                                         //$this->info($force['table'].' : '.$force['count']);
                                     }
                                     Sync_log::updateOrCreate(['user_id' => $user->user_id, 'updated_at' => now()]);
                                 } else {
-                                    foreach($table_sync as $table){
+                                    foreach ($table_sync as $table) {
                                         $this->proses_kirim($user->user_id, $table, $sekolah->sekolah_id, $semester->tahun_ajaran_id, $semester->semester_id);
                                     }
                                 }
@@ -107,30 +109,32 @@ class KirimErapor extends Command
                             exit;
                         }
                     } else {
-                        $this->error('Email '.$email.' tidak terhubung ke Data Sekolah');
+                        $this->error('Email ' . $email . ' tidak terhubung ke Data Sekolah');
                         exit;
                     }
                 } else {
-                    $this->error('Email '.$email.' tidak memiliki akses Administrator');
+                    $this->error('Email ' . $email . ' tidak memiliki akses Administrator');
                     exit;
                 }
             } else {
-                $this->error('Email '.$email.' tidak terdaftar');
+                $this->error('Email ' . $email . ' tidak terdaftar');
                 exit;
             }
         } else {
             $this->proses_kirim($user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id);
         }
     }
-    private function proses_kirim($user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id){
+    private function proses_kirim($user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id)
+    {
         $count = get_table($table, $sekolah_id, $tahun_ajaran_id, $semester_id, 1);
-        if($count){
+        if ($count) {
             $data = get_table($table, $sekolah_id, $tahun_ajaran_id, $semester_id);
             $this->kirim_data($user_id, $table, $data, $sekolah_id, $tahun_ajaran_id, $semester_id);
         }
         Sync_log::updateOrCreate(['user_id' => $user_id, 'updated_at' => now()]);
     }
-    private function kirim_data($user_id, $table, $data, $sekolah_id, $tahun_ajaran_id, $semester_id){
+    private function kirim_data($user_id, $table, $data, $sekolah_id, $tahun_ajaran_id, $semester_id)
+    {
         $data_sync = [
             'sekolah_id' => $sekolah_id,
             'tahun_ajaran_id' => $tahun_ajaran_id,
@@ -139,25 +143,26 @@ class KirimErapor extends Command
             'json' => prepare_send(json_encode($data)),
         ];
         $response = http_dashboard('sinkronisasi/kirim-data', $data_sync);
-        if($response->status){
-            if($this->argument('akses')){
-                $this->call('respon:artisan', ['status' => 'info', 'title' => 'Berhasil', 'respon' => count($data).' data '.nama_table($table).' berhasil dikirim']);
+        if ($response->status) {
+            if ($this->argument('akses')) {
+                $this->call('respon:artisan', ['status' => 'info', 'title' => 'Berhasil', 'respon' => count($data) . ' data ' . nama_table($table) . ' berhasil dikirim']);
             }
-            $this->info(count($data).' data '.nama_table($table). ' berhasil dikirim');
+            $this->info(count($data) . ' data ' . nama_table($table) . ' berhasil dikirim');
             $this->update_last_sync($user_id, $table, $data, $sekolah_id);
         } else {
-            if($this->argument('akses')){
-                $this->call('respon:artisan', ['status' => 'error', 'title' => 'Gagal', 'respon' => 'Proses pengiriman data '.nama_table($table).' gagal. Server tidak merespon. Status Server: '.$response->message]);
+            if ($this->argument('akses')) {
+                $this->call('respon:artisan', ['status' => 'error', 'title' => 'Gagal', 'respon' => 'Proses pengiriman data ' . nama_table($table) . ' gagal. Server tidak merespon. Status Server: ' . $response->message]);
             }
-            $this->proses_sync('', 'Proses pengiriman data '.nama_table($table).' gagal. Server tidak merespon', 0, 0, 0);
-            $this->error('Proses pengiriman data '.nama_table($table).' gagal. Server tidak merespon. Status Server: '.$response->message);
+            $this->proses_sync('', 'Proses pengiriman data ' . nama_table($table) . ' gagal. Server tidak merespon', 0, 0, 0);
+            $this->error('Proses pengiriman data ' . nama_table($table) . ' gagal. Server tidak merespon. Status Server: ' . $response->message);
         }
     }
-    private function update_last_sync($user_id, $table, $data, $sekolah_id){
-        $i=0;
-        foreach($data as $d){
+    private function update_last_sync($user_id, $table, $data, $sekolah_id)
+    {
+        $i = 0;
+        foreach ($data as $d) {
             $this->proses_sync('Mengirim data', $table, $i, count($data), $sekolah_id);
-            if(in_array($table, ['ref.kompetensi_dasar', 'ref.paket_ukk', 'ref.capaian_pembelajaran']) || Schema::hasColumn($table, 'last_sync')){
+            if (in_array($table, ['kompetensi_dasar', 'paket_ukk', 'capaian_pembelajaran']) || Schema::hasColumn($table, 'last_sync')) {
                 $field = (array) $d;
                 $collection = collect($field);
                 $keys = $collection->keys();
@@ -167,52 +172,54 @@ class KirimErapor extends Command
             $i++;
         }
     }
-    private function proses_sync($title, $table, $inserted, $jumlah, $sekolah_id){
-        $record['table'] = $title.' '.nama_table($table);
-		$record['jumlah'] = $jumlah;
-		$record['inserted'] = $inserted;
-		Storage::disk('public')->put('proses_sync_'.$sekolah_id.'.json', json_encode($record));
+    private function proses_sync($title, $table, $inserted, $jumlah, $sekolah_id)
+    {
+        $record['table'] = $title . ' ' . nama_table($table);
+        $record['jumlah'] = $jumlah;
+        $record['inserted'] = $inserted;
+        Storage::disk('public')->put('proses_sync_' . $sekolah_id . '.json', json_encode($record));
     }
-    private function getTableForce($user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id){
-        $jml = DB::table($table)->where(function($query) use ($table, $sekolah_id, $tahun_ajaran_id, $semester_id){
-            if(in_array($table, ['ref.kompetensi_dasar'])){
+    private function getTableForce($user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id)
+    {
+        $jml = DB::table($table)->where(function ($query) use ($table, $sekolah_id, $tahun_ajaran_id, $semester_id) {
+            if (in_array($table, ['kompetensi_dasar'])) {
                 $query->whereExists(function ($query) {
                     $query->select(DB::raw(1))
-                          ->from('users')
-                          ->whereColumn('ref.kompetensi_dasar.user_id', 'users.user_id');
+                        ->from('users')
+                        ->whereColumn('kompetensi_dasar.user_id', 'users.user_id');
                 });
             }
-            if(in_array($table, ['ref.paket_ukk', 'users']) || Schema::hasColumn($table, 'sekolah_id')){
+            if (in_array($table, ['paket_ukk', 'users']) || Schema::hasColumn($table, 'sekolah_id')) {
                 $query->where('sekolah_id', $sekolah_id);
             }
-            if(in_array($table, ['ref.capaian_pembelajaran'])){
+            if (in_array($table, ['capaian_pembelajaran'])) {
                 $query->where('is_dir', 0);
             }
         })->count();
-        if($jml){
-            $this->info('Memulai kirim data '.nama_table($table));
+        if ($jml) {
+            $this->info('Memulai kirim data ' . nama_table($table));
             $bar = $this->output->createProgressBar($jml);
             $bar->start();
-            $getData = DB::table($table)->where(function($query) use ($table, $sekolah_id, $tahun_ajaran_id, $semester_id){
-                if(in_array($table, ['ref.kompetensi_dasar'])){
+            $getData = DB::table($table)->where(function ($query) use ($table, $sekolah_id, $tahun_ajaran_id, $semester_id) {
+                if (in_array($table, ['kompetensi_dasar'])) {
                     $query->whereExists(function ($query) {
                         $query->select(DB::raw(1))
                             ->from('users')
-                            ->whereColumn('ref.kompetensi_dasar.user_id', 'users.user_id');
+                            ->whereColumn('kompetensi_dasar.user_id', 'users.user_id');
                     });
                 }
-                if(in_array($table, ['ref.paket_ukk', 'users']) || Schema::hasColumn($table, 'sekolah_id')){
+                if (in_array($table, ['paket_ukk', 'users']) || Schema::hasColumn($table, 'sekolah_id')) {
                     $query->where('sekolah_id', $sekolah_id);
                 }
-                if(in_array($table, ['ref.capaian_pembelajaran'])){
+                if (in_array($table, ['capaian_pembelajaran'])) {
                     $query->where('is_dir', 0);
                 }
             });
             if (Schema::hasColumn($table, 'last_sync')) {
                 $getData->update(['last_sync' => now()]);
             }
-            $getData->orderBy('created_at')->chunk(1000, function ($data) use ($bar, $user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id){
-                foreach($data as $d){
+            $getData->orderBy('created_at')->chunk(1000, function ($data) use ($bar, $user_id, $table, $sekolah_id, $tahun_ajaran_id, $semester_id) {
+                foreach ($data as $d) {
                     $bar->advance();
                 }
                 try {
@@ -225,13 +232,13 @@ class KirimErapor extends Command
                     ];
                     http_dashboard('sinkronisasi/kirim-data', $data_sync);
                 } catch (\Throwable $th) {
-                    $this->error('Proses pengiriman data '.nama_table($table).' gagal. Server tidak merespon. Status Server: '.$th->getMessage());
+                    $this->error('Proses pengiriman data ' . nama_table($table) . ' gagal. Server tidak merespon. Status Server: ' . $th->getMessage());
                 }
                 //$this->kirim_data($user_id, $table, $data, $sekolah_id, $tahun_ajaran_id, $semester_id);
             });
             $bar->finish();
             $this->newLine();
-            $this->warn('Kirim data '.nama_table($table).' selesai!');
+            $this->warn('Kirim data ' . nama_table($table) . ' selesai!');
         }
     }
 }

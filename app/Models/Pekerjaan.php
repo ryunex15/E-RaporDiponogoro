@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pekerjaan extends Model
 {
-    use HasFactory;
-    public $incrementing = false;
-	protected $table = 'ref.pekerjaan';
+	use HasFactory;
+	public $incrementing = false;
+	protected $table = 'pekerjaan';
 	protected $primaryKey = 'pekerjaan_id';
 	protected $guarded = [];
 }

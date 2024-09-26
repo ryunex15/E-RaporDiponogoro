@@ -13,18 +13,18 @@ class CreateSemesterTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref.semester', function (Blueprint $table) {
+        Schema::create('semester', function (Blueprint $table) {
             $table->string('semester_id', 5);
             $table->decimal('tahun_ajaran_id', 4, 0);
-			$table->string('nama');
-			$table->decimal('semester', 1, 0);
-			$table->decimal('periode_aktif', 1, 0);
-			$table->date('tanggal_mulai');
-			$table->date('tanggal_selesai');
-			$table->timestamps();
-			$table->timestamp('last_sync');
+            $table->string('nama');
+            $table->decimal('semester', 1, 0);
+            $table->decimal('periode_aktif', 1, 0);
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->timestamps();
+            $table->timestamp('last_sync');
             $table->primary('semester_id');
-			$table->foreign('tahun_ajaran_id')->references('tahun_ajaran_id')->on('ref.tahun_ajaran')
+            $table->foreign('tahun_ajaran_id')->references('tahun_ajaran_id')->on('tahun_ajaran')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
@@ -36,9 +36,9 @@ class CreateSemesterTable extends Migration
      */
     public function down()
     {
-        Schema::table('ref.semester', function (Blueprint $table) {
+        Schema::table('semester', function (Blueprint $table) {
             $table->dropForeign(['tahun_ajaran_id']);
         });
-		Schema::dropIfExists('ref.semester');
+        Schema::dropIfExists('semester');
     }
 }

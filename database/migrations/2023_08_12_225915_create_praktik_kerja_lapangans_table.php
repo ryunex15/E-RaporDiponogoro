@@ -29,7 +29,7 @@ return new class extends Migration
             $table->foreign('guru_id')->references('guru_id')->on('guru')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('rombongan_belajar_id')->references('rombongan_belajar_id')->on('rombongan_belajar')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('akt_pd_id')->references('akt_pd_id')->on('akt_pd')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign('semester_id')->references('semester_id')->on('ref.semester')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('semester_id')->references('semester_id')->on('semester')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

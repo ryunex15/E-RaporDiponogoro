@@ -19,22 +19,25 @@ class GuruController extends Controller
     public function index()
     {
         $datas = Guru::paginate(request()->per_page);
-        $data = Guru::where(function($query){
+        $data = Guru::where(function ($query) {
             $query->whereIn('jenis_ptk_id', jenis_gtk(request()->jenis_gtk));
             $query->where('sekolah_id', request()->sekolah_id);
-            $query->whereDoesntHave('ptk_keluar', function($query){
+            $query->whereDoesntHave('ptk_keluar', function ($query) {
                 $query->where('semester_id', request()->semester_id);
             });
-        })->with(['sekolah' => function($query){
-            $query->select('sekolah_id', 'nama');
-        }])->orderBy(request()->sortby, request()->sortbydesc)
-        ->when(request()->q, function($query) {
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
-            $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
-        })->paginate(request()->per_page);
+        })->with([
+                    'sekolah' => function ($query) {
+                        $query->select('sekolah_id', 'nama');
+                    }
+                ])->orderBy(request()->sortby, request()->sortbydesc)
+            ->when(request()->q, function ($query) {
+                $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+                $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
+            })->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data, 'datas' => $datas]);
     }
-    public function detil(){
+    public function detil()
+    {
         $guru = Guru::with(['gelar_depan', 'gelar_belakang', 'agama', 'dudi'])->find(request()->guru_id);
         $data = [
             'guru' => $guru,
@@ -45,28 +48,29 @@ class GuruController extends Controller
         ];
         return response()->json($data);
     }
-    public function update(){
-        Gelar_ptk::where(function($query){
+    public function update()
+    {
+        Gelar_ptk::where(function ($query) {
             $query->has('gelar_depan');
             $query->where('guru_id', request()->guru_id);
             $query->whereNotIn('gelar_akademik_id', request()->gelar_depan);
         })->delete();
-        Gelar_ptk::where(function($query){
+        Gelar_ptk::where(function ($query) {
             $query->has('gelar_belakang');
             $query->where('guru_id', request()->guru_id);
             $query->whereNotIn('gelar_akademik_id', request()->gelar_belakang);
         })->delete();
-        if(request()->gelar_depan){
-            foreach(request()->gelar_depan as $depan){
+        if (request()->gelar_depan) {
+            foreach (request()->gelar_depan as $depan) {
                 $this->updateGelar($depan);
             }
         }
-        if(request()->gelar_belakang){
-            foreach(request()->gelar_belakang as $belakang){
+        if (request()->gelar_belakang) {
+            foreach (request()->gelar_belakang as $belakang) {
                 $this->updateGelar($belakang);
             }
         }
-        if(request()->asesor){
+        if (request()->asesor) {
             Asesor::updateOrCreate(
                 [
                     'sekolah_id' => request()->sekolah_id,
@@ -85,12 +89,13 @@ class GuruController extends Controller
         ];
         return response()->json($data);
     }
-    private function updateGelar($data){
-        $find = Gelar_ptk::where(function($query) use ($data){
+    private function updateGelar($data)
+    {
+        $find = Gelar_ptk::where(function ($query) use ($data) {
             $query->where('guru_id', request()->guru_id);
             $query->where('gelar_akademik_id', $data);
         })->first();
-        if(!$find){
+        if (!$find) {
             Gelar_ptk::create(
                 [
                     'gelar_ptk_id' => Str::uuid(),
@@ -103,7 +108,8 @@ class GuruController extends Controller
             );
         }
     }
-    public function upload(){
+    public function upload()
+    {
         request()->validate(
             [
                 'file_excel' => 'required|mimes:xlsx',
@@ -117,21 +123,22 @@ class GuruController extends Controller
         $data = ['imported_data' => $this->imported_data($file_excel)];
         return response()->json($data);
     }
-    private function imported_data($file_excel){
-        $imported_data = (new FastExcel)->import(storage_path('/app/public/'.$file_excel));
+    private function imported_data($file_excel)
+    {
+        $imported_data = (new FastExcel)->import(storage_path('/app/public/' . $file_excel));
         $collection = collect($imported_data);
         $multiplied = $collection->map(function ($items, $key) {
-            foreach($items as $k => $v){
-                $k = str_replace('.','',$k);
-                $k = str_replace(' ','_',$k);
-                $k = str_replace('/','_',$k);
+            foreach ($items as $k => $v) {
+                $k = str_replace('.', '', $k);
+                $k = str_replace(' ', '_', $k);
+                $k = str_replace('/', '_', $k);
                 $k = strtolower($k);
                 $item[$k] = $v;
             }
             return $item;
         });
         $result = [];
-        foreach($multiplied->all() as $urut => $data){
+        foreach ($multiplied->all() as $urut => $data) {
             $result[$urut] = [
                 'no' => $data['no'],
                 'nama' => $data['nama'],
@@ -154,8 +161,8 @@ class GuruController extends Controller
         }
         return $result;
         return $multiplied->all();
-        
-        foreach($multiplied->all() as $urut => $data){
+
+        foreach ($multiplied->all() as $urut => $data) {
             $this->nama[$urut] = $data['nama'];
             $this->nuptk[$urut] = $data['nuptk'];
             $this->nip[$urut] = $data['nip'];
@@ -175,7 +182,8 @@ class GuruController extends Controller
         }
         $this->imported_data = $multiplied->all();
     }
-    public function simpan(){
+    public function simpan()
+    {
         request()->validate(
             [
                 'nama.*' => 'required',
@@ -183,7 +191,7 @@ class GuruController extends Controller
                 'jenis_kelamin.*' => 'required',
                 'tempat_lahir.*' => 'required',
                 'tanggal_lahir.*' => 'required|date|date_format:Y-m-d',
-                'agama.*' => 'required|exists:pgsql.ref.agama,nama',
+                'agama.*' => 'required|exists:pgsql.agama,nama',
                 'email.*' => 'required|unique:guru,email,NULL,guru_id,deleted_at,NULL',
             ],
             [
@@ -203,7 +211,7 @@ class GuruController extends Controller
                 'nik.*.unique' => 'NIK sudah terdaftar!',
             ]
         );
-        foreach(request()->nama as $urut => $nama){
+        foreach (request()->nama as $urut => $nama) {
             $agama = Agama::where('nama', request()->agama[$urut])->first();
             Guru::updateOrcreate(
                 [
@@ -237,32 +245,33 @@ class GuruController extends Controller
         $data = [
             'icon' => 'success',
             'title' => 'Berhasil!',
-            'text' => 'Data '.ucfirst(request()->jenis_gtk).' berhasil disimpan',
+            'text' => 'Data ' . ucfirst(request()->jenis_gtk) . ' berhasil disimpan',
             'request' => request()->all(),
         ];
         return response()->json($data);
     }
-    public function hapus(){
+    public function hapus()
+    {
         $find = Guru::find(request()->id);
-        if($find){
-            if($find->delete()){
+        if ($find) {
+            if ($find->delete()) {
                 $data = [
                     'icon' => 'success',
                     'title' => 'Berhasil!',
-                    'text' => 'Data '.request()->data.' berhasil dihapus',
+                    'text' => 'Data ' . request()->data . ' berhasil dihapus',
                 ];
             } else {
                 $data = [
                     'icon' => 'error',
                     'title' => 'Gagal!',
-                    'text' => 'Data '.request()->data.' gagal dihapus',
+                    'text' => 'Data ' . request()->data . ' gagal dihapus',
                 ];
             }
         } else {
             $data = [
                 'icon' => 'error',
                 'title' => 'Gagal!',
-                'text' => 'Data '.request()->data.' tidak ditemukan',
+                'text' => 'Data ' . request()->data . ' tidak ditemukan',
             ];
         }
         return response()->json($data);

@@ -9,7 +9,7 @@ class Status_kepegawaian extends Model
 {
     use HasFactory;
     public $incrementing = false;
-    protected $table = 'ref.status_kepegawaian';
-	protected $primaryKey = 'status_kepegawaian_id';
-	protected $guarded = [];
+    protected $table = 'status_kepegawaian';
+    protected $primaryKey = 'status_kepegawaian_id';
+    protected $guarded = [];
 }
