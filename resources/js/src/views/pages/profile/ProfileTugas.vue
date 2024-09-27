@@ -60,7 +60,7 @@
                                         •
                                         <span>{{
                                             formatDate(selectedTask.created_at)
-                                            }}</span>
+                                        }}</span>
                                     </p>
                                     <p>100 poin</p>
                                     <hr />
@@ -148,27 +148,34 @@
                                 </div>
 
                                 <!-- Modal untuk kirim tuags -->
-                                <b-modal v-model="showModal" title="Kirim tugas" v-if="activeTab === 'ditugaskan'">
-                                    <form @submit.prevent="submitTopik">
+                                <b-modal v-model="showModal">
+                                    <form @submit.prevent="submitJawabanTugas" enctype="multipart/form-data">
                                         <!-- Tabel Input Topik -->
-                                        <b-form-group label="id_pembelajaran" label-for="id_pembelajaran">
-                                            <b-form-input id="id_pembelajaran" required class="w-100"></b-form-input>
+                                        <b-form-group label="tugas_id" label-for="tugas_id">{{ this.items[0].tugas_id }}
+                                            <b-form-input id="tugas_id" v-model="kirimTugas.tugas_id" required
+                                                class="w-100"></b-form-input>
                                         </b-form-group>
-                                        <b-form-group label="Topik tugas" label-for="topik">
-                                            <b-form-input id="topik" required class="w-100"></b-form-input>
-                                        </b-form-group>
+
                                         <!-- Input Upload File -->
                                         <b-form-group label="Upload File" label-for="upload-file">
-                                            <b-form-file id="upload-file" required class="w-100"></b-form-file>
+                                            <b-form-file id="upload-file" v-model="kirimTugas.file" required
+                                                class="w-100"></b-form-file>
+                                        </b-form-group>
+
+                                        <!-- Input Komentar -->
+                                        <b-form-group label="Komentar" label-for="komentar">
+                                            <b-form-textarea id="komentar" v-model="kirimTugas.komentar" rows="3"
+                                                required class="w-100"></b-form-textarea>
                                         </b-form-group>
 
                                         <div class="d-flex justify-content-end">
                                             <b-button type="submit" variant="success">
-                                                Tambahkan Topik
+                                                Kirim Tugas
                                             </b-button>
                                         </div>
                                     </form>
                                 </b-modal>
+
                             </div>
                         </div>
                     </div>
@@ -206,7 +213,6 @@ export default {
         BFormGroup,
         BFormInput,
         BFormFile,
-
     },
 
     props: {
@@ -229,9 +235,15 @@ export default {
             isBusy: false,
             activeTab: "ditugaskan",
             showModal: false,
-            isTaskView: false, // State untuk menampilkan halaman detail tugas
+            isTaskView: false,
             selectedTask: {},
             items: [],
+            kirimTugas: {
+                tugas_id: null,
+                peserta_didik_id: null,
+                file: null,
+                komentar: "",
+            },
             fields: [
                 { key: "id", label: "ID" },
                 { key: "judul", label: "JUDUL" },
@@ -249,10 +261,15 @@ export default {
                 judul: tugas.judul,
                 topik: tugas["topik_tugas"].judul_topik,
                 tanggal: tugas.deadline,
+                tugas_id: tugas.tugas_id,
                 deskripsi: tugas.deskripsi || "Deskripsi tidak tersedia",
                 file: tugas.lampiran_document || "Deskripsi tidak tersedia",
                 created_at: tugas.created_at,
             }));
+
+            if (this.items.length > 0) {
+                this.kirimTugas.tugas_id = `${this.items[0].tugas_id}`;
+            }
         },
     },
 
@@ -262,22 +279,20 @@ export default {
         },
         viewTask(task) {
             this.selectedTask = task;
-            this.isTaskView = true; // Menampilkan halaman detail tugas
+            this.isTaskView = true;
         },
         backToList() {
-            this.isTaskView = false; // Kembali ke daftar tugas
+            this.isTaskView = false;
         },
         handleKirim(pembelajaran_id) {
             console.log(pembelajaran_id);
         },
         formatDate(date) {
             if (!date) return "-";
-
             const formattedDate = new Date(date).toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "long",
             });
-
             return formattedDate;
         },
 
@@ -303,7 +318,6 @@ export default {
         },
 
         handleDownload(filePath) {
-            // Trigger file download manually
             const link = document.createElement("a");
             link.href = this.getImageUrl(filePath);
             link.download = this.getFileName(filePath);
@@ -311,22 +325,63 @@ export default {
             link.click();
             document.body.removeChild(link);
         },
+
         convertToLink(text) {
-            // Cek apakah text ada dan merupakan string
             if (!text || typeof text !== "string") {
-                return text; // Jika text undefined atau bukan string, kembalikan seperti semula
+                return text;
             }
 
             const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
             return text.replace(urlRegex, (url) => {
                 let href = url.startsWith("www.") ? `http://${url}` : url;
-                return `<a href="${href}" target="_blank">${url}</a>`; // Mengembalikan string dengan tag <a>
+                return `<a href="${href}" target="_blank">${url}</a>`;
             });
         },
 
+        // Move the submitJawabanTugas method inside the methods object
+        async submitJawabanTugas() {
+            console.log('ddsda');
+            this.isBusy = true;
+            try {
+                const formData = new FormData();
+                formData.append('tugas_id', this.kirimTugas.tugas_id);
+                formData.append('file', this.kirimTugas.file);
+                formData.append('komentar', this.kirimTugas.komentar);
+
+                const response = await this.$http.post('/kirim_jawaban', formData);
+
+                console.log(formData)
+
+                this.$bvToast.toast('Tugas berhasil dikirim!', {
+                    title: 'Sukses',
+                    variant: 'success',
+                    solid: true,
+                });
+
+
+
+                this.isBusy = false;
+            } catch (error) {
+                this.isBusy = false;
+                this.$bvToast.toast('Gagal mengirim tugas.', {
+                    title: 'Error',
+                    variant: 'danger',
+                    solid: true,
+                });
+            }
+
+        },
+    },
+
+    resetForm() {
+        this.kirimTugas = {
+            file: null,
+            komentar: "",
+        }
     },
 };
 </script>
+
 
 <style scoped>
 .main-card {

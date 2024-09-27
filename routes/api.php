@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JawabanTugasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdController;
@@ -36,6 +37,8 @@ Route::get('/getSiswa', [TopikTugasController::class, 'getPd']);
 Route::get('/topik', [TopikTugasController::class, 'index']);
 Route::post('/simpan-topik', [TopikTugasController::class, 'store']);
 Route::delete('/topik/{id}', [TopikTugasController::class, 'destroy'])->name('topik.destroy');
+
+Route::post('/kirim_jawaban', [JawabanTugasController::class, 'store']);
 
 Route::get('/tugas', [TugasController::class, 'index']);
 Route::get('/detail', [TugasController::class, 'detail']);
