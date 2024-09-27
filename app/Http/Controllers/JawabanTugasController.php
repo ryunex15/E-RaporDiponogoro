@@ -26,7 +26,7 @@ class JawabanTugasController extends Controller
 
         // Simpan file
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('uploads'); // adjust path as needed
+            $path = $request->file('file')->store('public/tugas'); // adjust path as needed
         }
 
         // Buat entri baru di tabel Jawaban_siswa
