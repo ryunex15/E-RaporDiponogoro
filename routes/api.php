@@ -38,7 +38,9 @@ Route::get('/topik', [TopikTugasController::class, 'index']);
 Route::post('/simpan-topik', [TopikTugasController::class, 'store']);
 Route::delete('/topik/{id}', [TopikTugasController::class, 'destroy'])->name('topik.destroy');
 
+Route::get('/tugas_siswa', [JawabanTugasController::class, 'index']);
 Route::post('/kirim_jawaban', [JawabanTugasController::class, 'store']);
+Route::post('/update-nilai', [JawabanTugasController::class, 'update']);
 
 Route::get('/tugas', [TugasController::class, 'index']);
 Route::get('/detail', [TugasController::class, 'detail']);

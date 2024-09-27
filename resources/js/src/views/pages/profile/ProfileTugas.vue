@@ -151,9 +151,9 @@
                                 <b-modal v-model="showModal" title="Kirim Tugas">
                                     <form @submit.prevent="submitJawabanTugas" enctype="multipart/form-data">
                                         <!-- Tabel Input Topik -->
-                                        <b-form-group label="" label-for="tugas_id">
-                                            <b-form-input id="tugas_id" v-model="kirimTugas.tugas_id" required
-                                                class="w-100" disabled hidden></b-form-input>
+                                        <b-form-group label="" label-for="tugas_id">{{ selectedTask.tugas_id }}
+                                            <b-form-input id="tugas_id" v-model="selectedTask.tugas_id" required
+                                                class="w-100" disabled></b-form-input>
                                         </b-form-group>
 
                                         <!-- Input Upload File -->
@@ -265,11 +265,14 @@ export default {
                 deskripsi: tugas.deskripsi || "Deskripsi tidak tersedia",
                 file: tugas.lampiran_document || "Deskripsi tidak tersedia",
                 created_at: tugas.created_at,
+                
             }));
 
-            if (this.items.length > 0) {
-                this.kirimTugas.tugas_id = `${this.items[0].tugas_id}`;
-            }
+            this.kirimTugas =  newTugas.map((tugas, index) => ({
+                tugas_id: tugas.tugas_id,
+
+            }));
+           
         },
     },
 
@@ -280,6 +283,7 @@ export default {
         viewTask(task) {
             this.selectedTask = task;
             this.isTaskView = true;
+            
         },
         backToList() {
             this.isTaskView = false;
@@ -338,19 +342,17 @@ export default {
             });
         },
 
-        // Move the submitJawabanTugas method inside the methods object
+        // kirim tugas
         async submitJawabanTugas() {
-        console.log('ddsda');
         this.isBusy = true;
         try {
             const formData = new FormData();
-            formData.append('tugas_id', this.kirimTugas.tugas_id);
+            formData.append('tugas_id', this.selectedTask.tugas_id);
             formData.append('file', this.kirimTugas.file);
             formData.append('komentar', this.kirimTugas.komentar);
 
             const response = await this.$http.post('/kirim_jawaban', formData);
 
-            console.log(formData);
 
             // Show success toast
             this.$bvToast.toast('Tugas berhasil dikirim!', {
@@ -377,10 +379,11 @@ export default {
         }
     },
 
+    
+    // kosongkan form
     resetForm() {
         this.kirimTugas.file = null;
         this.kirimTugas.komentar = "";
-        // Keep tugas_id intact
     }
     },
 };

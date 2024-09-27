@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-        <div class="row">
+        <div class="row " v-if="!showDetail">
             <div class="col-lg-8 col-md-12">
                 <div class="card">
                     <div class="card-body">
@@ -31,52 +31,20 @@
                         <p v-html="convertToLink(items.tugas ? items.tugas.deskripsi : 'tidak tersedia')"></p>
                         <hr />
                         <p>Lampiran File:</p>
-                        <!-- Menampilkan gambar -->
-                        <div
-                            v-if="
-                                getFileType(items.tugas.lampiran_document) ===
-                                'image'
-                            "
-                        >
-                            <img
-                                :src="
-                                    getImageUrl(items.tugas.lampiran_document)
-                                "
-                                alt="gambar"
-                                class="img-fluid"
-                            />
+                        <div v-if="getFileType(items.tugas.lampiran_document) === 'image'">
+                            <img :src="getImageUrl(items.tugas.lampiran_document)" alt="gambar" class="img-fluid" />
                         </div>
 
-                        <!-- Menampilkan preview PDF -->
-                        <div
-                            v-else-if="
-                                getFileType(items.tugas.lampiran_document) ===
-                                'pdf'
-                            "
-                        >
-                            <strong class="text-xl fw-bold">
-                                Preview saat ini tidak tersedia untuk PDF.
-                            </strong>
+                        <div v-else-if="getFileType(items.tugas.lampiran_document) === 'pdf'">
+                            <strong class="text-xl fw-bold">Preview saat ini tidak tersedia untuk PDF.</strong>
                         </div>
 
-                        <!-- Menampilkan preview DOCX -->
-                        <div
-                            v-else-if="
-                                getFileType(items.tugas.lampiran_document) ===
-                                'docx'
-                            "
-                        >
-                            <strong class="text-xl fw-bold">
-                                Preview saat ini tidak tersedia untuk DOCX.
-                            </strong>
+                        <div v-else-if="getFileType(items.tugas.lampiran_document) === 'docx'">
+                            <strong class="text-xl fw-bold">Preview saat ini tidak tersedia untuk DOCX.</strong>
                         </div>
-                        <!-- Download Button -->
                         <div v-if="items.tugas.lampiran_document">
-                            <b-button
-                                variant="success"
-                                class="mt-1"
-                                @click="handleDownload(items.tugas.lampiran_document)"
-                            >
+                            <b-button variant="success" class="mt-1"
+                                @click="handleDownload(items.tugas.lampiran_document)">
                                 Download
                             </b-button>
                         </div>
@@ -87,32 +55,70 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="col-lg-4 col-md-12">
+        </div>
+
+        <div class="row" v-if="!showDetail">
+            <div class="col-lg-8 col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5>Tugas</h5>
-                            <b-badge variant="success">Selesai</b-badge>
-                        </div>
-                        <div class="d-flex flex-column mt-3">
-                            <b-button variant="outline-primary" class="mb-2">
-                                + Tambah atau buat
-                            </b-button>
-
-                            <b-button variant="primary"
-                                >Tandai sebagai selesai</b-button
-                            >
-                        </div>
+                        <h2 class="d-flex justify-content-center">Pengumpulan Tugas</h2>
+                        <b-list-group>
+                            <b-list-group-item v-for="(student, index) in students" :key="index"
+                                class="border-0 py-3 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <b-avatar :src="student.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
+                                    <div>
+                                        <div class="font-weight-bold">{{ student.peserta_didik.nama }}</div>
+                                        <div class="text-muted small">{{ student.kelas }}</div>
+                                    </div>
+                                </div>
+                                <b-button variant="primary"
+                                    @click="handleClick(student.peserta_didik.peserta_didik_id, student)">Lihat</b-button>
+                            </b-list-group-item>
+                            <hr class="my-4" />
+                        </b-list-group>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
+
+        <!-- New Detail Section -->
+        <div v-if="showDetail" class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="mb-2">Detail Tugas Siswa</h2>
+                        <h4>Nama: </h4>
+                        <p class="text-md">{{ detailJawaban.peserta_didik.nama }}</p>
+                        <h4>Komentar:</h4>
+                        <p class="fs-4 fw"> {{ detailJawaban.komentar }} </p>
+                        <div class="mb-4">
+                            <img :src="getImageUrl(detailJawaban.lampiran)" alt="Gambar Tugas" class="img-fluid"
+                                style="width: 100%; height: 50%;">
+                        </div>
+                        <form @submit.prevent="submitNilai">
+                            <div class="form-group">
+                                <h3>Nilai</h3>
+                                <input type="number" class="form-control col-6" id="nilai" v-model="updateNilai.nilai"
+                                    required>
+                                <input type="text" class="form-control col-6" id="nilai"
+                                    v-model="detailJawaban.peserta_didik_id" disabled>
+                                <input type="text" class="form-control col-6" id="nilai" v-model="id_tugas" disabled>
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan Nilai</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 </template>
 
+
 <script>
 import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons, BListGroup } from "bootstrap-vue";
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
@@ -121,8 +127,18 @@ export default {
     name: "WebsiteCreation",
     data() {
         return {
+            nilai: null,
             id_tugas: this.$route.query.id,
             items: {},
+            students: [], // Initialize as an empty array
+            detailJawaban: [],
+            showDetail: false, // New property to control visibility
+            selectedStudentId: null, // To hold the ID of the selected student
+            updateNilai: {
+                nilai: null,
+                peserta_didik_id: null,
+                tugas_id: null,
+            }
         };
     },
 
@@ -153,6 +169,27 @@ export default {
                     //         deskripsi: item.deskripsi || "Deskripsi tidak tersedia",
                     //     }));
                     console.log("Data tugas:", this.items);
+                });
+            this.$http
+                .get("/tugas_siswa", {
+                    params: {
+                        id_tugas: id_tugas,
+                    },
+                })
+                .then((response) => {
+                    let getData = response.data;
+                    console.log("testing hari ini", getData);
+                    this.students = getData;
+
+                    // this.tugas = getData.tugas.map((item) => ({
+                    //         judul: item.judul,
+                    //         file: item.lampiran_document,
+                    //         created_at: item.created_at,
+                    //         updated_at: item.updated_at,
+                    //         tanggal: item.deadline,
+                    //         deskripsi: item.deskripsi || "Deskripsi tidak tersedia",
+                    //     }));
+                    // console.log("Data tugas:", this.items);
                 });
         },
 
@@ -197,9 +234,9 @@ export default {
             document.body.removeChild(link);
         },
 
-         backToList() {
-           const pembelajaran_id = this.items.tugas.pembelajaran_id;
-           this.$router.push({
+        backToList() {
+            const pembelajaran_id = this.items.tugas.pembelajaran_id;
+            this.$router.push({
                 path: `/referensi/kelas-pembelajaran/kelas`,
                 query: {
                     pembelajaran_id: pembelajaran_id,
@@ -219,6 +256,49 @@ export default {
                 return `<a href="${href}" target="_blank">${url}</a>`; // Mengembalikan string dengan tag <a>
             });
         },
+
+        handleClick(id, student) {
+            this.showDetail = true; // Show the detail section
+            console.log('lihat tugas', id);
+            console.log('ini siswa', student);
+            this.detailJawaban = student;
+        },
+
+        async submitNilai() {
+            // Logika untuk mengirim nilai tugas ke server
+            console.log("Mengirim nilai tugas...");
+            // Tambahkan logika untuk mengirim data ke server
+
+
+            try {
+                // Buat instance FormData
+                const formData = new FormData();
+
+                // Tambahkan nilai ke dalam FormData
+                formData.append('nilai', this.nilai);
+                formData.append('peserta_didik_id', detailJawaban.peserta_didik_id);
+                formData.append('tugas_id', this.id_tugas);
+
+                // Kirim POST request ke endpoint server menggunakan FormData
+                const response = await this.$http.post('/update-nilai', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                // Handle response (misal tampilkan pesan sukses)
+                console.log('Response:', response.data);
+                alert('Nilai berhasil disimpan!');
+
+                // Reset form (jika diperlukan)
+                this.nilai = null;
+            } catch (error) {
+                console.error('Error submitting nilai:', error);
+                alert('Terjadi kesalahan saat menyimpan nilai');
+            }
+        }
+
+      
     },
 };
 </script>
