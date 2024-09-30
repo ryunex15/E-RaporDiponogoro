@@ -15,7 +15,7 @@ class TugasController extends Controller
         $pembelajaran_id = request()->pembelajaran_id;
 
         // Ambil data tugas
-        $tugas = Tugas::where('pembelajaran_id', $pembelajaran_id)->with('topikTugas')->get();
+        $tugas = Tugas::where('pembelajaran_id', $pembelajaran_id)->with('topikTugas', 'jawabanSiswa')->get();
         
 
 

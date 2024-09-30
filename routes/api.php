@@ -42,6 +42,9 @@ Route::get('/tugas_siswa', [JawabanTugasController::class, 'index']);
 Route::post('/kirim_jawaban', [JawabanTugasController::class, 'store']);
 Route::post('/update-nilai', [JawabanTugasController::class, 'update']);
 
+Route::get('/get-jawaban-tugas/{tugas_id}', [JawabanTugasController::class, 'getJawabanTugas']);
+
+
 Route::get('/tugas', [TugasController::class, 'index']);
 Route::get('/detail', [TugasController::class, 'detail']);
 Route::post('/tugas', [TugasController::class, 'store']);

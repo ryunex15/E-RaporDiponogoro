@@ -66,15 +66,19 @@
                             <b-list-group-item v-for="(student, index) in students" :key="index"
                                 class="border-0 py-3 d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center">
+                                    <!-- Display the index + 1 as the number -->
+                                    <div class="mr-3 font-weight-bold">{{ index + 1 }}.</div>
                                     <b-avatar :src="student.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
                                     <div>
                                         <div class="font-weight-bold">{{ student.peserta_didik.nama }}</div>
                                         <div class="text-muted small">{{ student.kelas }}</div>
+                                        <div class="font-weight-bold">Nilai : {{ student.nilai }}</div>
                                     </div>
                                 </div>
                                 <b-button variant="primary"
                                     @click="handleClick(student.peserta_didik.peserta_didik_id, student)">Lihat</b-button>
                             </b-list-group-item>
+
                             <hr class="my-4" />
                         </b-list-group>
                     </div>
@@ -87,23 +91,31 @@
             <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="mb-2">Detail Tugas Siswa</h2>
+                        <h2 class="mb-2">Detail Tugas Siswa 123</h2>
                         <h4>Nama: </h4>
                         <p class="text-md">{{ detailJawaban.peserta_didik.nama }}</p>
                         <h4>Komentar:</h4>
                         <p class="fs-4 fw"> {{ detailJawaban.komentar }} </p>
                         <div class="mb-4">
                             <img :src="getImageUrl(detailJawaban.lampiran)" alt="Gambar Tugas" class="img-fluid"
-                                style="width: 100%; height: 50%;">
+                                style="width: 40%; height: 40%;">
+                        </div>
+                        <div>
+                            <button class="btn btn-info" @click="handleDownload(detailJawaban.lampiran)">Download File</button>
                         </div>
                         <form @submit.prevent="submitNilai">
                             <div class="form-group">
                                 <h3>Nilai</h3>
-                                <input type="number" class="form-control col-6" id="nilai" v-model="updateNilai.nilai"
-                                    required>
+                                <input 
+                                    type="number" 
+                                    class="form-control col-6" 
+                                    id="nilai" 
+                                    v-model="computedNilai" 
+                                    required
+                                />
                                 <input type="text" class="form-control col-6" id="nilai"
-                                    v-model="detailJawaban.peserta_didik_id" disabled>
-                                <input type="text" class="form-control col-6" id="nilai" v-model="id_tugas" disabled>
+                                    v-model="detailJawaban.peserta_didik_id" hidden>
+                                <input type="text" class="form-control col-6" id="nilai" v-model="id_tugas" hidden>
                             </div>
                             <button type="submit" class="btn btn-success">Simpan Nilai</button>
                         </form>
@@ -145,6 +157,20 @@ export default {
     created() {
         this.id_tugas = this.$route.query.id;
         this.loadPostsData(this.id_tugas);
+    },
+
+    computed: {
+        // Jika detailJawaban.nilai ada, gunakan itu; jika tidak, gunakan updateNilai.nilai
+        computedNilai: {
+        get() {
+            return this.detailJawaban.nilai !== null 
+            ? this.detailJawaban.nilai 
+            : this.updateNilai.nilai;
+        },
+        set(value) {
+            this.updateNilai.nilai = value; // Set nilai ke updateNilai.nilai
+        }
+        }
     },
 
     methods: {
@@ -266,7 +292,7 @@ export default {
 
         async submitNilai() {
             // Logika untuk mengirim nilai tugas ke server
-            console.log("Mengirim nilai tugas...");
+            console.log("Mengirim nilai tugas...", this.detailJawaban);
             // Tambahkan logika untuk mengirim data ke server
 
 
@@ -275,9 +301,10 @@ export default {
                 const formData = new FormData();
 
                 // Tambahkan nilai ke dalam FormData
-                formData.append('nilai', this.nilai);
-                formData.append('peserta_didik_id', detailJawaban.peserta_didik_id);
+                formData.append('nilai', this.updateNilai.nilai);
+                formData.append('peserta_didik_id', this.detailJawaban.peserta_didik_id);
                 formData.append('tugas_id', this.id_tugas);
+                formData.append('detail_jawaban_id', this.detailJawaban.id);
 
                 // Kirim POST request ke endpoint server menggunakan FormData
                 const response = await this.$http.post('/update-nilai', formData, {
@@ -287,7 +314,7 @@ export default {
                 });
 
                 // Handle response (misal tampilkan pesan sukses)
-                console.log('Response:', response.data);
+                console.log('Response:', response);
                 alert('Nilai berhasil disimpan!');
 
                 // Reset form (jika diperlukan)

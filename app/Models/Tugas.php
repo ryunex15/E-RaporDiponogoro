@@ -55,5 +55,10 @@ class Tugas extends Model
       {
           return $this->belongsTo(Pembelajaran::class, 'pembelajaran_id');
       }
+
+      public function jawabanSiswa()
+      {
+          return $this->hasMany(Jawaban_siswa::class, 'tugas_id');
+      }
 };
 

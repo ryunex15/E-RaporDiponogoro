@@ -121,6 +121,7 @@ export default {
 
                         this.tugas = getData.tugas.map((item, index) => ({
                             id : index + 1,
+                            tugas_id: item.tugas_id,
                             judul: item.judul, // judul tugas
                             tanggal: item.deadline, // deadline
                             topik: item['topik_tugas'].judul_topik, // topik tugas

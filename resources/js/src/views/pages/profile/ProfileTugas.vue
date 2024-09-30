@@ -62,7 +62,9 @@
                                             formatDate(selectedTask.created_at)
                                         }}</span>
                                     </p>
-                                    <p>100 poin</p>
+                                    {{ tugas == null ? 'Belom Mengumpulkan Tugas' : 'Sudah Mengumpulkan Tugas' }} <br>
+                                    {{ nilaiTugas == null ? 'Belom Dinilai' : 'Sudah Dinilai' }}
+                                    <p>{{ nilaiTugas == null ? '0' : nilaiTugas }} / 100 poin</p>
                                     <hr />
                                     <p v-html="convertToLink(selectedTask.deskripsi)">
                                         {{
@@ -151,7 +153,7 @@
                                 <b-modal v-model="showModal" title="Kirim Tugas">
                                     <form @submit.prevent="submitJawabanTugas" enctype="multipart/form-data">
                                         <!-- Tabel Input Topik -->
-                                        <b-form-group label="" label-for="tugas_id">{{ selectedTask.tugas_id }}
+                                        <b-form-group label="" label-for="tugas_id">
                                             <b-form-input id="tugas_id" v-model="selectedTask.tugas_id" required
                                                 class="w-100" disabled></b-form-input>
                                         </b-form-group>
@@ -238,6 +240,9 @@ export default {
             isTaskView: false,
             selectedTask: {},
             items: [],
+            nilaiTugas: null,
+            tugas: null,
+            jawabanTugas: [], // Data jawaban tugas
             kirimTugas: {
                 tugas_id: null,
                 peserta_didik_id: null,
@@ -280,10 +285,26 @@ export default {
         setTab(tab) {
             this.activeTab = tab;
         },
+
+        async getJawabanTugas() {
+            try {
+                const response = await this.$http.get(`/get-jawaban-tugas/${this.selectedTask.tugas_id}`);
+                
+                this.jawabanTugas = response.data.data;
+                this.nilaiTugas = response.data.data.nilai;
+                this.tugas = response.data.data.lampiran;
+                console.log('Jawaban Tugas:', this.jawabanTugas); // Cek isi data di sini
+                // console.log('Jawaban Tugas:', this.selectedTask.tugas_id); // Cek isi data di sini
+            } catch (error) {
+                this.error = error.response ? error.response.data.message : 'Error tidak diketahui';
+                console.log(this.error);
+            }
+        },
+
         viewTask(task) {
             this.selectedTask = task;
             this.isTaskView = true;
-            
+            this.getJawabanTugas(); // Pastikan ini dipanggil setelah mengisi selectedTask
         },
         backToList() {
             this.isTaskView = false;
@@ -344,42 +365,54 @@ export default {
 
         // kirim tugas
         async submitJawabanTugas() {
-        this.isBusy = true;
-        try {
-            const formData = new FormData();
-            formData.append('tugas_id', this.selectedTask.tugas_id);
-            formData.append('file', this.kirimTugas.file);
-            formData.append('komentar', this.kirimTugas.komentar);
+            this.isBusy = true;
+            try {
+                const formData = new FormData();
+                formData.append('tugas_id', this.selectedTask.tugas_id);
+                formData.append('file', this.kirimTugas.file);
+                formData.append('komentar', this.kirimTugas.komentar);
 
-            const response = await this.$http.post('/kirim_jawaban', formData);
+                const response = await this.$http.post('/kirim_jawaban', formData);
 
+                // Show success toast with message from backend
+                if(response.data.message == 'Jawaban sudah pernah ditambahkan.'){
+                    this.$bvToast.toast(response.data.message, {
+                        title: 'Error',
+                        variant: 'danger',
+                        solid: true,
+                    });
+                }else{
+                    this.$bvToast.toast(response.data.message, {
+                        title: 'Sukses',
+                        variant: 'success',
+                        solid: true,
+                    });
+                }
 
-            // Show success toast
-            this.$bvToast.toast('Tugas berhasil dikirim!', {
-                title: 'Sukses',
-                variant: 'success',
-                solid: true,
-            });
+                // Reset the form
+                this.resetForm();
 
-            // Reset the form
-            this.resetForm();
+                // Hide the modal
+                this.showModal = false;
 
-            // Hide the modal
-            this.showModal = false;
+                this.isBusy = false;
+            } catch (error) {
+                this.isBusy = false;
 
-            this.isBusy = false;
-        } catch (error) {
-            this.isBusy = false;
-            // Show error toast
-            this.$bvToast.toast('Gagal mengirim tugas.', {
-                title: 'Error',
-                variant: 'danger',
-                solid: true,
-            });
-        }
-    },
+                // Check if there's a specific error message from the server
+                const errorMessage = error.response && error.response.data.message 
+                    ? error.response.data.message 
+                    : 'Gagal mengirimkan tugas atau tugas sudah pernah dikumpulkan';
 
-    
+                // Show error toast with message from backend or default error
+                this.$bvToast.toast(errorMessage, {
+                    title: 'Error',
+                    variant: 'danger',
+                    solid: true,
+                });
+            }
+        },
+
     // kosongkan form
     resetForm() {
         this.kirimTugas.file = null;
