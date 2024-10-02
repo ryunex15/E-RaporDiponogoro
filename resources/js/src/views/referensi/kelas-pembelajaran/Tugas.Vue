@@ -1,6 +1,6 @@
-<template>
+<template class="template">
     <div class="container-fluid">
-        <div class="row " v-if="!showDetail">
+        <div class="row " v-if="!showDetail && !showPrint">
             <div class="col-lg-8 col-md-12">
                 <div class="card">
                     <div class="card-body">
@@ -57,11 +57,14 @@
             </div>
         </div>
 
-        <div class="row" v-if="!showDetail">
+        <div class="row" v-if="!showDetail && !showPrint">
             <div class="col-lg-8 col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="d-flex justify-content-center">Pengumpulan Tugas</h2>
+                        <div class="d-flex justify-content-between">
+                            <h2 class="ml-4">Pengumpulan Tugas</h2>
+                            <b-button variant="success" class="mr-2" @click="handlePrint(students, items.tugas)">Print</b-button>
+                        </div>
                         <b-list-group>
                             <b-list-group-item v-for="(student, index) in students" :key="index"
                                 class="border-0 py-3 d-flex align-items-center justify-content-between">
@@ -87,11 +90,11 @@
         </div>
 
         <!-- New Detail Section -->
-        <div v-if="showDetail" class="row">
+        <div v-if="showDetail && !showPrint" class="row">
             <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="mb-2">Detail Tugas Siswa 123</h2>
+                        <h2 class="mb-2">Jawaban Siswa</h2>
                         <h4>Nama: </h4>
                         <p class="text-md">{{ detailJawaban.peserta_didik.nama }}</p>
                         <h4>Komentar:</h4>
@@ -101,28 +104,48 @@
                                 style="width: 40%; height: 40%;">
                         </div>
                         <div>
-                            <button class="btn btn-info" @click="handleDownload(detailJawaban.lampiran)">Download File</button>
+                            <button class="btn btn-info mb-4" @click="handleDownload(detailJawaban.lampiran)">Download
+                                File</button>
                         </div>
                         <form @submit.prevent="submitNilai">
                             <div class="form-group">
                                 <h3>Nilai</h3>
-                                <input 
-                                    type="number" 
-                                    class="form-control col-6" 
-                                    id="nilai" 
-                                    v-model="computedNilai" 
-                                    required
-                                />
+                                <input type="number" class="form-control col-6" id="nilai" v-model="computedNilai"
+                                    required />
                                 <input type="text" class="form-control col-6" id="nilai"
                                     v-model="detailJawaban.peserta_didik_id" hidden>
                                 <input type="text" class="form-control col-6" id="nilai" v-model="id_tugas" hidden>
                             </div>
                             <button type="submit" class="btn btn-success">Simpan Nilai</button>
                         </form>
+
+                        <button class="btn btn-secondary mt-2" @click="backTodetail()">kembali</button>
                     </div>
                 </div>
             </div>
         </div>
+
+
+        <div v-if="showPrint" class="row" id="printableArea">
+            <div class="col-lg-12 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="mb-2">Tugas {{ items.tugas.judul }}</h2>
+                        <b-table hover :items="nilaiSiswa" :fields="fields" small class="table">
+                            <template #cell(aksi)="row">
+                                <b-button variant="primary" @click="viewTask(row.item)">
+                                    View
+                                </b-button>
+                            </template>
+                        </b-table>
+                        <b-button variant="secondary" class="mt-4 print-hidden" @click="detailTugas()">Kembali</b-button>
+                        <b-button variant="primary" class="mt-4 print-hidden" @click="printDiv('printableArea')">Print Nilai</b-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
     </div>
 </template>
@@ -130,7 +153,7 @@
 
 <script>
 import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons, BListGroup } from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons, BListGroup, BTable } from "bootstrap-vue";
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
@@ -142,15 +165,21 @@ export default {
             nilai: null,
             id_tugas: this.$route.query.id,
             items: {},
+            nilaiSiswa: [],
             students: [], // Initialize as an empty array
             detailJawaban: [],
             showDetail: false, // New property to control visibility
+            showPrint: false, // halaman print set false
             selectedStudentId: null, // To hold the ID of the selected student
             updateNilai: {
                 nilai: null,
                 peserta_didik_id: null,
                 tugas_id: null,
-            }
+            },
+            fields: [
+                { key: "nama", label: "NAMA" },
+                { key: "nilai", label: "NILAI" },
+            ],
         };
     },
 
@@ -162,14 +191,14 @@ export default {
     computed: {
         // Jika detailJawaban.nilai ada, gunakan itu; jika tidak, gunakan updateNilai.nilai
         computedNilai: {
-        get() {
-            return this.detailJawaban.nilai !== null 
-            ? this.detailJawaban.nilai 
-            : this.updateNilai.nilai;
-        },
-        set(value) {
-            this.updateNilai.nilai = value; // Set nilai ke updateNilai.nilai
-        }
+            get() {
+                return this.detailJawaban.nilai !== null
+                    ? this.detailJawaban.nilai
+                    : this.updateNilai.nilai;
+            },
+            set(value) {
+                this.updateNilai.nilai = value; // Set nilai ke updateNilai.nilai
+            }
         }
     },
 
@@ -259,6 +288,13 @@ export default {
             link.click();
             document.body.removeChild(link);
         },
+        backTodetail(){
+            this.showDetail = false;
+        },
+
+        detailTugas(){
+            this.showPrint = false;
+        },
 
         backToList() {
             const pembelajaran_id = this.items.tugas.pembelajaran_id;
@@ -323,13 +359,48 @@ export default {
                 console.error('Error submitting nilai:', error);
                 alert('Terjadi kesalahan saat menyimpan nilai');
             }
-        }
+        },
 
-      
+        handlePrint(student, nama_tugas) {
+            // window.print();
+            this.showPrint = true;
+            console.log(student)
+
+            this.nilaiSiswa = this.students.map(student => ({
+                nama: student.peserta_didik.nama,
+                nilai: student.nilai,
+            }));
+        },
+        
+
+        printDiv(divId) {
+            // Menyimpan isi div ke dalam variabel
+            const printContents = document.getElementById(divId).innerHTML;
+            const originalContents = document.body.innerHTML;
+
+            // Mengganti isi body dengan isi div yang ingin dicetak
+            document.body.innerHTML = printContents;
+
+            // Memicu dialog cetak
+            window.print();
+
+            // Mengembalikan isi asli dari body
+            document.body.innerHTML = originalContents;
+
+            // Mengembalikan scroll posisi
+            window.location.reload();
+        },
+
+
     },
 };
 </script>
 
 <style>
-/* Add any custom styles here */
+    @media print {
+        .print-hidden {
+            display: none !important;
+        }
+    }
 </style>
+

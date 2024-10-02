@@ -23,7 +23,7 @@
 
     <!-- Right Col -->
     <b-navbar-nav class="nav align-items-center ml-auto">
-      <logokanan />
+      <logokanan /> 
     </b-navbar-nav>
   </div>
 </template>

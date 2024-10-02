@@ -62,7 +62,7 @@
                                             formatDate(selectedTask.created_at)
                                         }}</span>
                                     </p>
-                                    {{ tugas == null ? 'Belom Mengumpulkan Tugas' : 'Sudah Mengumpulkan Tugas' }} <br>
+                                    {{ this.jawabanTugas == null ? 'Belom Mengumpulkan Tugas' : 'Sudah Mengumpulkan Tugas' }} <br>
                                     {{ nilaiTugas == null ? 'Belom Dinilai' : 'Sudah Dinilai' }}
                                     <p>{{ nilaiTugas == null ? '0' : nilaiTugas }} / 100 poin</p>
                                     <hr />
@@ -138,7 +138,7 @@
                                             ">
                                             Download
                                         </b-button>
-                                        <b-button variant="success" class="ml-2 mt-2" @click="showModal = true">
+                                        <b-button variant="success" class="ml-2 mt-2" @click="showModal = true" v-show="!jawabanTugas">
                                             Kirim Tugas
                                         </b-button>
                                     </div>
@@ -241,6 +241,7 @@ export default {
             selectedTask: {},
             items: [],
             nilaiTugas: null,
+            tugasId: null,
             tugas: null,
             jawabanTugas: [], // Data jawaban tugas
             kirimTugas: {
@@ -254,6 +255,7 @@ export default {
                 { key: "judul", label: "JUDUL" },
                 { key: "topik", label: "TOPIK" },
                 { key: "tanggal", label: "TANGGAL" },
+                { key: "nilai", label: "NILAI" },
                 { key: "aksi", label: "AKSI" },
             ],
         };
@@ -270,7 +272,7 @@ export default {
                 deskripsi: tugas.deskripsi || "Deskripsi tidak tersedia",
                 file: tugas.lampiran_document || "Deskripsi tidak tersedia",
                 created_at: tugas.created_at,
-                
+                nilai: tugas.jawaban_siswa.length > 0 ? tugas.jawaban_siswa[0].nilai : 0,
             }));
 
             this.kirimTugas =  newTugas.map((tugas, index) => ({
@@ -293,8 +295,11 @@ export default {
                 this.jawabanTugas = response.data.data;
                 this.nilaiTugas = response.data.data.nilai;
                 this.tugas = response.data.data.lampiran;
+                this.tugasId = response.data.data.tugas_id;
+                console.log('ini lampiran',this.tugas);
                 console.log('Jawaban Tugas:', this.jawabanTugas); // Cek isi data di sini
                 // console.log('Jawaban Tugas:', this.selectedTask.tugas_id); // Cek isi data di sini
+                
             } catch (error) {
                 this.error = error.response ? error.response.data.message : 'Error tidak diketahui';
                 console.log(this.error);
