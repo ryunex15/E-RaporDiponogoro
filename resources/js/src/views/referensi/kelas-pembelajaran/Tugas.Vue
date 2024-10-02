@@ -66,23 +66,28 @@
                             <b-button variant="success" class="mr-2" @click="handlePrint(students, items.tugas)">Print</b-button>
                         </div>
                         <b-list-group>
-                            <b-list-group-item v-for="(student, index) in students" :key="index"
-                                class="border-0 py-3 d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center">
-                                    <!-- Display the index + 1 as the number -->
-                                    <div class="mr-3 font-weight-bold">{{ index + 1 }}.</div>
-                                    <b-avatar :src="student.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
-                                    <div>
-                                        <div class="font-weight-bold">{{ student.peserta_didik.nama }}</div>
-                                        <div class="text-muted small">{{ student.kelas }}</div>
-                                        <div class="font-weight-bold">Nilai : {{ student.nilai }}</div>
+                            <template v-if="students.length > 0">
+                                <b-list-group-item v-for="(student, index) in students" :key="index"
+                                    class="border-0 py-3 d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Display the index + 1 as the number -->
+                                        <div class="mr-3 font-weight-bold">{{ index + 1 }}.</div>
+                                        <b-avatar :src="student.avatar" size="3rem" class="mr-3 rounded-circle"></b-avatar>
+                                        <div>
+                                            <div class="font-weight-bold">{{ student.peserta_didik.nama }}</div>
+                                            <div class="text-muted small">{{ student.kelas }}</div>
+                                            <div class="font-weight-bold">Nilai : {{ student.nilai }}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <b-button variant="primary"
-                                    @click="handleClick(student.peserta_didik.peserta_didik_id, student)">Lihat</b-button>
-                            </b-list-group-item>
+                                    <b-button variant="primary"
+                                        @click="handleClick(student.peserta_didik.peserta_didik_id, student)">Lihat</b-button>
+                                </b-list-group-item>
 
-                            <hr class="my-4" />
+                                <hr class="my-4" />
+                            </template>
+                            <template v-else>
+                                <h5 class="text-center mt-4">Tidak ada data.</h5>
+                            </template>
                         </b-list-group>
                     </div>
                 </div>
