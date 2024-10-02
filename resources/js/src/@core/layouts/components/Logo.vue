@@ -9,7 +9,7 @@ export default {
   },
   data() {
     return {
-      sideImg: '/images/logo/logo.png',
+      sideImg: '/images/tutwuri.png',
     }
   },
   computed: {

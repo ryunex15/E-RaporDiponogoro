@@ -178,7 +178,7 @@ export default {
       semester_id: '',
       data_semester: [],
       sideImg: '/images/pages/bg_login.png',
-      logoImg: '/images/logo/logo.png',
+      logoImg: '/images/tutwuri.png',
       //sideImg: '/images/pages/login-v2.svg'),
       // validation rules
       required,

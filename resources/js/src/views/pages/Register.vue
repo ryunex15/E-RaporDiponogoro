@@ -161,7 +161,7 @@ export default {
       //sideImg: '/images/pages/register-v2.svg'),
       // validation
       sideImg: '/images/pages/bg_login.png',
-      logoImg: '/images/logo/logo.png',
+      logoImg: '/images/tutwuri.png',
       required,
       email,
       app: store.state.appConfig.app,

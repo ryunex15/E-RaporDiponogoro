@@ -134,7 +134,7 @@ export default {
       state_password_confirmation: null,
       password_confirmation_error: '',
       sideImg: '/images/pages/bg_login.png',
-      logoImg: '/images/logo/logo.png',
+      logoImg: '/images/tutwuri.png',
       // validation
       required,
       email,

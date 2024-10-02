@@ -13,7 +13,7 @@ export const $themeConfig = {
     // eslint-disable-next-line global-require
     //appLogoKemdikbud: '/images/logo/logo-name.svg', // Will update logo in navigation menu (Branding)
     //http://erapor6.test/images/logo-name.svg
-    appLogoImage: '/images/logo/logo.png', // Will update logo in navigation menu (Branding)
+    appLogoImage: '/images/tutwuri.png', // Will update logo in navigation menu (Branding)
     //appLogoKiri: '/images/logo/kiri.svg', // Will update logo in navigation menu (Branding)
     //appLogoKanan: '/images/logo/kanan.png', // Will update logo in navigation menu (Branding)
   },
