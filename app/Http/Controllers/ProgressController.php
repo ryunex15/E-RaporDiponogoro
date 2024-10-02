@@ -28,7 +28,7 @@ class ProgressController extends Controller
             'anggota_rombel',
       ])
       ->when(request()->q, function($query) {
-         $query->where('nama_mata_pelajaran', 'ILIKE', '%' . request()->q . '%');
+         $query->where('nama_mata_pelajaran', 'like', '%' . request()->q . '%');
          $query->whereNotNull('kelompok_id');
          $query->whereNotNull('no_urut');
          //$query->whereNull('induk_pembelajaran_id');
@@ -36,19 +36,19 @@ class ProgressController extends Controller
             $query->whereIn('jenis_rombel', [1, 16]);
             $query->where('semester_id', request()->semester_id);
             $query->where('sekolah_id', request()->sekolah_id);
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
          });
          $query->whereNotNull('kelompok_id');
          $query->whereNotNull('no_urut');
          //$query->whereNull('induk_pembelajaran_id');
          $query->orWhereHas('guru', function($query){
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
          });
          $query->whereNotNull('kelompok_id');
          $query->whereNotNull('no_urut');
          //$query->whereNull('induk_pembelajaran_id');
          $query->orWhereHas('pengajar', function($query){
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
          });
          $query->whereNotNull('kelompok_id');
          $query->whereNotNull('no_urut');
@@ -185,7 +185,7 @@ class ProgressController extends Controller
                $query->where('rombongan_belajar.sekolah_id', request()->sekolah_id);
                $query->where('jenis_rombel', 1);
             })->orderBy('nama')->when(request()->q, function($query){
-               $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+               $query->where('nama', 'like', '%' . request()->q . '%');
             })->paginate(request()->per_page),
          ];
       } elseif(request()->aksi == 'pkl'){
@@ -232,16 +232,16 @@ class ProgressController extends Controller
       ->orderBy(request()->sortby, request()->sortbydesc)
       ->orderBy('nama', request()->sortbydesc)
       ->when(request()->q, function($query){
-         $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+         $query->where('nama', 'like', '%' . request()->q . '%');
          /*
          $query->orWhereHas('wali_kelas', function($query){
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
          });
          $query->orWhereHas('jurusan_sp', function($query){
-            $query->where('nama_jurusan_sp', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama_jurusan_sp', 'like', '%' . request()->q . '%');
          });
          $query->orWhereHas('kurikulum', function($query){
-            $query->where('nama_kurikulum', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama_kurikulum', 'like', '%' . request()->q . '%');
          });
          */
       })->paginate(request()->per_page);
@@ -265,7 +265,7 @@ class ProgressController extends Controller
       ->orderBy(request()->sortby, request()->sortbydesc)
       ->orderBy('nama', request()->sortbydesc)
       ->when(request()->q, function($query){
-         $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+         $query->where('nama', 'like', '%' . request()->q . '%');
       })->paginate(request()->per_page);
       return response()->json(['status' => 'success', 'data' => $data]);
    }
@@ -288,8 +288,8 @@ class ProgressController extends Controller
       ->orderBy(request()->sortby, request()->sortbydesc)
       ->when(request()->q, function($query) {
             $query->whereHas('paket_ukk', function($query){
-               $query->where('nama_paket_id', 'ILIKE', '%' . request()->q . '%');
-               $query->orWhere('nama_paket_en', 'ILIKE', '%' . request()->q . '%');
+               $query->where('nama_paket_id', 'like', '%' . request()->q . '%');
+               $query->orWhere('nama_paket_en', 'like', '%' . request()->q . '%');
             });
       })->paginate(request()->per_page);
       return response()->json(['status' => 'success', 'data' => $data]);
@@ -303,15 +303,15 @@ class ProgressController extends Controller
          'akt_pd.dudi'
      ])->withCount('pd_pkl')->orderBy(request()->sortby, request()->sortbydesc)
      ->when(request()->q, function($query){
-         $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+         $query->where('nama', 'like', '%' . request()->q . '%');
          $query->orWhereHas('wali_kelas', function($query){
-             $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+             $query->where('nama', 'like', '%' . request()->q . '%');
          });
          $query->orWhereHas('jurusan_sp', function($query){
-             $query->where('nama_jurusan_sp', 'ILIKE', '%' . request()->q . '%');
+             $query->where('nama_jurusan_sp', 'like', '%' . request()->q . '%');
          });
          $query->orWhereHas('kurikulum', function($query){
-             $query->where('nama_kurikulum', 'ILIKE', '%' . request()->q . '%');
+             $query->where('nama_kurikulum', 'like', '%' . request()->q . '%');
          });
      })->paginate(request()->per_page);
      return response()->json(['status' => 'success', 'data' => $data]);
@@ -325,8 +325,8 @@ class ProgressController extends Controller
          $query->where('status', 3);
       })->orderBy(request()->sortby, request()->sortbydesc)
       ->when(request()->q, function($query){
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
-            $query->where('nisn', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
+            $query->where('nisn', 'like', '%' . request()->q . '%');
       })
      ->when(request()->rombongan_belajar_id, function($query){
          $query->whereHas('kelas', function($query){

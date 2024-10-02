@@ -465,15 +465,15 @@ class SinkronisasiController extends Controller
         ->orderBy(request()->sortby, request()->sortbydesc)
         ->orderBy('nama', request()->sortbydesc)
         ->when(request()->q, function($query){
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
             $query->orWhereHas('wali_kelas', function($query){
-                $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama', 'like', '%' . request()->q . '%');
             });
             $query->orWhereHas('jurusan_sp', function($query){
-                $query->where('nama_jurusan_sp', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_jurusan_sp', 'like', '%' . request()->q . '%');
             });
             $query->orWhereHas('kurikulum', function($query){
-                $query->where('nama_kurikulum', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_kurikulum', 'like', '%' . request()->q . '%');
             });
         })->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data]);
@@ -627,10 +627,10 @@ class SinkronisasiController extends Controller
         })->orderBy(request()->sortby, request()->sortbydesc)
         ->orderBy('rombongan_belajar_id', request()->sortbydesc)
         ->when(request()->q, function($query){
-            $query->where('nm_mata_evaluasi', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nm_mata_evaluasi', 'like', '%' . request()->q . '%');
             $query->orWhereHas('pembelajaran', function($query){
                 $query->whereHas('guru', function($query){
-                    $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+                    $query->where('nama', 'like', '%' . request()->q . '%');
                 });
             });
         })->paginate(request()->per_page);

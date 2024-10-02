@@ -37,12 +37,12 @@ class UsersController extends Controller
         ])->where($where)->orderBy(request()->sortby, request()->sortbydesc)
             ->when(request()->q, function ($query) use ($where) {
                 $query->where($where);
-                $query->where('name', 'ILIKE', '%' . request()->q . '%');
-                $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
+                $query->where('name', 'like', '%' . request()->q . '%');
+                $query->orWhere('nuptk', 'like', '%' . request()->q . '%');
                 $query->where($where);
-                $query->orWhere('nisn', 'ILIKE', '%' . request()->q . '%');
+                $query->orWhere('nisn', 'like', '%' . request()->q . '%');
                 $query->where($where);
-                $query->orWhere('email', 'ILIKE', '%' . request()->q . '%');
+                $query->orWhere('email', 'like', '%' . request()->q . '%');
                 $query->where($where);
             })->when(request()->role_id, function ($ptk) {
                 if (request()->role_id !== 'all') {

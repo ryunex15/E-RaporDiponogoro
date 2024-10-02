@@ -31,8 +31,8 @@ class UkkController extends Controller
         ->orderBy(request()->sortby, request()->sortbydesc)
         ->when(request()->q, function($query) {
             $query->whereHas('paket_ukk', function($query){
-                $query->where('nama_paket_id', 'ILIKE', '%' . request()->q . '%');
-                $query->orWhere('nama_paket_en', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_paket_id', 'like', '%' . request()->q . '%');
+                $query->orWhere('nama_paket_en', 'like', '%' . request()->q . '%');
             });
         })->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data]);
@@ -202,8 +202,8 @@ class UkkController extends Controller
         ->orderBy(request()->sortby, request()->sortbydesc)
         ->when(request()->q, function($query) {
             $query->whereHas('paket_ukk', function($query){
-                $query->where('nama_paket_id', 'ILIKE', '%' . request()->q . '%');
-                $query->orWhere('nama_paket_en', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_paket_id', 'like', '%' . request()->q . '%');
+                $query->orWhere('nama_paket_en', 'like', '%' . request()->q . '%');
             });
         })->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data]);
@@ -223,7 +223,7 @@ class UkkController extends Controller
         ->orderBy('kurikulum_id', 'asc')
         ->orderBy('nomor_paket', 'asc')
         ->when(request()->q, function($query) {
-            $query->where('nama_paket_id', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama_paket_id', 'like', '%' . request()->q . '%');
         })
         ->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data]);

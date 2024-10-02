@@ -716,7 +716,7 @@ class PenilaianController extends Controller
             'search' => request()->q,
             'kurtilas' => Rombongan_belajar::where(function ($query) {
                 $query->whereHas('kurikulum', function ($query) {
-                    $query->where('nama_kurikulum', 'ILIKE', '%2013%');
+                    $query->where('nama_kurikulum', 'like', '%2013%');
                 });
                 $query->where('semester_id', request()->semester_id);
                 $query->where('sekolah_id', request()->sekolah_id);
@@ -730,7 +730,7 @@ class PenilaianController extends Controller
             'data' => Budaya_kerja::with(['elemen_budaya_kerja'])->get(),
             'kurtilas' => Rombongan_belajar::where(function ($query) {
                 $query->whereHas('kurikulum', function ($query) {
-                    $query->where('nama_kurikulum', 'ILIKE', '%2013%');
+                    $query->where('nama_kurikulum', 'like', '%2013%');
                 });
                 $query->where('semester_id', request()->semester_id);
                 $query->where('sekolah_id', request()->sekolah_id);
@@ -889,12 +889,12 @@ class PenilaianController extends Controller
             ->withCount('aspek_budaya_kerja')
             ->orderBy(request()->sortby, request()->sortbydesc)
             ->when(request()->q, function ($query) {
-                $query->where('nama_penilaian', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_penilaian', 'like', '%' . request()->q . '%');
                 $query->orWhereHas('pembelajaran', function ($query) {
                     $query->whereNotNull('kelompok_id');
                     $query->whereNotNull('no_urut');
                     $query->where('sekolah_id', request()->sekolah_id);
-                    $query->where('nama_mata_pelajaran', 'ILIKE', '%' . request()->q . '%');
+                    $query->where('nama_mata_pelajaran', 'like', '%' . request()->q . '%');
                 });
                 /*$query->orWhereIn('pembelajaran_id', function($query){
                     $query->select('pembelajaran_id')
@@ -903,7 +903,7 @@ class PenilaianController extends Controller
                     ->whereNotNull('no_urut')
                     //->whereNull('induk_pembelajaran_id')
                     ->where('sekolah_id', request()->sekolah_id)
-                    ->where('nama_mata_pelajaran', 'ILIKE', '%' . request()->q . '%');
+                    ->where('nama_mata_pelajaran', 'like', '%' . request()->q . '%');
                 });*/
             })->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data]);

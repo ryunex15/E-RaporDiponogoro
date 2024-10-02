@@ -62,14 +62,14 @@ class PdController extends Controller
         ])
         ->orderBy(request()->sortby, request()->sortbydesc)
         ->when(request()->q, function($query) {
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
             $query->where($this->kondisi());
-            $query->orWhere('nisn', 'ILIKE', '%' . request()->q . '%');
+            $query->orWhere('nisn', 'like', '%' . request()->q . '%');
             $query->where($this->kondisi());
-            $query->orWhere('tempat_lahir', 'ILIKE', '%' . request()->q . '%');
+            $query->orWhere('tempat_lahir', 'like', '%' . request()->q . '%');
             $query->where($this->kondisi());
             $query->orWhereHas('agama', function($query){
-                $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama', 'like', '%' . request()->q . '%');
             });
             $query->where($this->kondisi());
         })->when(request()->tingkat, function($query){

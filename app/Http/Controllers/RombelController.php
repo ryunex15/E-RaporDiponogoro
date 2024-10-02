@@ -28,18 +28,18 @@ class RombelController extends Controller
         ->orderBy(request()->sortby, request()->sortbydesc)
         ->orderBy('nama')
         ->when(request()->q, function($query){
-            $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+            $query->where('nama', 'like', '%' . request()->q . '%');
             $query->where($this->kondisi());
             $query->orWhereHas('wali_kelas', function($query){
-                $query->where('nama', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama', 'like', '%' . request()->q . '%');
             });
             $query->where($this->kondisi());
             $query->orWhereHas('jurusan_sp', function($query){
-                $query->where('nama_jurusan_sp', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_jurusan_sp', 'like', '%' . request()->q . '%');
             });
             $query->where($this->kondisi());
             $query->orWhereHas('kurikulum', function($query){
-                $query->where('nama_kurikulum', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama_kurikulum', 'like', '%' . request()->q . '%');
             });
             $query->where($this->kondisi());
         })->paginate(request()->per_page);
@@ -205,7 +205,7 @@ class RombelController extends Controller
             }
             if(request()->has('opsi_sikap')){
                 $query->whereHas('kurikulum', function($query){
-                    $query->where('nama_kurikulum', 'ILIKE', '%2013%');
+                    $query->where('nama_kurikulum', 'like', '%2013%');
                 });
             }
         })->orderBy('nama')->get();

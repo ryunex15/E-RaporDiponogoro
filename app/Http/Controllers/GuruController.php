@@ -31,8 +31,8 @@ class GuruController extends Controller
                     }
                 ])->orderBy(request()->sortby, request()->sortbydesc)
             ->when(request()->q, function ($query) {
-                $query->where('nama', 'ILIKE', '%' . request()->q . '%');
-                $query->orWhere('nuptk', 'ILIKE', '%' . request()->q . '%');
+                $query->where('nama', 'like', '%' . request()->q . '%');
+                $query->orWhere('nuptk', 'like', '%' . request()->q . '%');
             })->paginate(request()->per_page);
         return response()->json(['status' => 'success', 'data' => $data, 'datas' => $datas]);
     }
