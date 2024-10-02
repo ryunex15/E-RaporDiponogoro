@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CetakController;
 use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ApplicationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +16,9 @@ use App\Http\Controllers\AuthController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/home', [HomeController::class, 'index']);
+
 Route::group(['prefix' => 'cetak'], function () {
     Route::get('/', [CetakController::class, 'viewPdf']);
     Route::group(['prefix' => 'berita-acara'], function () {
