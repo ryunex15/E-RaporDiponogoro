@@ -56,6 +56,7 @@ class JawabanTugasController extends Controller
                 'lampiran' => $filePath ?? null,
                 'komentar' => $request->komentar,
                 'peserta_didik_id' => $peserta_didik_id,
+                'nilai' => 0,
             ]);
 
             return response()->json(['message' => 'Tugas berhasil dikirim!', 'data' => $jawabanSiswa], 201);

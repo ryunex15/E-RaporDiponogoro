@@ -63,7 +63,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <h2 class="ml-4">Pengumpulan Tugas</h2>
-                            <b-button variant="success" class="mr-2" @click="handlePrint(students, items.tugas)">Print</b-button>
+                            <b-button v-if="students.length > 0" variant="success" class="mr-2" @click="handlePrint(students, items.tugas)">Print</b-button>
                         </div>
                         <b-list-group>
                             <template v-if="students.length > 0">
