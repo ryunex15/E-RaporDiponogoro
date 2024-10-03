@@ -17,7 +17,7 @@ use App\Http\Controllers\ApplicationController;
 |
 */
 
-Route::get('/home', [HomeController::class, 'index']);
+Route::get('/contoh', [HomeController::class, 'index']);
 
 Route::group(['prefix' => 'cetak'], function () {
     Route::get('/', [CetakController::class, 'viewPdf']);

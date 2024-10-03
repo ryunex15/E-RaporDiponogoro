@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\JawabanTugasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdController;
@@ -9,7 +8,9 @@ use App\Http\Controllers\PklController;
 use App\Http\Controllers\UkkController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WakaController;
+use App\Http\Controllers\TugasController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WalasController;
 use App\Http\Controllers\RombelController;
@@ -18,7 +19,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\ReferensiController;
 use App\Http\Controllers\TopikTugasController;
-use App\Http\Controllers\TugasController;
+use App\Http\Controllers\JawabanTugasController;
 use App\Http\Controllers\SinkronisasiController;
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,8 @@ Route::get('/detail', [TugasController::class, 'detail']);
 Route::post('/tugas', [TugasController::class, 'store']);
 Route::delete('/tugas/{id}', [TugasController::class, 'destroy'])->name('tugas.destroy');
 Route::get('/pembelajaran/{id}', [RombelController::class, 'getPembelajaranById']);
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
 Route::get('sekolah', [DashboardController::class, 'hitung_sekolah']);

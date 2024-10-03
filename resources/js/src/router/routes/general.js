@@ -27,6 +27,27 @@ export default [
     },
   },
   {
+    path: '/home',
+    name: 'home',
+    component: () => import('@/views/pages/Home.vue'),
+    meta: {
+      layout: 'full',
+      resource: 'Auth',
+      redirectIfLoggedIn: true,
+      pageTitle: 'Login Pengguna',
+    },
+  },
+  // {
+  //   path: '/home',
+  //   name: 'home',
+  //   component: () => import('@/views/pages/Home.vue'),
+  //   meta: {
+  //     layout: 'full',
+  //     resource: 'Home',
+  //     pageTitle: 'Home',
+  //   },
+  // },
+  {
     path: '/reset-password/:token?',
     name: 'auth-reset-password',
     component: () => import('@/views/pages/LupaPassword.vue'),
